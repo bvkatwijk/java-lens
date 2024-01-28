@@ -11,6 +11,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
 import java.io.IOException;
@@ -27,11 +28,8 @@ public class LensProcessor extends AbstractProcessor {
             return true;
         }
         lensElements(roundEnv)
-            .forEach(it -> {
-                System.out.println("it = " + it);
-                HashSet.of(new Type("org.bvkatwijk.lens.gen", "PersonLens1"))
-                    .forEach(this::writeSourceFile);
-            });
+            .filter(it -> ElementKind.RECORD.equals(it.getKind()))
+            .forEach(it -> writeSourceFile(new Type("org.bvkatwijk.lens.gen", "Record" + it.getSimpleName())));
         return true;
     }
 
@@ -40,7 +38,7 @@ public class LensProcessor extends AbstractProcessor {
         processingEnv.getFiler()
             .createSourceFile(it.qualified())
             .openWriter()
-            .append("public class PersonLens1 {}")
+            .append("package " + it.pack() + ";\n\n" + "public class " + it.name() + " {}")
             .close();
     }
 
