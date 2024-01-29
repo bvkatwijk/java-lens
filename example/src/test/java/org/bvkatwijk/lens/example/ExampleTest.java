@@ -31,6 +31,16 @@ public class ExampleTest {
     }
 
     @Test
+    void userAddressNumberDirectReplace() {
+        var addressNumberLens = USER.focus(it -> it.address().number(), it -> USER.withAddress(USER.address().withNumber(it)));
+        assertEquals(
+            new User(NAME, NEW_ADDRESS),
+            addressNumberLens
+                .replace(NUMBER_NEW)
+        );
+    }
+
+    @Test
     void userAddressNameReplace() {
         assertEquals(
             new User(NAME_NEW, ADDRESS),

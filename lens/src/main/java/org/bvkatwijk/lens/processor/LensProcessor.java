@@ -13,9 +13,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import javax.tools.FileObject;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Set;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_19)
@@ -29,16 +27,35 @@ public class LensProcessor extends AbstractProcessor {
         }
         lensElements(roundEnv)
             .filter(it -> ElementKind.RECORD.equals(it.getKind()))
-            .forEach(it -> writeSourceFile(new Type("org.bvkatwijk.lens.gen", "Record" + it.getSimpleName())));
+            .forEach(it -> writeSourceFile(new Type("org.bvkatwijk.lens.gen", it.getSimpleName() + "Lens")));
         return true;
     }
 
     @SneakyThrows
     private void writeSourceFile(Type it) {
+        writeSourceFile(it, String.join(
+            "\n",
+            "package " + it.pack() + ";",
+            "",
+            "import org.bvkatwijk.lens.Address;",
+            "import org.bvkatwijk.lens.Focus;",
+            "import org.bvkatwijk.lens.IFocus;",
+            "",
+            "import java.util.function.Function;",
+            "",
+            "public class " + it.name() + " {",
+            "    public <TARGET> IFocus<Address, TARGET> focus(Function<Address, TARGET> f, Function<TARGET, Address> with) {",
+            "        return new Focus<>(this, with, f);",
+            "    }",
+            "}"
+        ));
+    }
+
+    private void writeSourceFile(Type it, String content) throws IOException {
         processingEnv.getFiler()
             .createSourceFile(it.qualified())
             .openWriter()
-            .append("package " + it.pack() + ";\n\n" + "public class " + it.name() + " {}")
+            .append(content)
             .close();
     }
 
