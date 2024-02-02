@@ -33,39 +33,43 @@ public class LensProcessor extends AbstractProcessor {
         }
         lensElements(roundEnv)
             .filter(it -> ElementKind.RECORD.equals(it.getKind()))
-            .forEach(this::writeLens);
+            .forEach(this::writeSourceFile);
         return true;
     }
 
-    private void writeLens(Element it) {
-        var fields = it.getEnclosedElements()
+    @SneakyThrows
+    private void writeSourceFile(Element el) {
+        Type type = new Type("org.bvkatwijk.lens.gen", el.getSimpleName().toString());
+        var fields = List.ofAll(el.getEnclosedElements()
             .stream()
             .filter(RecordComponentElement.class::isInstance)
             .map(RecordComponentElement.class::cast)
-            .toList();
-        writeSourceFile(new Type("org.bvkatwijk.lens.gen", it.getSimpleName().toString()));
-    }
+            .toList());
 
-    @SneakyThrows
-    private void writeSourceFile(Type it) {
-        writeSourceFile(it, String.join(
+        var isoConstants = fields
+            .map(it -> isoConstant(type.name(), it.getSimpleName().toString(), it.getSimpleName().toString()))
+            .map(this::indent)
+            .toList();
+
+        writeSourceFile(type, String.join(
             "\n",
-            "package " + it.pack() + ";",
-            "",
-            "import org.bvkatwijk.lens.Address;",
-            "import org.bvkatwijk.lens.kind.Lens;",
-            "import org.bvkatwijk.lens.Person;",
-            "",
-            "import java.util.function.Function;",
-            "",
-            "public class " + it.name() + Const.LENS + " {",
-            indent(iso(it.name(), "name", "String")),
-            "}"
-        ));
+            List.of(
+                    "package " + type.pack() + ";",
+                    "",
+                    "import org.bvkatwijk.lens.Address;",
+                    "import org.bvkatwijk.lens.kind.Lens;",
+                    "import org.bvkatwijk.lens.Person;",
+                    "",
+                    "import java.util.function.Function;",
+                    "",
+                    "public class " + type.name() + Const.LENS + " {")
+                .appendAll(isoConstants)
+                .append("}")
+                .toJavaList()));
     }
 
     // Address person Integer
-    public String iso(String record, String field, String fieldType) {
+    public String isoConstant(String record, String field, String fieldType) {
         return "public static final " + Const.LENS + "<" + record + ", " + fieldType + "> " + isoName(field) + " = new " + Const.LENS + "<>(" + record + "::" + witherName(
             field) + ", " + record + "::" + field + ");";
     }
