@@ -3,6 +3,7 @@ package org.bvkatwijk.lens.example;
 import net.datafaker.providers.entertainment.NewGirl;
 import org.bvkatwijk.lens.Address;
 import org.bvkatwijk.lens.User;
+import org.bvkatwijk.lens.gen.AddressLens;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -60,19 +61,10 @@ public class ExampleTest {
     }
 
     @Test
-    void addressNumberReplace() {
-        assertEquals(
-            NEW_ADDRESS,
-            ADDRESS.focus(Address::number, ADDRESS::withNumber)
-                .replace(NEW_ADDRESS.number())
-        );
-    }
-
-    @Test
     void addressNumberModify() {
         assertEquals(
             new Address(STREET, ADDRESS.number() + 1),
-            ADDRESS.with(Address.NUMBER, i -> i + 1)
+            ADDRESS.with(AddressLens.NUMBER, i -> i + 1)
         );
     }
 
@@ -80,7 +72,7 @@ public class ExampleTest {
     void addressStreetModify() {
         assertEquals(
             new Address(STREET.toUpperCase(), ADDRESS.number()),
-            ADDRESS.with(Address.STREET, String::toUpperCase)
+            ADDRESS.with(AddressLens.STREET, String::toUpperCase)
         );
     }
 
@@ -88,7 +80,7 @@ public class ExampleTest {
     void addressBothStreetAndNumberModify() {
         assertEquals(
             new Address(STREET.toUpperCase(), ADDRESS.number()),
-            ADDRESS.with(Address.STREET, String::toUpperCase)
+            ADDRESS.with(AddressLens.STREET, String::toUpperCase)
         );
     }
 }

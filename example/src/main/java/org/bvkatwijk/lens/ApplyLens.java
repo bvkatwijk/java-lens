@@ -4,7 +4,7 @@ import org.bvkatwijk.lens.kind.Lens;
 
 import java.util.function.UnaryOperator;
 
-public interface With<S extends With<S>> {
+public interface ApplyLens<S extends ApplyLens<S>> {
     /**
      * Apply the supplied operator to the property captured in the iso
      * @param iso
