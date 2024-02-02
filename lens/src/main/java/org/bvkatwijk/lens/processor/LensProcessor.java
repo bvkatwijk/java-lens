@@ -5,7 +5,6 @@ import io.vavr.collection.List;
 import lombok.SneakyThrows;
 import org.bvkatwijk.lens.Const;
 import org.bvkatwijk.lens.Lenses;
-import org.bvkatwijk.lens.ast.Type;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -16,6 +15,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -39,7 +39,8 @@ public class LensProcessor extends AbstractProcessor {
 
     @SneakyThrows
     private void writeSourceFile(Element el) {
-        Type type = new Type("org.bvkatwijk.lens.gen", el.getSimpleName().toString());
+        var pack = "org.bvkatwijk.lens.gen";
+        var name = el.getSimpleName().toString();
         var fields = List.ofAll(el.getEnclosedElements()
             .stream()
             .filter(RecordComponentElement.class::isInstance)
@@ -47,14 +48,17 @@ public class LensProcessor extends AbstractProcessor {
             .toList());
 
         var isoConstants = fields
-            .map(it -> isoConstant(type.name(), it.getSimpleName().toString(), it.getSimpleName().toString()))
+            .map(it -> {
+                String typeName = typeName(it);
+                return isoConstant(name, it.getSimpleName().toString(), typeName);
+            })
             .map(this::indent)
             .toList();
 
-        writeSourceFile(type, String.join(
+        writeSourceFile(pack, name, String.join(
             "\n",
             List.of(
-                    "package " + type.pack() + ";",
+                    "package " + pack + ";",
                     "",
                     "import org.bvkatwijk.lens.Address;",
                     "import org.bvkatwijk.lens.kind.Lens;",
@@ -62,10 +66,27 @@ public class LensProcessor extends AbstractProcessor {
                     "",
                     "import java.util.function.Function;",
                     "",
-                    "public class " + type.name() + Const.LENS + " {")
+                    "public class " + name + Const.LENS + " {")
                 .appendAll(isoConstants)
                 .append("}")
                 .toJavaList()));
+    }
+
+    private static String typeName(RecordComponentElement it) {
+        TypeMirror type = it.asType();
+        return switch (type.getKind()) {
+            case BOOLEAN -> "Boolean";
+            case BYTE -> "Byte";
+            case SHORT -> "Short";
+            case INT -> "Integer";
+            case LONG -> "Long";
+            case CHAR -> "Character";
+            case FLOAT -> "Float";
+            case DOUBLE -> "Double";
+            case VOID -> "Void";
+            case NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL -> throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
+            case DECLARED, OTHER -> type.toString();
+        };
     }
 
     // Address person Integer
@@ -96,9 +117,9 @@ public class LensProcessor extends AbstractProcessor {
         return strings.map(this::indent);
     }
 
-    private void writeSourceFile(Type it, String content) throws IOException {
+    private void writeSourceFile(String pack, String name, String content) throws IOException {
         processingEnv.getFiler()
-            .createSourceFile(it.qualified() + LENS)
+            .createSourceFile(pack + "." + name + LENS)
             .openWriter()
             .append(content)
             .close();
