@@ -1,4 +1,6 @@
 package org.bvkatwijk.lens;
 
-@Lens
-public record Person(String name) { }
+@lombok.With
+@Lenses
+public record Person(String name) implements With<Address> {
+}

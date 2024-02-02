@@ -1,5 +1,6 @@
 package org.bvkatwijk.lens.example;
 
+import net.datafaker.providers.entertainment.NewGirl;
 import org.bvkatwijk.lens.Address;
 import org.bvkatwijk.lens.User;
 import org.junit.jupiter.api.Test;
@@ -71,8 +72,23 @@ public class ExampleTest {
     void addressNumberModify() {
         assertEquals(
             new Address(STREET, ADDRESS.number() + 1),
-            ADDRESS.focus(Address::number, ADDRESS::withNumber)
-                .modify(i -> i + 1)
+            ADDRESS.with(Address.NUMBER, i -> i + 1)
+        );
+    }
+
+    @Test
+    void addressStreetModify() {
+        assertEquals(
+            new Address(STREET.toUpperCase(), ADDRESS.number()),
+            ADDRESS.with(Address.STREET, String::toUpperCase)
+        );
+    }
+
+    @Test
+    void addressBothStreetAndNumberModify() {
+        assertEquals(
+            new Address(STREET.toUpperCase(), ADDRESS.number()),
+            ADDRESS.with(Address.STREET, String::toUpperCase)
         );
     }
 }
