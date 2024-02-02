@@ -84,8 +84,8 @@ public class LensProcessor extends AbstractProcessor {
             case FLOAT -> "Float";
             case DOUBLE -> "Double";
             case VOID -> "Void";
-            case NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL -> throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
             case DECLARED, OTHER -> type.toString();
+            case NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL -> throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
         };
     }
 
