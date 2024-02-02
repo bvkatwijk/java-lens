@@ -64,8 +64,6 @@ public class LensProcessor extends AbstractProcessor {
                     "import org.bvkatwijk.lens.kind.Lens;",
                     "import org.bvkatwijk.lens.Person;",
                     "",
-                    "import java.util.function.Function;",
-                    "",
                     "public class " + name + Const.LENS + " {")
                 .appendAll(isoConstants)
                 .append("}")
