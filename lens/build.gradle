@@ -28,7 +28,7 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.30'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.5'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.12'
     implementation group: 'io.vavr', name: 'vavr', version: '0.10.4'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'

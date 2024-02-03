@@ -24,7 +24,7 @@ ext {
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.26'
     annotationProcessor 'org.projectlombok:lombok:1.18.26'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.5'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.12'
     implementation 'net.datafaker:datafaker:1.8.0'
     implementation group: 'io.vavr', name: 'vavr', version: '0.10.4'
 
