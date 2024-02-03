@@ -1,4 +1,4 @@
-package org.bvkatwijk.lens.ast;
+package nl.bvkatwijk.lens.ast;
 
 public record Type(String pack, String name) {
     public String qualified() {

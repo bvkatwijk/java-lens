@@ -1,4 +1,4 @@
-package org.bvkatwijk.lens;
+package nl.bvkatwijk.lens;
 
 public class Const {
     public static final String LENS = "Lens";

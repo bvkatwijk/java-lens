@@ -1,4 +1,4 @@
-package org.bvkatwijk.lens;
+package nl.bvkatwijk.lens;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

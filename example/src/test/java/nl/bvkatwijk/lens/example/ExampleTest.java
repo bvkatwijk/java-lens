@@ -1,7 +1,7 @@
-package org.bvkatwijk.lens.example;
+package nl.bvkatwijk.lens.example;
 
-import org.bvkatwijk.lens.Address;
-import org.bvkatwijk.lens.gen.AddressLens;
+import nl.bvkatwijk.lens.Address;
+import nl.bvkatwijk.lens.gen.AddressLens;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;

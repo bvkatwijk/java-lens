@@ -1,4 +1,4 @@
-package org.bvkatwijk.lens.kind;
+package nl.bvkatwijk.lens.kind;
 
 import io.vavr.Function1;
 import io.vavr.Function2;

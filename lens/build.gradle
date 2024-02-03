@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'com.adarshr.test-logger' version '3.2.0'
+    id 'maven-publish'
 }
 
 group = 'nl.bvkatwijk.java-lens'
@@ -22,21 +23,19 @@ ext {
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.26'
-    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    testCompileOnly 'org.projectlombok:lombok:1.18.30'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.5'
-    implementation 'net.datafaker:datafaker:1.8.0'
     implementation group: 'io.vavr', name: 'vavr', version: '0.10.4'
 
-    testCompileOnly 'org.projectlombok:lombok:1.18.26'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.3'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.1.1'
-    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.1.1'
+
     testImplementation 'org.instancio:instancio-junit:2.10.0'
-    testImplementation group: 'com.tngtech.archunit', name: 'archunit', version: '1.0.1'
 }
 
 tasks.named('test') {
@@ -48,3 +47,14 @@ testlogger {
 }
 
 clean { delete += "tmp" }
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'nl.bvkatwijk'
+            artifactId = 'java-lens'
+            version = '0.1'
+            from components.java
+        }
+    }
+}

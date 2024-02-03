@@ -1,10 +1,10 @@
-package org.bvkatwijk.lens.processor;
+package nl.bvkatwijk.lens.processor;
 
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import lombok.SneakyThrows;
-import org.bvkatwijk.lens.Const;
-import org.bvkatwijk.lens.Lenses;
+import nl.bvkatwijk.lens.Const;
+import nl.bvkatwijk.lens.Lenses;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_19)
-@SupportedAnnotationTypes("org.bvkatwijk.lens.Lenses")
+@SupportedAnnotationTypes("nl.bvkatwijk.lens.Lenses")
 public class LensProcessor extends AbstractProcessor {
     protected static final String LENS = "Lens";
 
@@ -39,7 +39,7 @@ public class LensProcessor extends AbstractProcessor {
 
     @SneakyThrows
     private void writeSourceFile(Element el) {
-        var pack = "org.bvkatwijk.lens.gen";
+        var pack = "nl.bvkatwijk.lens.gen";
         var name = el.getSimpleName().toString();
         var fields = List.ofAll(el.getEnclosedElements()
             .stream()
@@ -60,9 +60,9 @@ public class LensProcessor extends AbstractProcessor {
             List.of(
                     "package " + pack + ";",
                     "",
-                    "import org.bvkatwijk.lens.Address;",
-                    "import org.bvkatwijk.lens.kind.Lens;",
-                    "import org.bvkatwijk.lens.Person;",
+                    "import nl.bvkatwijk.lens.Address;",
+                    "import nl.bvkatwijk.lens.kind.Lens;",
+                    "import nl.bvkatwijk.lens.Person;",
                     "",
                     "public class " + name + Const.LENS + " {")
                 .appendAll(isoConstants)

@@ -1,4 +1,4 @@
-package org.bvkatwijk.lens;
+package nl.bvkatwijk.lens;
 
 import lombok.With;
 

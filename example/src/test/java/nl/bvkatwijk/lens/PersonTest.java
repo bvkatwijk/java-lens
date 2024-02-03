@@ -1,6 +1,6 @@
-package org.bvkatwijk.lens;
+package nl.bvkatwijk.lens;
 
-import org.bvkatwijk.lens.gen.PersonLens;
+import nl.bvkatwijk.lens.gen.PersonLens;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 
