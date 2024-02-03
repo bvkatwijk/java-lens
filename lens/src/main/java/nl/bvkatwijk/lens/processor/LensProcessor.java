@@ -46,37 +46,42 @@ public class LensProcessor extends AbstractProcessor {
             .filter(RecordComponentElement.class::isInstance)
             .map(RecordComponentElement.class::cast)
             .toList());
-
         var isoConstants = fields
-            .map(it -> {
-                String typeName = typeName(it);
-                return isoConstant(name, it.getSimpleName().toString(), typeName);
-            })
+            .map(it -> isoConstant(name, it.getSimpleName().toString(), typeName(it)))
             .map(this::indent)
             .toList();
-
         writeSourceFile(pack, name, String.join(
             "\n",
-            List.of(
-                    "package " + pack + ";",
-                    "",
-                    "import nl.bvkatwijk.lens.Address;",
-                    "import nl.bvkatwijk.lens.kind.Lens;",
-                    "import nl.bvkatwijk.lens.Person;",
-                    "",
-                    "public class " + name + Const.LENS + " {")
+            List.of("package " + pack + ";", "")
+                .append(importLens())
+                .append(importElement(el))
+                .appendAll(imports(fields))
+                .append("")
+                .append("public class " + name + Const.LENS + " {")
                 .appendAll(isoConstants)
                 .append("}")
                 .toJavaList()));
     }
 
-    private static String typeName(RecordComponentElement it) {
+    private String importLens() {
+        return "import nl.bvkatwijk.lens.kind.Lens;";
+    }
+
+    private Iterable<String> imports(List<? extends Element> fields) {
+        return fields.map(LensProcessor::importElement);
+    }
+
+    private static String importElement(Element it) {
+        return "import " + typeName(it) + ";";
+    }
+
+    private static String typeName(Element it) {
         TypeMirror type = it.asType();
         return switch (type.getKind()) {
             case BOOLEAN -> "Boolean";
             case BYTE -> "Byte";
             case SHORT -> "Short";
-            case INT -> "Integer";
+            case INT -> "java.lang.Integer";
             case LONG -> "Long";
             case CHAR -> "Character";
             case FLOAT -> "Float";
@@ -87,7 +92,6 @@ public class LensProcessor extends AbstractProcessor {
         };
     }
 
-    // Address person Integer
     public String isoConstant(String record, String field, String fieldType) {
         return "public static final " + Const.LENS + "<" + record + ", " + fieldType + "> " + isoName(field) + " = new " + Const.LENS + "<>(" + record + "::" + witherName(
             field) + ", " + record + "::" + field + ");";
