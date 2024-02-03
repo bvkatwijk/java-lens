@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PersonTest {
+class PersonLensTest {
     public static final Person PERSON = Instancio.create(Person.class);
     public static final Address ADDRESS = Instancio.create(Address.class);
 

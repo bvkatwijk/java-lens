@@ -9,11 +9,10 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ExampleTest {
+public class AddressLensTest {
     public static final Random RANDOM = new Random();
     public static final String STREET = UUID.randomUUID().toString();
     public static final Address ADDRESS = new Address(STREET, RANDOM.nextInt());
-    public static final int NUMBER_NEW = RANDOM.nextInt();
 
     @Test
     void addressNumberModify() {
