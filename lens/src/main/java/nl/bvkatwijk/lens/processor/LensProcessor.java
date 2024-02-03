@@ -54,8 +54,7 @@ public class LensProcessor extends AbstractProcessor {
             "\n",
             List.of("package " + pack + ";", "")
                 .append(importLens())
-                .append(importElement(el))
-                .appendAll(imports(fields))
+                .appendAll(imports(List.of(el).appendAll(fields)))
                 .append("")
                 .append("public class " + name + Const.LENS + " {")
                 .appendAll(isoConstants)
@@ -68,25 +67,28 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private Iterable<String> imports(List<? extends Element> fields) {
-        return fields.map(LensProcessor::importElement);
+        return fields
+            .map(LensProcessor::typeName)
+            .map(it -> it.indexOf('<') > 0 ? it.substring(0, it.indexOf('<')) : it)
+            .map(LensProcessor::importElement);
     }
 
-    private static String importElement(Element it) {
-        return "import " + typeName(it) + ";";
+    private static String importElement(String qualifiedTypeName) {
+        return "import " + qualifiedTypeName + ";";
     }
 
     private static String typeName(Element it) {
         TypeMirror type = it.asType();
         return switch (type.getKind()) {
-            case BOOLEAN -> "Boolean";
-            case BYTE -> "Byte";
-            case SHORT -> "Short";
+            case BOOLEAN -> "java.lang.Boolean";
+            case BYTE -> "java.lang.Byte";
+            case SHORT -> "java.lang.Short";
             case INT -> "java.lang.Integer";
-            case LONG -> "Long";
-            case CHAR -> "Character";
-            case FLOAT -> "Float";
-            case DOUBLE -> "Double";
-            case VOID -> "Void";
+            case LONG -> "java.lang.Long";
+            case CHAR -> "java.lang.Character";
+            case FLOAT -> "java.lang.Float";
+            case DOUBLE -> "java.lang.Double";
+            case VOID -> "java.lang.Void";
             case DECLARED, OTHER -> type.toString();
             case NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL -> throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
         };

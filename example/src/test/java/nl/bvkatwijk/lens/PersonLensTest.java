@@ -4,6 +4,8 @@ import nl.bvkatwijk.lens.gen.PersonLens;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PersonLensTest {
@@ -22,5 +24,12 @@ class PersonLensTest {
         assertEquals(
             PERSON.withAddress(ADDRESS),
             PERSON.with(PersonLens.ADDRESS, i -> ADDRESS));
+    }
+
+    @Test
+    void friendsTest() {
+        assertEquals(
+            PERSON.withFriends(List.of()),
+            PERSON.with(PersonLens.FRIENDS, i -> List.of()));
     }
 }
