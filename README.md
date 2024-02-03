@@ -7,9 +7,9 @@ Automatic lens generation to easily apply transformations to records.
 
 ## Usage
 ```java
-@Lenses // <-- 1. Add annotation
+@Lenses // <-- 1. Generates a Lens helper class
 public record Person(String name, Address address)
-    implements ApplyLens<Person> // <-- 2. (Optional) Add convenience method
+    implements ApplyLens<Person> // <-- 2. (Optional) Adds convenience method
 {
      
 }
