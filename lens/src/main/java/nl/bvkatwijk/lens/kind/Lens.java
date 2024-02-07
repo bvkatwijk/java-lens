@@ -15,6 +15,12 @@ public record Lens<S, T>(Function2<S, T, S> with, Function1<S, T> get) {
     }
 
     public <U> Lens<S, U> andThen(Lens<T, U> lens) {
-        return new Lens<>((s, u) -> with.apply(s, lens.with().apply(get.apply(s)).apply(u)), get.andThen(lens.get));
+        return new Lens<>(
+            (s, u) -> with.apply(s, lens.with().apply(get.apply(s)).apply(u)),
+            get.andThen(lens.get));
+    }
+
+    public <R> Lens<R, T> compose(Lens<R, S> lens) {
+        return lens.andThen(this);
     }
 }

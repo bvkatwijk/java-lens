@@ -38,6 +38,14 @@ class PersonLensTest {
     }
 
     @Test
+    void addressNumberLensComposed() {
+        assertEquals(
+            PERSON.withAddress(PERSON.address().withNumber(NUMBER)),
+            PERSON.with(AddressLens.NUMBER.compose(PersonLens.ADDRESS), i -> NUMBER)
+        );
+    }
+
+    @Test
     void friendsTest() {
         assertEquals(
             PERSON.withFriends(List.of()),
