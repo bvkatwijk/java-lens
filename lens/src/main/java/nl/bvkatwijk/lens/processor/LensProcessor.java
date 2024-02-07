@@ -69,8 +69,12 @@ public class LensProcessor extends AbstractProcessor {
     private Iterable<String> imports(List<? extends Element> fields) {
         return fields
             .map(LensProcessor::typeName)
-            .map(it -> it.indexOf('<') > 0 ? it.substring(0, it.indexOf('<')) : it)
+            .map(LensProcessor::removeGenerics)
             .map(LensProcessor::importElement);
+    }
+
+    private static String removeGenerics(String it) {
+        return it.indexOf('<') > 0 ? it.substring(0, it.indexOf('<')) : it;
     }
 
     private static String importElement(String qualifiedTypeName) {
