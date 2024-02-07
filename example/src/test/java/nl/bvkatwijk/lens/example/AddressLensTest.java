@@ -18,7 +18,7 @@ public class AddressLensTest {
     void addressNumberModify() {
         assertEquals(
             new Address(STREET, ADDRESS.number() + 1),
-            ADDRESS.with(AddressLens.NUMBER, i -> i + 1)
+            ADDRESS.modify(AddressLens.NUMBER, i -> i + 1)
         );
     }
 
@@ -26,7 +26,7 @@ public class AddressLensTest {
     void addressStreetModify() {
         assertEquals(
             new Address(STREET.toUpperCase(), ADDRESS.number()),
-            ADDRESS.with(AddressLens.STREET, String::toUpperCase)
+            ADDRESS.modify(AddressLens.STREET, String::toUpperCase)
         );
     }
 
@@ -34,7 +34,7 @@ public class AddressLensTest {
     void addressBothStreetAndNumberModify() {
         assertEquals(
             new Address(STREET.toUpperCase(), ADDRESS.number()),
-            ADDRESS.with(AddressLens.STREET, String::toUpperCase)
+            ADDRESS.modify(AddressLens.STREET, String::toUpperCase)
         );
     }
 }

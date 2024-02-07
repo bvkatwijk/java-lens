@@ -11,7 +11,7 @@ public record Lens<S, T>(Function2<S, T, S> with, Function1<S, T> get) {
     }
 
     public S apply(S s, UnaryOperator<T> op) {
-        return with().apply(s, op.apply(get().apply(s)));
+        return with().apply(s, op.apply(get.apply(s)));
     }
 
     public <U> Lens<S, U> andThen(Lens<T, U> lens) {
