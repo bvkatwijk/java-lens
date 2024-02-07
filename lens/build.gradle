@@ -5,21 +5,11 @@ plugins {
 }
 
 group = 'nl.bvkatwijk.java-lens'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '19'
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
+version = '0.1.0'
+sourceCompatibility = '21'
 
 repositories {
     mavenCentral()
-}
-
-ext {
-
 }
 
 dependencies {
@@ -28,11 +18,9 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.30'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.5'
     implementation group: 'io.vavr', name: 'vavr', version: '0.10.4'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.3'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
 
     testImplementation 'org.instancio:instancio-junit:2.10.0'
