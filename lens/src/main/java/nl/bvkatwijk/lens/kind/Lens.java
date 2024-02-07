@@ -14,7 +14,7 @@ public record Lens<S, T>(Function2<S, T, S> with, Function1<S, T> get) {
         return with().apply(s, op.apply(get().apply(s)));
     }
 
-    public <U> Lens<S, U> andThen(Lens<T, U> you) {
-        return new Lens<>((s, u) -> with.apply(s, you.with().apply(get.apply(s)).apply(u)), get.andThen(you.get));
+    public <U> Lens<S, U> andThen(Lens<T, U> lens) {
+        return new Lens<>((s, u) -> with.apply(s, lens.with().apply(get.apply(s)).apply(u)), get.andThen(lens.get));
     }
 }
