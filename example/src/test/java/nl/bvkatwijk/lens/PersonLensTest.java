@@ -7,94 +7,128 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static nl.bvkatwijk.lens.gen.AddressLens.NUMBER;
+import static nl.bvkatwijk.lens.gen.PersonLens.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PersonLensTest {
-    public static final Person PERSON = Instancio.create(Person.class);
-    public static final Address ADDRESS = Instancio.create(Address.class);
-    public static final Address NEW_ADDRESS = Instancio.create(Address.class);
-    public static final int NUMBER = new Random().nextInt();
+    public static final Person ALICE = Instancio.create(Person.class)
+        .withName("alice");
+    public static final Address HOME = Instancio.create(Address.class);
+    public static final Address WORK = Instancio.create(Address.class);
+    public static final int HOUSE_NUMBER = 10;
 
     @Nested
     class Modify {
         @Test
         void nameLens() {
             assertEquals(
-                PERSON.withName(PERSON.name().toUpperCase()),
-                PERSON.modify(PersonLens.NAME, String::toUpperCase));
+                ALICE.withName(ALICE.name().toUpperCase()),
+                ALICE.modify(NAME, String::toUpperCase));
         }
 
         @Test
         void addressLens() {
             assertEquals(
-                PERSON.withAddress(ADDRESS),
-                PERSON.modify(PersonLens.ADDRESS, i -> ADDRESS));
+                ALICE.withAddress(HOME),
+                ALICE.modify(ADDRESS, i -> HOME));
         }
 
         @Test
         void addressNumberLens() {
             assertEquals(
-                PERSON.withAddress(PERSON.address().withNumber(NUMBER)),
-                PERSON.modify(PersonLens.ADDRESS.andThen(AddressLens.NUMBER), i -> NUMBER)
+                ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
+                ALICE.modify(ADDRESS.andThen(NUMBER), i -> HOUSE_NUMBER)
             );
         }
 
         @Test
         void addressNumberLensComposed() {
             assertEquals(
-                PERSON.withAddress(PERSON.address().withNumber(NUMBER)),
-                PERSON.modify(AddressLens.NUMBER.compose(PersonLens.ADDRESS), i -> NUMBER)
+                ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
+                ALICE.modify(NUMBER.compose(ADDRESS), i -> HOUSE_NUMBER)
             );
         }
 
         @Test
         void friendsTest() {
             assertEquals(
-                PERSON.withFriends(List.of()),
-                PERSON.modify(PersonLens.FRIENDS, i -> List.of()));
+                ALICE.withFriends(List.of()),
+                ALICE.modify(FRIENDS, i -> List.of()));
+        }
+    }
+
+    @Nested
+    class Z {
+        @Test
+        void address() {
+            assertEquals(
+                ALICE.withAddress(HOME),
+                ALICE.with(LensZ.PERSON.address(), HOME));
+        }
+
+        @Test
+        void addressNumber() {
+            assertEquals(
+                ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
+                ALICE.with(LensZ.PERSON.address().number(), HOUSE_NUMBER));
+        }
+
+        @Test
+        void addressNumberModify() {
+            var address = ALICE.address();
+            assertEquals(
+                ALICE.withAddress(address.withNumber(address.number() + 1)),
+                ALICE.modify(LensZ.PERSON.address().number(), i -> i + 1));
+        }
+
+        @Test
+        void addressStreet() {
+            String newStreet = "new street";
+            assertEquals(
+                ALICE.withAddress(ALICE.address().withStreet(newStreet)),
+                ALICE.with(LensZ.PERSON.address().street(), newStreet));
         }
     }
 
     @Nested
     class With {
-
         @Test
         void nameLens() {
             assertEquals(
-                PERSON.withName("bob"),
-                PERSON.with(PersonLens.NAME, "bob"));
+                ALICE.withName("bob"),
+                ALICE.with(NAME, "bob"));
         }
 
         @Test
         void addressLens() {
             assertEquals(
-                PERSON.withAddress(NEW_ADDRESS),
-                PERSON.with(PersonLens.ADDRESS, NEW_ADDRESS));
+                ALICE.withAddress(WORK),
+                ALICE.with(ADDRESS, WORK));
         }
 
         @Test
         void addressNumberLens() {
             assertEquals(
-                PERSON.withAddress(PERSON.address().withNumber(NUMBER)),
-                PERSON.with(PersonLens.ADDRESS.andThen(AddressLens.NUMBER), NUMBER)
+                ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
+                ALICE.with(ADDRESS.andThen(NUMBER), HOUSE_NUMBER)
             );
         }
 
         @Test
         void addressNumberLensComposed() {
             assertEquals(
-                PERSON.withAddress(PERSON.address().withNumber(NUMBER)),
-                PERSON.with(AddressLens.NUMBER.compose(PersonLens.ADDRESS), NUMBER)
+                ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
+                ALICE.with(NUMBER.compose(ADDRESS), HOUSE_NUMBER)
             );
         }
 
         @Test
         void friendsTest() {
             assertEquals(
-                PERSON.withFriends(List.of()),
-                PERSON.with(PersonLens.FRIENDS, List.of()));
+                ALICE.withFriends(List.of()),
+                ALICE.with(FRIENDS, List.of()));
         }
     }
 }
