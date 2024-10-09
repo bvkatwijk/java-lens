@@ -13,19 +13,26 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.34'
-    annotationProcessor 'org.projectlombok:lombok:1.18.34'
-    testCompileOnly 'org.projectlombok:lombok:1.18.34'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+    compileOnly libs.lombok
+    annotationProcessor libs.lombok
+    testCompileOnly libs.lombok
+    testAnnotationProcessor libs.lombok
 
     implementation group: 'io.vavr', name: 'vavr', version: '0.10.4'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.2'
+    testImplementation libs.junit.jupiter
+    testImplementation libs.junit.jupiter.api
 
     testImplementation 'org.instancio:instancio-junit:5.0.2'
     testAnnotationProcessor(project(":lens"))
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(23)
+    }
+}
+
 
 tasks.named('test') {
     useJUnitPlatform()

@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-@SupportedSourceVersion(SourceVersion.RELEASE_19)
+@SupportedSourceVersion(SourceVersion.RELEASE_23)
 @SupportedAnnotationTypes("nl.bvkatwijk.lens.Lenses")
 public class LensProcessor extends AbstractProcessor {
     protected static final String LENS = "Lens";
