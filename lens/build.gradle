@@ -24,6 +24,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.3'
 
     testImplementation 'org.instancio:instancio-junit:2.10.0'
+    testAnnotationProcessor(project(":lens"))
 }
 
 tasks.named('test') {
