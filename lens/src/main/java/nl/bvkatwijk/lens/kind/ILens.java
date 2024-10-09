@@ -26,4 +26,18 @@ public interface ILens<S, T> {
             (s, u) -> with().apply(s, lens.with().apply(get().apply(s)).apply(u)),
             get().andThen(lens.get()));
     }
+
+    /** Currying variant of {@link ILens#with()} */
+    default UnaryOperator<S> with(T t) {
+        return s -> with().apply(s, t);
+    }
+
+    default Function2<S, UnaryOperator<T>, S> modify() {
+        return (s, f) -> with().apply(s, f.apply(get().apply(s)));
+    }
+
+    /** Currying variant of {@link ILens#modify()} */
+    default UnaryOperator<S> modify(UnaryOperator<T> f) {
+        return s -> with().apply(s, f.apply(get().apply(s)));
+    }
 }
