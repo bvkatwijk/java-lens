@@ -21,7 +21,7 @@ dependencies {
 
     implementation group: 'io.vavr', name: 'vavr', version: '0.10.4'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.2'
 
     testImplementation 'org.instancio:instancio-junit:2.10.0'
