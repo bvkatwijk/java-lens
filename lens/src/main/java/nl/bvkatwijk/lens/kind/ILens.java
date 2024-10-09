@@ -17,6 +17,13 @@ public interface ILens<S, T> {
         return with().apply(s, op.apply(get().apply(s)));
     }
 
+    /**
+     * Currying variant of {@link ILens#apply(Object, UnaryOperator)}
+     */
+    default UnaryOperator<S> apply(UnaryOperator<T> op) {
+        return s -> apply(s, op);
+    }
+
     default <R> Lens<R, T> compose(ILens<R, S> lens) {
         return lens.andThen(this);
     }
