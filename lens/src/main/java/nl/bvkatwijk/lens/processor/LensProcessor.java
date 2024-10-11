@@ -3,8 +3,11 @@ package nl.bvkatwijk.lens.processor;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import nl.bvkatwijk.lens.Const;
 import nl.bvkatwijk.lens.Lenses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -38,14 +41,15 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     @SneakyThrows
-    private void writeSourceFile(Element el) {
+    private void writeSourceFile(Element element) {
         var pack = "nl.bvkatwijk.lens.gen";
-        var name = el.getSimpleName().toString();
-        var fields = List.ofAll(el.getEnclosedElements()
+        var name = element.getSimpleName().toString();
+        var fields = List.ofAll(element.getEnclosedElements()
             .stream()
             .filter(RecordComponentElement.class::isInstance)
             .map(RecordComponentElement.class::cast)
             .toList());
+
         var isoConstants = fields
             .map(it -> isoConstant(name, it.getSimpleName().toString(), typeName(it)))
             .map(this::indent)
@@ -54,7 +58,7 @@ public class LensProcessor extends AbstractProcessor {
             "\n",
             List.of("package " + pack + ";", "")
                 .append(importLens())
-                .appendAll(imports(List.of(el).appendAll(fields)))
+                .appendAll(imports(List.of(element).appendAll(fields)))
                 .append("")
                 .append("public class " + name + Const.LENS + " {")
                 .appendAll(isoConstants)
