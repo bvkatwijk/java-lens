@@ -6,8 +6,9 @@ import io.vavr.Function2;
 import java.util.function.UnaryOperator;
 
 public interface ILens<S, T> {
-    Function2<S, T, S> with();
     Function1<S, T> get();
+
+    Function2<S, T, S> with();
 
     static <S, T> S apply(S s, Lens<S, T> lens, UnaryOperator<T> op) {
         return lens.with().apply(s, op.apply(lens.get().apply(s)));
@@ -37,6 +38,10 @@ public interface ILens<S, T> {
     /** Currying variant of {@link ILens#with()} */
     default UnaryOperator<S> with(T t) {
         return s -> with().apply(s, t);
+    }
+
+    default S with(S subject, T value) {
+        return with().apply(subject, value);
     }
 
     default Function2<S, UnaryOperator<T>, S> modify() {
