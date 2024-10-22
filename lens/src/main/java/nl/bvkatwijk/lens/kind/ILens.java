@@ -18,6 +18,10 @@ public interface ILens<S, T> {
         return with().apply(s, op.apply(get().apply(s)));
     }
 
+    default T get(S s) {
+        return get().apply(s);
+    }
+
     /**
      * Currying variant of {@link ILens#apply(Object, UnaryOperator)}
      */
@@ -45,11 +49,11 @@ public interface ILens<S, T> {
     }
 
     default Function2<S, UnaryOperator<T>, S> modify() {
-        return (s, f) -> with().apply(s, f.apply(get().apply(s)));
+        return (s, f) -> with().apply(s, f.apply(get(s)));
     }
 
     /** Currying variant of {@link ILens#modify()} */
     default UnaryOperator<S> modify(UnaryOperator<T> f) {
-        return s -> with().apply(s, f.apply(get().apply(s)));
+        return s -> with(s, f.apply(get(s)));
     }
 }

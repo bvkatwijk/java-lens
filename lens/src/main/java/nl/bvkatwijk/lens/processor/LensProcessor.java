@@ -3,11 +3,8 @@ package nl.bvkatwijk.lens.processor;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import nl.bvkatwijk.lens.Const;
 import nl.bvkatwijk.lens.Lenses;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
