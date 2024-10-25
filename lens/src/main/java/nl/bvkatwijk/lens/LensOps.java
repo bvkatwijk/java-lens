@@ -8,6 +8,7 @@ import java.util.function.UnaryOperator;
 public interface LensOps<S extends LensOps<S>> {
     /** Apply the supplied operator to the property through the lens */
     default <T> S modify(ILens<S, T> lens, UnaryOperator<T> op) {
+        /* can this cast be prevented? */
         @SuppressWarnings("unchecked") S s = (S) this;
         return lens.apply(s, op);
     }
