@@ -13,18 +13,14 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_23)
-@SupportedAnnotationTypes("nl.bvkatwijk.lens.Lenses")
+@SupportedAnnotationTypes(Const.LENS_ANNOTATION_QUALIFIED)
 public class LensProcessor extends AbstractProcessor {
-    protected static final String LENS = "Lens";
-    public static final String PACK = "nl.bvkatwijk.lens.gen";
-
     @Override
     @SneakyThrows
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -46,11 +42,11 @@ public class LensProcessor extends AbstractProcessor {
             .map(RecordComponentElement.class::cast)
             .toList());
 
-        writeSourceFile(PACK, name, String.join(
+        writeSourceFile(Const.PACK, name, String.join(
             "\n",
-            List.of("package " + PACK + ";", "")
+            List.of("package " + Const.PACK + ";", "")
                 .append(importLens())
-                .appendAll(imports(List.of(element).appendAll(fields)))
+                .appendAll(imports(List.of(element)))
                 .append("")
                 .append("public record " + name + Const.LENS + "<T>(Lens<T, " + name + "> inner) implements " + iLens(name) + "{")
                 .appendAll(lensConstants(fields, name))
@@ -103,7 +99,7 @@ public class LensProcessor extends AbstractProcessor {
     record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement field) {
         public String returnValue() {
             return switch (lensKind) {
-                case LENSED -> PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<T>";
+                case LENSED -> Const.PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<T>";
                 case PRIMITIVE, OTHER -> "ILens<T, " + qualifiedType + ">";
             };
         }
@@ -111,7 +107,7 @@ public class LensProcessor extends AbstractProcessor {
         public String returnStatement() {
             var chainInner = "inner.andThen(" + isoName(field) + ")";
             return switch (lensKind) {
-                case LENSED -> "return new " + PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<>(" + chainInner + ");";
+                case LENSED -> "return new " + Const.PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<>(" + chainInner + ");";
                 case PRIMITIVE, OTHER -> "return " + chainInner + ";";
             };
         }
@@ -131,7 +127,7 @@ public class LensProcessor extends AbstractProcessor {
     private static FieldLens declared(RecordComponentElement field) {
         return List.ofAll(((DeclaredType) field.asType()).asElement().getAnnotationMirrors())
             .map(AnnotationMirror::toString)
-            .contains("@nl.bvkatwijk.lens.Lenses")
+            .contains("@" + Const.LENS_ANNOTATION_QUALIFIED)
             ? new FieldLens("unused?", LensKind.LENSED, field)
             : new FieldLens(typeName(field), LensKind.OTHER, field);
     }
@@ -219,7 +215,7 @@ public class LensProcessor extends AbstractProcessor {
 
     private void writeSourceFile(String pack, String name, String content) throws IOException {
         processingEnv.getFiler()
-            .createSourceFile(pack + "." + name + LENS)
+            .createSourceFile(pack + "." + name + Const.LENS)
             .openWriter()
             .append(content)
             .close();
