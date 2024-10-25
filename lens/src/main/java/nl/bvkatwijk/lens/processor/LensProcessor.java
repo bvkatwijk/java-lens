@@ -103,7 +103,7 @@ public class LensProcessor extends AbstractProcessor {
     record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement field) {
         public String returnValue() {
             return switch (lensKind) {
-                case LENSED -> PACK + "." + fieldTypeUnqualified(field) + Const.LENS;
+                case LENSED -> PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<T>";
                 case PRIMITIVE, OTHER -> "ILens<T, " + qualifiedType + ">";
             };
         }
