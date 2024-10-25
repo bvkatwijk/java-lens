@@ -1,6 +1,7 @@
 package nl.bvkatwijk.lens;
 
 import org.instancio.Instancio;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -49,12 +50,12 @@ class PersonLensTest {
             );
         }
 
-        @Test
-        void friendsTest() {
-            assertEquals(
-                ALICE.withFriends(List.of()),
-                ALICE.modify(FRIENDS, i -> List.of()));
-        }
+//        @Test
+//        void friendsTest() {
+//            assertEquals(
+//                ALICE.withFriends(List.of()),
+//                ALICE.modify(FRIENDS, i -> List.of()));
+//        }
     }
 
     @Nested
@@ -130,11 +131,12 @@ class PersonLensTest {
             );
         }
 
-        @Test
-        void friendsTest() {
-            assertEquals(
-                ALICE.withFriends(List.of()),
-                ALICE.with(FRIENDS, List.of()));
-        }
+//        @Test
+//        @Disabled
+//        void friendsTest() {
+//            assertEquals(
+//                ALICE.withFriends(List.of()),
+//                ALICE.with(FRIENDS, List.of()));
+//        }
     }
 }

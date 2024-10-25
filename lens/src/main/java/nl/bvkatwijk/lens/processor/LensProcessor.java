@@ -15,6 +15,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.Set;
@@ -24,6 +25,7 @@ import java.util.regex.Pattern;
 @SupportedAnnotationTypes("nl.bvkatwijk.lens.Lenses")
 public class LensProcessor extends AbstractProcessor {
     protected static final String LENS = "Lens";
+    public static final String PACK = "nl.bvkatwijk.lens.gen";
 
     @Override
     @SneakyThrows
@@ -39,7 +41,6 @@ public class LensProcessor extends AbstractProcessor {
 
     @SneakyThrows
     private void writeSourceFile(Element element) {
-        var pack = "nl.bvkatwijk.lens.gen";
         var name = element.getSimpleName().toString();
         var fields = List.ofAll(element.getEnclosedElements()
             .stream()
@@ -47,24 +48,130 @@ public class LensProcessor extends AbstractProcessor {
             .map(RecordComponentElement.class::cast)
             .toList());
 
-        var isoConstants = fields
-            .map(it -> isoConstant(name, it.getSimpleName().toString(), typeName(it)))
-            .map(this::indent)
-            .toList();
-        writeSourceFile(pack, name, String.join(
+        writeSourceFile(PACK, name, String.join(
             "\n",
-            List.of("package " + pack + ";", "")
+            List.of("package " + PACK + ";", "")
                 .append(importLens())
                 .appendAll(imports(List.of(element).appendAll(fields)))
                 .append("")
-                .append("public class " + name + Const.LENS + " {")
-                .appendAll(isoConstants)
+                .append("public record " + name + Const.LENS + "<T>(Lens<T, " + name + "> inner) implements " + iLens(name) + "{")
+                .appendAll(lensConstants(fields, name))
+                .appendAll(lensMethods(fields))
+                .appendAll(innerDelegation(name))
                 .append("}")
                 .toJavaList()));
     }
 
+    private static String iLens(String name) {
+        return "ILens<T, " + name + ">";
+    }
+
+    private List<String> lensConstants(List<RecordComponentElement> fields, String name) {
+        return fields
+            .map(it -> lensConstant(name, fieldName(it), typeName(it)))
+            .map(this::indent)
+            .toList();
+    }
+
+    private static String fieldName(RecordComponentElement it) {
+        return it.getSimpleName().toString();
+    }
+
+    /**
+     * This is not accurate, not sure how to retrieve unqualified type name
+     */
+    public static String fieldTypeUnqualified(RecordComponentElement it) {
+        return capitalize(fieldName(it));
+    }
+
+    private Iterable<String> lensMethods(List<RecordComponentElement> fields) {
+        return fields.flatMap(field -> {
+            var lensType = qualifiedLens(field);
+            return indent(List.of(
+                "",
+                    "public " + lensType.returnValue() + " " + fieldName(field) + "() {",
+                indent(lensType.returnStatement()),
+                "}"
+            ));
+        });
+    }
+
+    enum LensKind {
+        PRIMITIVE,
+        LENSED,
+        OTHER;
+    }
+    record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement field) {
+        /**
+         * Lens on a primitive field, needs boxing
+         * @return
+         */
+        public static FieldLens primitive(String boxedType, RecordComponentElement field) {
+            return new FieldLens(boxedType, LensKind.PRIMITIVE, field);
+        }
+
+        /**
+         * Lens on a known lensed type, use wrapped lens record
+         * @return
+         */
+        public static FieldLens lensed(String qualifiedType, RecordComponentElement field) {
+            return new FieldLens(qualifiedType, LensKind.LENSED, field);
+        }
+
+        /**
+         * In other cases, refer to known lens const
+         * @return
+         */
+        public static FieldLens other(String qualifiedType, RecordComponentElement field) {
+            return new FieldLens(qualifiedType, LensKind.OTHER, field);
+        }
+
+        public String returnValue() {
+            return switch (lensKind) {
+                case LENSED -> PACK + "." + fieldTypeUnqualified(field) + Const.LENS;
+                case PRIMITIVE, OTHER -> "ILens<T, " + qualifiedType + ">";
+            };
+        }
+
+        public String returnStatement() {
+            var chainInner = "inner.andThen(" + isoName(field) + ")";
+            return switch (lensKind) {
+                case LENSED -> "return new " + PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<>(" + chainInner + ");";
+                case PRIMITIVE, OTHER -> "return " + chainInner + ";";
+            };
+        }
+    }
+
+    private static FieldLens qualifiedLens(RecordComponentElement field) {
+        TypeMirror type = field.asType();
+        return switch (type.getKind()) {
+            case BOOLEAN, BYTE, SHORT, INT, LONG, CHAR, FLOAT, DOUBLE, VOID -> FieldLens.primitive(typeName(field), field);
+            case TypeKind x when typeName(field).equals("java.lang.String")  -> FieldLens.other(typeName(field), field);
+            case DECLARED -> FieldLens.lensed(type.toString(), field);
+            case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
+                throw new IllegalArgumentException("Type " + field + " (" + field.getKind() + " " + type.getKind() + ") not yet supported.");
+        };
+    }
+
+    public static String isoName(RecordComponentElement field) {
+        return isoName(fieldName(field));
+    }
+
+    private Iterable<String> innerDelegation(String typeName) {
+        return indent(List.of(
+            "",
+            "public io.vavr.Function2<T, " + typeName + ", T> with() {",
+            indent("System.out.println(\"USAGE FLAG\");return inner.with();"),
+            "}",
+            "",
+            "public io.vavr.Function1<T, " + typeName + "> get() {",
+            indent("System.out.println(\"USAGE FLAG\");return inner.get();"),
+            "}"
+        ));
+    }
+
     private String importLens() {
-        return "import nl.bvkatwijk.lens.kind.Lens;";
+        return "import nl.bvkatwijk.lens.kind.ILens;\nimport nl.bvkatwijk.lens.kind.Lens;";
     }
 
     private Iterable<String> imports(List<? extends Element> fields) {
@@ -95,11 +202,12 @@ public class LensProcessor extends AbstractProcessor {
             case DOUBLE -> "java.lang.Double";
             case VOID -> "java.lang.Void";
             case DECLARED -> type.toString();
-            case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL -> throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
+            case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
+                throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
         };
     }
 
-    public String isoConstant(String record, String field, String fieldType) {
+    public String lensConstant(String record, String field, String fieldType) {
         return "public static final " + Const.LENS + "<" + record + ", " + fieldType + "> " + isoName(field) + " = new " + Const.LENS + "<>(" + record + "::" + witherName(
             field) + ", " + record + "::" + field + ");";
     }
@@ -116,7 +224,7 @@ public class LensProcessor extends AbstractProcessor {
         return Const.INDENT + string;
     }
 
-    public String capitalize(String string) {
+    public static String capitalize(String string) {
         return Pattern.compile("^.")
             .matcher(string)
             .replaceFirst(m -> m.group().toUpperCase());
