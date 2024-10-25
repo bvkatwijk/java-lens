@@ -11,10 +11,8 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.RecordComponentElement;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
@@ -101,31 +99,8 @@ public class LensProcessor extends AbstractProcessor {
         LENSED,
         OTHER;
     }
+
     record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement field) {
-        /**
-         * Lens on a primitive field, needs boxing
-         * @return
-         */
-        public static FieldLens primitive(String boxedType, RecordComponentElement field) {
-            return new FieldLens(boxedType, LensKind.PRIMITIVE, field);
-        }
-
-        /**
-         * Lens on a known lensed type, use wrapped lens record
-         * @return
-         */
-        public static FieldLens lensed(String qualifiedType, RecordComponentElement field) {
-            return new FieldLens(qualifiedType, LensKind.LENSED, field);
-        }
-
-        /**
-         * In other cases, refer to known lens const
-         * @return
-         */
-        public static FieldLens other(String qualifiedType, RecordComponentElement field) {
-            return new FieldLens(qualifiedType, LensKind.OTHER, field);
-        }
-
         public String returnValue() {
             return switch (lensKind) {
                 case LENSED -> PACK + "." + fieldTypeUnqualified(field) + Const.LENS;
@@ -145,12 +120,20 @@ public class LensProcessor extends AbstractProcessor {
     private static FieldLens qualifiedLens(RecordComponentElement field) {
         TypeMirror type = field.asType();
         return switch (type.getKind()) {
-            case BOOLEAN, BYTE, SHORT, INT, LONG, CHAR, FLOAT, DOUBLE, VOID -> FieldLens.primitive(typeName(field), field);
-            case TypeKind x when typeName(field).equals("java.lang.String")  -> FieldLens.other(typeName(field), field);
-            case DECLARED -> FieldLens.lensed(type.toString(), field);
+            case BOOLEAN, BYTE, SHORT, INT, LONG, CHAR, FLOAT, DOUBLE, VOID ->
+                new FieldLens(typeName(field), LensKind.PRIMITIVE, field);
+            case DECLARED -> declared(field);
             case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
                 throw new IllegalArgumentException("Type " + field + " (" + field.getKind() + " " + type.getKind() + ") not yet supported.");
         };
+    }
+
+    private static FieldLens declared(RecordComponentElement field) {
+        return List.ofAll(((DeclaredType) field.asType()).asElement().getAnnotationMirrors())
+            .map(AnnotationMirror::toString)
+            .contains("@nl.bvkatwijk.lens.Lenses")
+            ? new FieldLens("unused?", LensKind.LENSED, field)
+            : new FieldLens(typeName(field), LensKind.OTHER, field);
     }
 
     public static String isoName(RecordComponentElement field) {
@@ -161,11 +144,11 @@ public class LensProcessor extends AbstractProcessor {
         return indent(List.of(
             "",
             "public io.vavr.Function2<T, " + typeName + ", T> with() {",
-            indent("System.out.println(\"USAGE FLAG\");return inner.with();"),
+            indent("return inner.with();"),
             "}",
             "",
             "public io.vavr.Function1<T, " + typeName + "> get() {",
-            indent("System.out.println(\"USAGE FLAG\");return inner.get();"),
+            indent("return inner.get();"),
             "}"
         ));
     }
