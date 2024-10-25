@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PersonLensTest {
     public static final Person ALICE = Instancio.create(Person.class)
         .withName("alice");
+    public static final Person BOB = Instancio.create(Person.class)
+        .withName("bob");
     public static final Address HOME = Instancio.create(Address.class);
     public static final Address WORK = Instancio.create(Address.class);
     public static final int HOUSE_NUMBER = 10;
@@ -50,12 +52,12 @@ class PersonLensTest {
             );
         }
 
-//        @Test
-//        void friendsTest() {
-//            assertEquals(
-//                ALICE.withFriends(List.of()),
-//                ALICE.modify(FRIENDS, i -> List.of()));
-//        }
+        @Test
+        void friendsTest() {
+            assertEquals(
+                ALICE.withFriends(List.of()),
+                ALICE.modify(FRIENDS, i -> List.of()));
+        }
     }
 
     @Nested
@@ -131,12 +133,11 @@ class PersonLensTest {
             );
         }
 
-//        @Test
-//        @Disabled
-//        void friendsTest() {
-//            assertEquals(
-//                ALICE.withFriends(List.of()),
-//                ALICE.with(FRIENDS, List.of()));
-//        }
+        @Test
+        void friendsTest() {
+            assertEquals(
+                ALICE.withFriends(List.of(BOB)),
+                ALICE.with(FRIENDS, List.of(BOB)));
+        }
     }
 }

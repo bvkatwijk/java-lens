@@ -9,4 +9,4 @@ public record City(String name) {
         return new City("city " + ((int) (Math.random() * 100)));
     }
 }
-    
+
