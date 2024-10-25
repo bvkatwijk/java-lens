@@ -88,6 +88,14 @@ class PersonLensTest {
                 ALICE.withAddress(ALICE.address().withStreet(newStreet)),
                 ALICE.with(LensZ.PERSON.address().street(), newStreet));
         }
+
+        @Test
+        void addressCityName() {
+            String newCity = "new city";
+            assertEquals(
+                ALICE.withAddress(ALICE.address().withCity(new City(newCity))),
+                ALICE.with(LensZ.PERSON.address().city().name(), newCity));
+        }
     }
 
     @Nested
