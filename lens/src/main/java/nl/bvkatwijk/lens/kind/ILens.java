@@ -8,18 +8,27 @@ import java.util.function.UnaryOperator;
 public interface ILens<S, T> {
     Function1<S, T> get();
 
-    Function2<S, T, S> with();
-
-    static <S, T> S apply(S s, Lens<S, T> lens, UnaryOperator<T> op) {
-        return lens.with().apply(s, op.apply(lens.get().apply(s)));
-    }
-
-    default S apply(S s, UnaryOperator<T> op) {
-        return with().apply(s, op.apply(get().apply(s)));
-    }
-
     default T get(S s) {
         return get().apply(s);
+    }
+
+    Function2<S, T, S> with();
+
+    /** Currying variant of {@link ILens#with()} */
+    default UnaryOperator<S> with(T t) {
+        return s -> with().apply(s, t);
+    }
+
+    default S with(S subject, T value) {
+        return with().apply(subject, value);
+    }
+
+//    static <S, T> S apply(S s, Lens<S, T> lens, UnaryOperator<T> op) {
+//        return lens.with().apply(s, op.apply(lens.get(s)));
+//    }
+
+    default S apply(S s, UnaryOperator<T> op) {
+        return with().apply(s, op.apply(get(s)));
     }
 
     /**
@@ -29,23 +38,14 @@ public interface ILens<S, T> {
         return s -> apply(s, op);
     }
 
-    default <R> Lens<R, T> compose(ILens<R, S> lens) {
-        return lens.andThen(this);
-    }
-
     default <U> Lens<S, U> andThen(ILens<T, U> lens) {
         return new Lens<>(
-            (s, u) -> with().apply(s, lens.with().apply(get().apply(s)).apply(u)),
+            (s, u) -> with().apply(s, lens.with().apply(get(s)).apply(u)),
             get().andThen(lens.get()));
     }
 
-    /** Currying variant of {@link ILens#with()} */
-    default UnaryOperator<S> with(T t) {
-        return s -> with().apply(s, t);
-    }
-
-    default S with(S subject, T value) {
-        return with().apply(subject, value);
+    default <R> Lens<R, T> compose(ILens<R, S> lens) {
+        return lens.andThen(this);
     }
 
     default Function2<S, UnaryOperator<T>, S> modify() {
