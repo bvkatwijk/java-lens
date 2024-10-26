@@ -13,9 +13,8 @@ public record Person(String name) { }
 ```
 
 You can create modifying functions using lenses:
-```java
-PersonLens.Name.
-```
+
+https://github.com/bvkatwijk/java-lens/blob/main/lens/src/test/java/nl/bvkatwijk/lens/PersonLensTest.java#L23-L25
 
 
 You can use lens chaining to perform deep transformation:
