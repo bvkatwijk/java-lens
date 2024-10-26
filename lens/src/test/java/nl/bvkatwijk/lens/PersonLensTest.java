@@ -73,14 +73,14 @@ class PersonLensTest {
         void address() {
             assertEquals(
                 ALICE.withAddress(HOME),
-                ALICE.with(LensZ.PERSON.address(), HOME));
+                ALICE.with(PersonLens.ID.address(), HOME));
         }
 
         @Test
         void addressNumber() {
             assertEquals(
                 ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
-                ALICE.with(LensZ.PERSON.address().number(), HOUSE_NUMBER));
+                ALICE.with(PersonLens.ID.address().number(), HOUSE_NUMBER));
         }
 
         @Test
@@ -88,7 +88,7 @@ class PersonLensTest {
             var address = ALICE.address();
             assertEquals(
                 ALICE.withAddress(address.withNumber(address.number() + 1)),
-                ALICE.modify(LensZ.PERSON.address().number(), i -> i + 1));
+                ALICE.modify(PersonLens.ID.address().number(), i -> i + 1));
         }
 
         @Test
@@ -96,7 +96,7 @@ class PersonLensTest {
             String newStreet = "new street";
             assertEquals(
                 ALICE.withAddress(ALICE.address().withStreet(newStreet)),
-                ALICE.with(LensZ.PERSON.address().street(), newStreet));
+                ALICE.with(PersonLens.ID.address().street(), newStreet));
         }
 
         @Test
@@ -104,7 +104,7 @@ class PersonLensTest {
             String newCity = "new city";
             assertEquals(
                 ALICE.withAddress(ALICE.address().withCity(new City(newCity))),
-                ALICE.with(LensZ.PERSON.address().city().name(), newCity));
+                ALICE.with(PersonLens.ID.address().city().name(), newCity));
         }
     }
 
