@@ -1,23 +1,38 @@
 # java-lens
 
-Automatic lens generation to easily apply transformations to records.
+Automatic lens generation to support transformations to records.
 
 ## Install
 `TODO Publish, then add maven/gradle setup here`
 
 ## Usage
 ```java
-@Lenses // <-- 1. Generates a Lens helper class
-public record Person(String name, Address address)
-    implements ApplyLens<Person> // <-- 2. (Optional) Adds convenience method
-{
-     
-}
+@With // Add Lombok with
+@Lenses // Generate a PersonLens helper class
+public record Person(String name) { }
 ```
 
-Now you can quickly apply transformations, such as changing username:
+You can create modifying functions using lenses:
 ```java
-var bob = alice.with(PersonLens.NAME, name -> "Bob");
+PersonLens.Name.
+```
+
+
+You can use lens chaining to perform deep transformation:
+```java
+PersonLens.ROOT
+        .address()
+        .city()
+        .name(),
+    name -> "New York");
+```
+
+In vanilla java this would be done
+
+You can curry the lens with an operation to have a function for the outer type:
+
+```java
+UnaryOperator<Person> nameCapitalizer = PersonLens.NAME.apply(String::toUpperCase);
 ```
 
 See [Examples](./example) for more usage examples.
