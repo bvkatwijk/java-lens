@@ -49,7 +49,7 @@ public class LensProcessor extends AbstractProcessor {
                 .appendAll(imports(List.of(element)))
                 .append("")
                 .append("public record " + name + Const.LENS + "<T>(Lens<T, " + name + "> inner) implements " + iLens(name) + " {")
-                .append(identityLens(name))
+                .append(rootLens(name))
                 .appendAll(lensConstants(fields, name))
                 .appendAll(lensMethods(fields))
                 .appendAll(innerDelegation(name))
@@ -57,8 +57,8 @@ public class LensProcessor extends AbstractProcessor {
                 .toJavaList()));
     }
 
-    private String identityLens(String name) {
-        return indent("public static final " + name + "Lens<" + name + "> ID = new " + name + "Lens<>(Lens.identity());");
+    private String rootLens(String name) {
+        return indent("public static final " + name + "Lens<" + name + "> ROOT = new " + name + "Lens<>(Lens.identity());");
     }
 
     private static String iLens(String name) {
