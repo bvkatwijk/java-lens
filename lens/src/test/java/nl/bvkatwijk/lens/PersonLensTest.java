@@ -1,7 +1,7 @@
 package nl.bvkatwijk.lens;
 
+import nl.bvkatwijk.lens.gen.PersonLens;
 import org.instancio.Instancio;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +34,13 @@ class PersonLensTest {
             assertEquals(
                 ALICE.withAddress(HOME),
                 ALICE.modify(ADDRESS, i -> HOME));
+        }
+
+        @Test
+        void workLens() {
+            assertEquals(
+                ALICE.withWork(HOME),
+                ALICE.modify(PersonLens.WORK, i -> HOME));
         }
 
         @Test

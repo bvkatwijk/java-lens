@@ -6,5 +6,5 @@ import java.util.List;
 
 @With
 @Lenses
-public record Person(String name, Address address, List<Person> friends) implements LensOps<Person> {
+public record Person(String name, Address address, Address work, List<Person> friends) implements LensOps<Person> {
 }

@@ -75,7 +75,8 @@ public class LensProcessor extends AbstractProcessor {
      * This is not accurate, not sure how to retrieve unqualified type name
      */
     public static String fieldTypeUnqualified(RecordComponentElement it) {
-        return capitalize(fieldName(it));
+        var qualifiedType = it.asType().toString();
+        return qualifiedType.substring(qualifiedType.lastIndexOf(".") + 1);
     }
 
     private Iterable<String> lensMethods(List<RecordComponentElement> fields) {
