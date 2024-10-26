@@ -6,32 +6,18 @@ Automatic lens generation to support transformations to records.
 `TODO Publish, then add maven/gradle setup here`
 
 ## Usage
-```java
-@With // Add Lombok with
-@Lenses // Generate a PersonLens helper class
-public record Person(String name) { }
-```
+Add `@Lenses` annotation to generate a helper class:
 
-You can create modifying functions using lenses:
+https://github.com/bvkatwijk/java-lens/blob/f2c223515c4f1396c07e40730af0175a94debeb2/lens/src/test/java/nl/bvkatwijk/lens/example/PersonLensTest.java#L19-L23
 
-https://github.com/bvkatwijk/java-lens/blob/004daf12603db6fb5695077349369eabff9f2e85/lens/src/test/java/nl/bvkatwijk/lens/example/PersonLensTest.java#L39
+This creates Lens instances that you can use:
+https://github.com/bvkatwijk/java-lens/blob/f2c223515c4f1396c07e40730af0175a94debeb2/lens/src/test/java/nl/bvkatwijk/lens/example/PersonLensTest.java#L40-L41
 
-You can use lens chaining to perform deep transformation:
-```java
-PersonLens.ROOT
-        .address()
-        .city()
-        .name(),
-    name -> "New York");
-```
+You can use this to transform record components:
+https://github.com/bvkatwijk/java-lens/blob/f2c223515c4f1396c07e40730af0175a94debeb2/lens/src/test/java/nl/bvkatwijk/lens/example/PersonLensTest.java#L46-L50
 
-In vanilla java this would be done
-
-You can curry the lens with an operation to have a function for the outer type:
-
-```java
-UnaryOperator<Person> nameCapitalizer = PersonLens.NAME.apply(String::toUpperCase);
-```
+If you need to perform transformations multiple levels deep, you can use Root chaining:
+https://github.com/bvkatwijk/java-lens/blob/f2c223515c4f1396c07e40730af0175a94debeb2/lens/src/test/java/nl/bvkatwijk/lens/example/PersonLensTest.java#L55-L59
 
 See [Examples](./example) for more usage examples.
 
