@@ -2,10 +2,11 @@ package nl.bvkatwijk.lens.processor;
 
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
-import io.vavr.collection.Vector;
 import lombok.SneakyThrows;
 import nl.bvkatwijk.lens.Const;
 import nl.bvkatwijk.lens.Lenses;
+import nl.bvkatwijk.lens.kind.ILens;
+import nl.bvkatwijk.lens.kind.Lens;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -49,7 +50,7 @@ public class LensProcessor extends AbstractProcessor {
                 .append(importLens())
                 .appendAll(imports(List.of(element)))
                 .append("")
-                .append("public record " + name + Const.LENS + "<T>(" + iLens(name) + " inner) implements " + iLens(name) + " {")
+                .append("public record " + name + Const.LENS + "<T>(" + Code.iLens(name) + " inner) implements " + Code.iLens(name) + " {")
                 .append(rootLens(name))
                 .appendAll(lensConstants(fields, name))
                 .appendAll(lensMethods(fields))
@@ -60,10 +61,6 @@ public class LensProcessor extends AbstractProcessor {
 
     private String rootLens(String name) {
         return indent("public static final " + name + "Lens<" + name + "> " + Const.ROOT_LENS_NAME + " = new " + name + "Lens<>(Lens.identity());");
-    }
-
-    private static String iLens(String name) {
-        return "ILens<" + params("T", name) + ">";
     }
 
     private List<String> lensConstants(List<RecordComponentElement> fields, String name) {
@@ -105,12 +102,12 @@ public class LensProcessor extends AbstractProcessor {
         public String returnValue() {
             return switch (lensKind) {
                 case LENSED -> Const.PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<T>";
-                case PRIMITIVE, OTHER -> iLens(qualifiedType);
+                case PRIMITIVE, OTHER -> Code.iLens(qualifiedType);
             };
         }
 
         public String returnStatement() {
-            var chainInner = "inner.andThen(" + isoName(field) + ")";
+            var chainInner = "inner.andThen(" + lensName(field) + ")";
             return switch (lensKind) {
                 case LENSED -> "return new " + Const.PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<>(" + chainInner + ");";
                 case PRIMITIVE, OTHER -> "return " + chainInner + ";";
@@ -132,32 +129,32 @@ public class LensProcessor extends AbstractProcessor {
     private static FieldLens declared(RecordComponentElement field) {
         return List.ofAll(((DeclaredType) field.asType()).asElement().getAnnotationMirrors())
             .map(AnnotationMirror::toString)
-            .contains("@" + Const.LENS_ANNOTATION_QUALIFIED)
+            .contains("@" + Lenses.class.getName())
             ? new FieldLens("unused?", LensKind.LENSED, field)
             : new FieldLens(typeName(field), LensKind.OTHER, field);
     }
 
-    static String isoName(RecordComponentElement field) {
-        return isoName(fieldName(field));
+    static String lensName(RecordComponentElement field) {
+        return lensName(fieldName(field));
     }
 
     private Iterable<String> innerDelegation(String typeName) {
         return indent(List.of(
             "",
-            "public java.util.function.BiFunction<" + params("T", typeName, "T") + "> with() {",
+            "public java.util.function.BiFunction<" + Code.params("T", typeName, "T") + "> with() {",
             indent("return inner.with();"),
             "}",
             "",
-            "public java.util.function.Function<" + params("T",  typeName) + "> get() {",
+            "public java.util.function.Function<" + Code.params("T",  typeName) + "> get() {",
             indent("return inner.get();"),
             "}"
         ));
     }
 
     private String importLens() {
-        return importStatements(
-            "nl.bvkatwijk.lens.kind.ILens",
-            "nl.bvkatwijk.lens.kind.Lens"
+        return Code.importStatements(
+            ILens.class.getName(),
+            Lens.class.getName()
         );
     }
 
@@ -166,22 +163,12 @@ public class LensProcessor extends AbstractProcessor {
         return fields
             .map(LensProcessor::typeName)
             .map(LensProcessor::removeGenerics)
-            .map(LensProcessor::importStatement);
+            .map(Code::importStatement);
     }
 
     // Todo too ugly
     private static String removeGenerics(String it) {
         return it.indexOf('<') > 0 ? it.substring(0, it.indexOf('<')) : it;
-    }
-
-    private static String importStatement(String qualifiedTypeName) {
-        return "import " + qualifiedTypeName + ";";
-    }
-
-    private static String importStatements(String... args) {
-        return Vector.of(args)
-            .map(LensProcessor::importStatement)
-            .mkString("\n");
     }
 
     private static String typeName(Element it) {
@@ -203,26 +190,12 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     String lensConstant(String record, String field, String fieldType) {
-        return "public static final " + Const.LENS + "<" + params(record, fieldType) + "> " + isoName(field) + " = new " + Const.LENS + "<>("
-            + params(reference(record, field),  reference(record, witherName(field)))
+        return "public static final " + Code.iLens(record, fieldType) + " " + lensName(field) + " = new " + Const.LENS + "<>("
+            + Code.params(Code.reference(record, field),  Code.reference(record, witherName(field)))
             + ");";
     }
 
-    /**
-     * @param typeName type name
-     * @param method method name
-     * @return method reference
-     */
-    private static String reference(String typeName, String method) {
-        return typeName + "::" + method;
-    }
-
-    private static String params(String... args) {
-        return Vector.of(args)
-            .mkString(", ");
-    }
-
-    private static String isoName(String field) {
+    private static String lensName(String field) {
         return field.toUpperCase();
     }
 

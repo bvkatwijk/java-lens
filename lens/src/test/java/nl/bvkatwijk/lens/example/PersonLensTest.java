@@ -33,6 +33,7 @@ public class PersonLensTest {
     public record City(String name) {
     }
 
+    @SuppressWarnings("unused")
     @Nested
     class ReadmeExamples {
         @Test
