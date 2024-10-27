@@ -35,4 +35,8 @@ public class Code {
     static String iLens(String name) {
         return iLens(Const.PARAM_SOURCE_TYPE, name);
     }
+
+    static String unqualify(String qualifiedType) {
+        return qualifiedType.substring(qualifiedType.lastIndexOf(".") + 1);
+    }
 }

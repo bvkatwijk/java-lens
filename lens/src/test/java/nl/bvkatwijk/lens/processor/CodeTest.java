@@ -39,4 +39,13 @@ class CodeTest {
             assertEquals("ILens<" + Const.PARAM_SOURCE_TYPE + ", A>", Code.iLens("A"));
         }
     }
+
+    @Nested
+    @DisplayName("Unqualify")
+    class UnqualifyTest {
+        @Test
+        void generate() {
+            assertEquals("C", Code.unqualify("a.b.C"));
+        }
+    }
 }

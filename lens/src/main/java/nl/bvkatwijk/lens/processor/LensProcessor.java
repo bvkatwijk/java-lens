@@ -74,12 +74,6 @@ public class LensProcessor extends AbstractProcessor {
         return it.getSimpleName().toString();
     }
 
-    // todo not very elegant
-    public static String fieldTypeUnqualified(RecordComponentElement it) {
-        var qualifiedType = it.asType().toString();
-        return qualifiedType.substring(qualifiedType.lastIndexOf(".") + 1);
-    }
-
     private Iterable<String> lensMethods(List<RecordComponentElement> fields) {
         return fields.flatMap(field -> {
             var lensType = qualifiedLens(field);
@@ -90,29 +84,6 @@ public class LensProcessor extends AbstractProcessor {
                 "}"
             ));
         });
-    }
-
-    enum LensKind {
-        PRIMITIVE,
-        LENSED,
-        OTHER;
-    }
-
-    record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement field) {
-        public String returnValue() {
-            return switch (lensKind) {
-                case LENSED -> Const.PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">";
-                case PRIMITIVE, OTHER -> Code.iLens(qualifiedType);
-            };
-        }
-
-        public String returnStatement() {
-            var chainInner = "inner.andThen(" + lensName(field) + ")";
-            return switch (lensKind) {
-                case LENSED -> "return new " + Const.PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<>(" + chainInner + ");";
-                case PRIMITIVE, OTHER -> "return " + chainInner + ";";
-            };
-        }
     }
 
     private static FieldLens qualifiedLens(RecordComponentElement field) {
