@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 public class LensesProcessorTest {
     @Test
-    void verifyProcessed() {
+    void verify_processed() {
+        // Deliberately left empty, green means processing was successful
     }
 }

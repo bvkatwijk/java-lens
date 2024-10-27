@@ -1,6 +1,7 @@
 package nl.bvkatwijk.lens.processor;
 
 import nl.bvkatwijk.lens.Const;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CodeTest {
     @Nested
+    @DisplayName("Reference")
     class MethodReferenceTest {
         @Test
         void generate() {
@@ -16,6 +18,7 @@ class CodeTest {
     }
 
     @Nested
+    @DisplayName("Import")
     class ImportStatementTest {
         @Test
         void generate() {
@@ -24,7 +27,8 @@ class CodeTest {
     }
 
     @Nested
-    class ILens {
+    @DisplayName("ILens")
+    class ILensTest {
         @Test
         void generate() {
             assertEquals("ILens<A, B>", Code.iLens("A", "B"));
