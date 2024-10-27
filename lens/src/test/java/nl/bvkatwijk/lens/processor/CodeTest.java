@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CodeTest {
     @Nested
@@ -46,6 +46,15 @@ class CodeTest {
         @Test
         void generate() {
             assertEquals("C", Code.unqualify("a.b.C"));
+        }
+    }
+
+    @Nested
+    @DisplayName("Remove Generics")
+    class RemoveGenericsTest{
+        @Test
+        void generate() {
+            assertEquals("A", Code.removeGenerics("A<B, C<D>>"));
         }
     }
 }
