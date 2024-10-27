@@ -2,6 +2,9 @@
 
 Automatic lens generation to support transformations to records.
 
+[![ci](https://github.com/bvkatwijk/java-lens/actions/workflows/gradle.yml/badge.svg)](https://github.com/bvkatwijk/java-lens/actions/workflows/gradle.yml)
+[![codecov](https://codecov.io/github/bvkatwijk/java-lens/graph/badge.svg?token=9aIaRmZ2ON)](https://codecov.io/github/bvkatwijk/java-lens)
+
 ## Install
 `TODO Publish, then add maven/gradle setup here`
 
