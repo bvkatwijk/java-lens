@@ -11,6 +11,8 @@ public final class Const {
      */
     public static final String LENS = "Lens";
 
+    public static final String BASE_LENS = "Lens";
+
     /**
      * Indent character for generated code
      */

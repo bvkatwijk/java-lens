@@ -61,18 +61,14 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private String rootLens(String name) {
-        return Code.indent("public static final " + name + "Lens<" + name + "> " + Const.ROOT_LENS_NAME + " = new " + name + "Lens<>(Lens.identity());");
+        return Code.indent("public static final " + name + Const.LENS + "<" + name + "> " + Const.ROOT_LENS_NAME + " = new " + name + Const.LENS + "<>(" + Const.BASE_LENS + ".identity());");
     }
 
     private List<String> lensConstants(List<RecordComponentElement> fields, String name) {
         return fields
-            .map(it -> lensConstant(name, fieldName(it), typeName(it)))
+            .map(it -> lensConstant(name, Code.fieldName(it), typeName(it)))
             .map(Code::indent)
             .toList();
-    }
-
-    private static String fieldName(RecordComponentElement it) {
-        return it.getSimpleName().toString();
     }
 
     private Iterable<String> lensMethods(List<RecordComponentElement> fields) {
@@ -80,13 +76,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private Iterable<String> lensMethod(RecordComponentElement element) {
-        var lensType = qualifiedLens(element);
-        return Code.indent(List.of(
-            "",
-            "public " + lensType.returnValue() + " " + fieldName(element) + "() {",
-            Code.indent(lensType.returnStatement()),
-            "}"
-        ));
+        return qualifiedLens(element).lensMethod();
     }
 
     private static FieldLens qualifiedLens(RecordComponentElement field) {
@@ -109,7 +99,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     static String lensName(RecordComponentElement field) {
-        return lensName(fieldName(field));
+        return lensName(Code.fieldName(field));
     }
 
     private Iterable<String> innerDelegation(String typeName) {
@@ -169,7 +159,7 @@ public class LensProcessor extends AbstractProcessor {
     String lensConstant(String record, String field, String fieldType) {
         return "public static final " + Code.iLens(
             record,
-            fieldType) + " " + lensName(field) + " = new " + Const.LENS + "<>("
+            fieldType) + " " + lensName(field) + " = new " + Const.BASE_LENS + "<>("
             + Code.params(Code.reference(record, field), Code.reference(record, witherName(field)))
             + ");";
     }

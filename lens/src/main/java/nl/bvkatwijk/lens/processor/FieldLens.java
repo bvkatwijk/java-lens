@@ -1,10 +1,20 @@
 package nl.bvkatwijk.lens.processor;
 
+import io.vavr.collection.List;
 import nl.bvkatwijk.lens.Const;
 
 import javax.lang.model.element.RecordComponentElement;
 
 record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement field) {
+    public List<String> lensMethod() {
+        return Code.indent(List.of(
+            "",
+            "public " + returnValue() + " " + Code.fieldName(field) + "() {",
+            Code.indent(returnStatement()),
+            "}"
+        ));
+    }
+
     public String returnValue() {
         return switch (lensKind) {
             case LENSED -> typeLens(field) + "<" + Const.PARAM_SOURCE_TYPE + ">";

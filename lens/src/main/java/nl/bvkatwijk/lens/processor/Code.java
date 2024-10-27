@@ -4,6 +4,8 @@ import io.vavr.collection.List;
 import io.vavr.collection.Vector;
 import nl.bvkatwijk.lens.Const;
 
+import javax.lang.model.element.RecordComponentElement;
+
 public class Code {
     static String params(String... args) {
         return Vector.of(args)
@@ -47,5 +49,9 @@ public class Code {
 
     static List<String> indent(List<String> strings) {
         return strings.map(Code::indent);
+    }
+
+    static String fieldName(RecordComponentElement it) {
+        return it.getSimpleName().toString();
     }
 }
