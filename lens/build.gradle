@@ -18,7 +18,7 @@ dependencies {
     testCompileOnly libs.lombok
     testAnnotationProcessor libs.lombok
 
-    implementation group: 'io.vavr', name: 'vavr', version: '0.10.4'
+    implementation libs.vavr
 
     testImplementation libs.junit.jupiter
     testImplementation libs.junit.jupiter.api
