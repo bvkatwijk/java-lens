@@ -108,11 +108,11 @@ public class LensProcessor extends AbstractProcessor {
                 Const.PARAM_SOURCE_TYPE,
                 typeName,
                 Const.PARAM_SOURCE_TYPE) + "> with() {",
-            Code.indent("return inner.with();"),
+            Code.indent(Code.ret("inner.with()")),
             "}",
             "",
             "public java.util.function.Function<" + Code.params(Const.PARAM_SOURCE_TYPE, typeName) + "> get() {",
-            Code.indent("return inner.get();"),
+            Code.indent(Code.ret("inner.get()")),
             "}"
         ));
     }

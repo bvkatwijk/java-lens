@@ -54,4 +54,8 @@ public class Code {
     static String removeGenerics(String arg) {
         return arg.indexOf('<') > 0 ? arg.substring(0, arg.indexOf('<')) : arg;
     }
+
+    static String ret(String arg) {
+        return "return " + arg + ";";
+    }
 }

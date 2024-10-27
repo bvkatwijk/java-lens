@@ -9,13 +9,13 @@ record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement
     public List<String> lensMethod() {
         return Code.indent(List.of(
             "",
-            "public " + returnValue() + " " + Code.fieldName(field) + "() {",
+            "public " + returnType() + " " + Code.fieldName(field) + "() {",
             Code.indent(returnStatement()),
             "}"
         ));
     }
 
-    public String returnValue() {
+    public String returnType() {
         return switch (lensKind) {
             case LENSED -> typeLens(field) + "<" + Const.PARAM_SOURCE_TYPE + ">";
             case PRIMITIVE, OTHER -> Code.iLens(qualifiedType);
@@ -24,10 +24,10 @@ record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement
 
     public String returnStatement() {
         var chainInner = "inner.andThen(" + LensProcessor.lensName(field) + ")";
-        return switch (lensKind) {
-            case LENSED -> "return new " + typeLens(field) + "<>(" + chainInner + ");";
-            case PRIMITIVE, OTHER -> "return " + chainInner + ";";
-        };
+        return Code.ret(switch (lensKind) {
+            case LENSED -> "new " + typeLens(field) + "<>(" + chainInner + ")";
+            case PRIMITIVE, OTHER -> chainInner;
+        });
     }
 
     static String typeLens(RecordComponentElement element) {
