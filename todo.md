@@ -1,8 +1,0 @@
-- generate in package of source
-- apply to multiple
-- generate enum of lensabale field
-  - why?
-- component annotation to add shortcut lens?
-  - so `House(Address)` and `Person(@Direct House house)` => `PersonLens.ROOT.house().address`, but then also `PersonLens.ROOT.address()`
-- also generate lombok with onto the lens?
-  - so `PersonLens.ROOT.house().withAddress()` ?
