@@ -1,4 +1,4 @@
-package nl.bvkatwijk.lens;
+package nl.bvkatwijk.lens.integration;
 
 import com.karuslabs.elementary.Results;
 import com.karuslabs.elementary.junit.JavacExtension;
@@ -21,14 +21,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         import nl.bvkatwijk.lens.Lenses;
           
         @Lenses
-        public record Person(String name) {
-            public Person withName(String newName) {
-                return new Person(newName);
+        public record Person(Address address) {
+            public Person withAddress(Address newAddress) {
+                return new Person(newAddress);
+            }
+            
+            @Lenses
+            public record Address(String street) {
+                public Address withStreet(String newName) {
+                    return new Address(newName);
+                }
             }
         }
         """
 )
-class ImaginaryTest {
+class IntegrationTest {
     @Test
     void process_without_error(Results results) {
         var errors = results.find().errors();
