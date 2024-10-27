@@ -47,7 +47,6 @@ public class LensProcessor extends AbstractProcessor {
         writeSourceFile(Const.PACK, name, String.join(
             "\n",
             List.of("package " + Const.PACK + ";", "")
-                .append(importLens())
                 .appendAll(imports(List.of(element)))
                 .append("")
                 .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + Code.iLens(name) + " inner) implements " + Code.iLens(
@@ -61,7 +60,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private String rootLens(String name) {
-        return Code.indent("public static final " + name + Const.LENS + "<" + name + "> " + Const.ROOT_LENS_NAME + " = new " + name + Const.LENS + "<>(" + Const.BASE_LENS + ".identity());");
+        return Code.indent(Code.PSF + name + Const.LENS + "<" + name + "> " + Const.ROOT_LENS_NAME + " = new " + name + Const.LENS + "<>(" + Const.BASE_LENS + ".identity());");
     }
 
     private List<String> lensConstants(List<RecordComponentElement> fields, String name) {
@@ -118,24 +117,13 @@ public class LensProcessor extends AbstractProcessor {
         ));
     }
 
-    private String importLens() {
-        return Code.importStatements(
-            ILens.class.getName(),
-            Lens.class.getName()
-        );
-    }
-
-    // Todo too ugly
     private Iterable<String> imports(List<? extends Element> fields) {
         return fields
             .map(LensProcessor::typeName)
-            .map(LensProcessor::removeGenerics)
+            .map(Code::removeGenerics)
+            .append(ILens.class.getName())
+            .append(Lens.class.getName())
             .map(Code::importStatement);
-    }
-
-    // Todo too ugly
-    private static String removeGenerics(String it) {
-        return it.indexOf('<') > 0 ? it.substring(0, it.indexOf('<')) : it;
     }
 
     private static String typeName(Element it) {
@@ -157,9 +145,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     String lensConstant(String record, String field, String fieldType) {
-        return "public static final " + Code.iLens(
-            record,
-            fieldType) + " " + lensName(field) + " = new " + Const.BASE_LENS + "<>("
+        return Code.PSF + Code.iLens(record, fieldType) + " " + lensName(field) + " = new " + Const.BASE_LENS + "<>("
             + Code.params(Code.reference(record, field), Code.reference(record, witherName(field)))
             + ");";
     }
