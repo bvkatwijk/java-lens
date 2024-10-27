@@ -1,17 +1,20 @@
 package nl.bvkatwijk.lens;
 
+import nl.bvkatwijk.lens.kind.ILens;
+import nl.bvkatwijk.lens.kind.Lens;
+
 public final class Const {
     /**
      * Name of interface
      */
-    public static final String ILENS = "ILens";
+    public static final String ILENS = ILens.class.getSimpleName();
 
     /**
      * Name of Lens concept
      */
     public static final String LENS = "Lens";
 
-    public static final String BASE_LENS = "Lens";
+    public static final String BASE_LENS = Lens.class.getSimpleName();
 
     /**
      * Indent character for generated code
