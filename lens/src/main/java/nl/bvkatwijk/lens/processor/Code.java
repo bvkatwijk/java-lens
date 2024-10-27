@@ -1,5 +1,6 @@
 package nl.bvkatwijk.lens.processor;
 
+import io.vavr.collection.List;
 import io.vavr.collection.Vector;
 import nl.bvkatwijk.lens.Const;
 
@@ -38,5 +39,13 @@ public class Code {
 
     static String unqualify(String qualifiedType) {
         return qualifiedType.substring(qualifiedType.lastIndexOf(".") + 1);
+    }
+
+    static String indent(String string) {
+        return Const.INDENT + string;
+    }
+
+    static List<String> indent(List<String> strings) {
+        return strings.map(Code::indent);
     }
 }

@@ -1,6 +1,6 @@
 package nl.bvkatwijk.lens;
 
-public class Const {
+public final class Const {
     /**
      * Name of interface
      */
