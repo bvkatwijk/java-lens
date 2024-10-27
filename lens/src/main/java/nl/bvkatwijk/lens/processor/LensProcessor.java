@@ -48,7 +48,7 @@ public class LensProcessor extends AbstractProcessor {
                 .append(importLens())
                 .appendAll(imports(List.of(element)))
                 .append("")
-                .append("public record " + name + Const.LENS + "<T>(Lens<T, " + name + "> inner) implements " + iLens(name) + " {")
+                .append("public record " + name + Const.LENS + "<T>(ILens<T, " + name + "> inner) implements " + iLens(name) + " {")
                 .append(rootLens(name))
                 .appendAll(lensConstants(fields, name))
                 .appendAll(lensMethods(fields))
