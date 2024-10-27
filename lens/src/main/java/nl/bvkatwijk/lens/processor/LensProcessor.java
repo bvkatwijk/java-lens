@@ -145,7 +145,7 @@ public class LensProcessor extends AbstractProcessor {
     private Iterable<String> innerDelegation(String typeName) {
         return indent(List.of(
             "",
-            "public io.vavr.Function2<T, " + typeName + ", T> with() {",
+            "public java.util.function.BiFunction<T, " + typeName + ", T> with() {",
             indent("return inner.with();"),
             "}",
             "",

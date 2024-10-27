@@ -1,11 +1,10 @@
 package nl.bvkatwijk.lens.kind;
 
-import io.vavr.Function2;
-
+import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 
 public interface IWith<S, T> {
-    Function2<S, T, S> with();
+    BiFunction<S, T, S> with();
 
     /**
      * Currying version of {@link ILens#with()}
