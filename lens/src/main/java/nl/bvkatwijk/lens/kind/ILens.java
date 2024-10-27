@@ -17,7 +17,7 @@ public interface ILens<S, T> extends IGet<S, T>, IWith<S, T> {
     }
 
     default Function2<S, UnaryOperator<T>, S> modify() {
-        return (s, f) -> with().apply(s, f.apply(get(s)));
+        return (s, f) -> with(s, f.apply(get(s)));
     }
 
     /** Currying variant of {@link ILens#modify()} */
@@ -27,7 +27,7 @@ public interface ILens<S, T> extends IGet<S, T>, IWith<S, T> {
 
     default <U> ILens<S, U> andThen(ILens<T, U> lens) {
         return new Lens<>(
-            (s, u) -> with().apply(s, lens.with().apply(get(s)).apply(u)),
+            (s, u) -> with(s, lens.with(get(s), u)),
             get().andThen(lens.get()));
     }
 
