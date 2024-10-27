@@ -8,3 +8,4 @@
     - so `PersonLens.ROOT.house().withAddress()` ?
 - generate with methods so that lombok is not necessary
 - remove vavr transitive dependency
+  - maybe vavr add-on module?
