@@ -138,7 +138,7 @@ public class LensProcessor extends AbstractProcessor {
             : new FieldLens(typeName(field), LensKind.OTHER, field);
     }
 
-    public static String isoName(RecordComponentElement field) {
+    static String isoName(RecordComponentElement field) {
         return isoName(fieldName(field));
     }
 
@@ -192,7 +192,7 @@ public class LensProcessor extends AbstractProcessor {
         };
     }
 
-    public String lensConstant(String record, String field, String fieldType) {
+    String lensConstant(String record, String field, String fieldType) {
         return "public static final " + Const.LENS + "<" + record + ", " + fieldType + "> " + isoName(field) + " = new " + Const.LENS + "<>(" + record + "::" + witherName(
             field) + ", " + record + "::" + field + ");";
     }
@@ -201,21 +201,21 @@ public class LensProcessor extends AbstractProcessor {
         return field.toUpperCase();
     }
 
-    public String witherName(String fieldName) {
+    String witherName(String fieldName) {
         return "with" + capitalize(fieldName);
     }
 
-    public String indent(String string) {
+    String indent(String string) {
         return Const.INDENT + string;
     }
 
-    public static String capitalize(String string) {
+    static String capitalize(String string) {
         return Pattern.compile("^.")
             .matcher(string)
             .replaceFirst(m -> m.group().toUpperCase());
     }
 
-    public List<String> indent(List<String> strings) {
+    List<String> indent(List<String> strings) {
         return strings.map(this::indent);
     }
 
