@@ -2,6 +2,7 @@ package nl.bvkatwijk.lens.processor;
 
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
+import io.vavr.collection.Vector;
 import lombok.SneakyThrows;
 import nl.bvkatwijk.lens.Const;
 import nl.bvkatwijk.lens.Lenses;
@@ -48,7 +49,7 @@ public class LensProcessor extends AbstractProcessor {
                 .append(importLens())
                 .appendAll(imports(List.of(element)))
                 .append("")
-                .append("public record " + name + Const.LENS + "<T>(ILens<T, " + name + "> inner) implements " + iLens(name) + " {")
+                .append("public record " + name + Const.LENS + "<T>(" + iLens(name) + " inner) implements " + iLens(name) + " {")
                 .append(rootLens(name))
                 .appendAll(lensConstants(fields, name))
                 .appendAll(lensMethods(fields))
@@ -58,11 +59,11 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private String rootLens(String name) {
-        return indent("public static final " + name + "Lens<" + name + "> ROOT = new " + name + "Lens<>(Lens.identity());");
+        return indent("public static final " + name + "Lens<" + name + "> " + Const.ROOT_LENS_NAME + " = new " + name + "Lens<>(Lens.identity());");
     }
 
     private static String iLens(String name) {
-        return "ILens<T, " + name + ">";
+        return "ILens<" + params("T", name) + ">";
     }
 
     private List<String> lensConstants(List<RecordComponentElement> fields, String name) {
@@ -104,7 +105,7 @@ public class LensProcessor extends AbstractProcessor {
         public String returnValue() {
             return switch (lensKind) {
                 case LENSED -> Const.PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<T>";
-                case PRIMITIVE, OTHER -> "ILens<T, " + qualifiedType + ">";
+                case PRIMITIVE, OTHER -> iLens(qualifiedType);
             };
         }
 
@@ -143,18 +144,21 @@ public class LensProcessor extends AbstractProcessor {
     private Iterable<String> innerDelegation(String typeName) {
         return indent(List.of(
             "",
-            "public java.util.function.BiFunction<T, " + typeName + ", T> with() {",
+            "public java.util.function.BiFunction<" + params("T", typeName, "T") + "> with() {",
             indent("return inner.with();"),
             "}",
             "",
-            "public java.util.function.Function<T, " + typeName + "> get() {",
+            "public java.util.function.Function<" + params("T",  typeName) + "> get() {",
             indent("return inner.get();"),
             "}"
         ));
     }
 
     private String importLens() {
-        return "import nl.bvkatwijk.lens.kind.ILens;\nimport nl.bvkatwijk.lens.kind.Lens;";
+        return importStatements(
+            "nl.bvkatwijk.lens.kind.ILens",
+            "nl.bvkatwijk.lens.kind.Lens"
+        );
     }
 
     // Todo too ugly
@@ -162,7 +166,7 @@ public class LensProcessor extends AbstractProcessor {
         return fields
             .map(LensProcessor::typeName)
             .map(LensProcessor::removeGenerics)
-            .map(LensProcessor::importElement);
+            .map(LensProcessor::importStatement);
     }
 
     // Todo too ugly
@@ -170,8 +174,14 @@ public class LensProcessor extends AbstractProcessor {
         return it.indexOf('<') > 0 ? it.substring(0, it.indexOf('<')) : it;
     }
 
-    private static String importElement(String qualifiedTypeName) {
+    private static String importStatement(String qualifiedTypeName) {
         return "import " + qualifiedTypeName + ";";
+    }
+
+    private static String importStatements(String... args) {
+        return Vector.of(args)
+            .map(LensProcessor::importStatement)
+            .mkString("\n");
     }
 
     private static String typeName(Element it) {
@@ -193,11 +203,23 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     String lensConstant(String record, String field, String fieldType) {
-        return "public static final " + Const.LENS + "<" + record + ", " + fieldType + "> " + isoName(field) + " = new " + Const.LENS + "<>("
-            + record + "::" + field
-            + ", "
-            + record + "::" + witherName(field)
+        return "public static final " + Const.LENS + "<" + params(record, fieldType) + "> " + isoName(field) + " = new " + Const.LENS + "<>("
+            + params(reference(record, field),  reference(record, witherName(field)))
             + ");";
+    }
+
+    /**
+     * @param typeName type name
+     * @param method method name
+     * @return method reference
+     */
+    private static String reference(String typeName, String method) {
+        return typeName + "::" + method;
+    }
+
+    private static String params(String... args) {
+        return Vector.of(args)
+            .mkString(", ");
     }
 
     private static String isoName(String field) {
