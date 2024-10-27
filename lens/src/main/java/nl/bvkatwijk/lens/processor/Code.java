@@ -7,6 +7,8 @@ import nl.bvkatwijk.lens.Const;
 import javax.lang.model.element.RecordComponentElement;
 
 public class Code {
+    public static final String PSF = "public static final ";
+
     static String params(String... args) {
         return Vector.of(args)
             .mkString(", ");
@@ -23,12 +25,6 @@ public class Code {
 
     static String importStatement(String qualifiedTypeName) {
         return "import " + qualifiedTypeName + ";";
-    }
-
-    static String importStatements(String... args) {
-        return Vector.of(args)
-            .map(Code::importStatement)
-            .mkString("\n");
     }
 
     static String iLens(String from, String to) {
@@ -53,5 +49,9 @@ public class Code {
 
     static String fieldName(RecordComponentElement it) {
         return it.getSimpleName().toString();
+    }
+
+    static String removeGenerics(String arg) {
+        return arg.indexOf('<') > 0 ? arg.substring(0, arg.indexOf('<')) : arg;
     }
 }
