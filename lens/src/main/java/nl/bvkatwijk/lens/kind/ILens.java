@@ -1,7 +1,6 @@
 package nl.bvkatwijk.lens.kind;
 
-import io.vavr.Function2;
-
+import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 
 public interface ILens<S, T> extends IGet<S, T>, IWith<S, T> {
@@ -16,7 +15,7 @@ public interface ILens<S, T> extends IGet<S, T>, IWith<S, T> {
         return s -> apply(s, op);
     }
 
-    default Function2<S, UnaryOperator<T>, S> modify() {
+    default BiFunction<S, UnaryOperator<T>, S> modify() {
         return (s, f) -> with(s, f.apply(get(s)));
     }
 

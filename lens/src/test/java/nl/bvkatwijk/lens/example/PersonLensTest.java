@@ -248,7 +248,7 @@ public class PersonLensTest {
             void modify_and_apply() {
                 assertEquals(
                     new Address(STREET, ADDRESS.number() + 1, CITY),
-                    AddressLens.NUMBER.modify().apply(ADDRESS, i -> i + 1)
+                    NUMBER.modify().apply(ADDRESS, i -> i + 1)
                 );
             }
 
@@ -256,7 +256,7 @@ public class PersonLensTest {
             void modify_target_and_apply() {
                 assertEquals(
                     new Address(STREET, ADDRESS.number() + 1, CITY),
-                    AddressLens.NUMBER.modify(i -> i + 1).apply(ADDRESS)
+                    NUMBER.modify(i -> i + 1).apply(ADDRESS)
                 );
             }
         }
