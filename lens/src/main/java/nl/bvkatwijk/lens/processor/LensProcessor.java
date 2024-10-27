@@ -5,6 +5,8 @@ import io.vavr.collection.List;
 import lombok.SneakyThrows;
 import nl.bvkatwijk.lens.Const;
 import nl.bvkatwijk.lens.Lenses;
+import nl.bvkatwijk.lens.kind.ILens;
+import nl.bvkatwijk.lens.kind.Lens;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -48,7 +50,7 @@ public class LensProcessor extends AbstractProcessor {
                 .append(importLens())
                 .appendAll(imports(List.of(element)))
                 .append("")
-                .append("public record " + name + Const.LENS + "<T>(Lens<T, " + name + "> inner) implements " + iLens(name) + " {")
+                .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + Code.iLens(name) + " inner) implements " + Code.iLens(name) + " {")
                 .append(rootLens(name))
                 .appendAll(lensConstants(fields, name))
                 .appendAll(lensMethods(fields))
@@ -58,11 +60,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private String rootLens(String name) {
-        return indent("public static final " + name + "Lens<" + name + "> ROOT = new " + name + "Lens<>(Lens.identity());");
-    }
-
-    private static String iLens(String name) {
-        return "ILens<T, " + name + ">";
+        return indent("public static final " + name + "Lens<" + name + "> " + Const.ROOT_LENS_NAME + " = new " + name + "Lens<>(Lens.identity());");
     }
 
     private List<String> lensConstants(List<RecordComponentElement> fields, String name) {
@@ -76,14 +74,6 @@ public class LensProcessor extends AbstractProcessor {
         return it.getSimpleName().toString();
     }
 
-    /**
-     * This is not accurate, not sure how to retrieve unqualified type name
-     */
-    public static String fieldTypeUnqualified(RecordComponentElement it) {
-        var qualifiedType = it.asType().toString();
-        return qualifiedType.substring(qualifiedType.lastIndexOf(".") + 1);
-    }
-
     private Iterable<String> lensMethods(List<RecordComponentElement> fields) {
         return fields.flatMap(field -> {
             var lensType = qualifiedLens(field);
@@ -94,29 +84,6 @@ public class LensProcessor extends AbstractProcessor {
                 "}"
             ));
         });
-    }
-
-    enum LensKind {
-        PRIMITIVE,
-        LENSED,
-        OTHER;
-    }
-
-    record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement field) {
-        public String returnValue() {
-            return switch (lensKind) {
-                case LENSED -> Const.PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<T>";
-                case PRIMITIVE, OTHER -> "ILens<T, " + qualifiedType + ">";
-            };
-        }
-
-        public String returnStatement() {
-            var chainInner = "inner.andThen(" + isoName(field) + ")";
-            return switch (lensKind) {
-                case LENSED -> "return new " + Const.PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<>(" + chainInner + ");";
-                case PRIMITIVE, OTHER -> "return " + chainInner + ";";
-            };
-        }
     }
 
     private static FieldLens qualifiedLens(RecordComponentElement field) {
@@ -133,89 +100,91 @@ public class LensProcessor extends AbstractProcessor {
     private static FieldLens declared(RecordComponentElement field) {
         return List.ofAll(((DeclaredType) field.asType()).asElement().getAnnotationMirrors())
             .map(AnnotationMirror::toString)
-            .contains("@" + Const.LENS_ANNOTATION_QUALIFIED)
+            .contains("@" + Lenses.class.getName())
             ? new FieldLens("unused?", LensKind.LENSED, field)
             : new FieldLens(typeName(field), LensKind.OTHER, field);
     }
 
-    public static String isoName(RecordComponentElement field) {
-        return isoName(fieldName(field));
+    static String lensName(RecordComponentElement field) {
+        return lensName(fieldName(field));
     }
 
     private Iterable<String> innerDelegation(String typeName) {
         return indent(List.of(
             "",
-            "public io.vavr.Function2<T, " + typeName + ", T> with() {",
+            "public java.util.function.BiFunction<" + Code.params(Const.PARAM_SOURCE_TYPE, typeName, Const.PARAM_SOURCE_TYPE) + "> with() {",
             indent("return inner.with();"),
             "}",
             "",
-            "public io.vavr.Function1<T, " + typeName + "> get() {",
+            "public java.util.function.Function<" + Code.params(Const.PARAM_SOURCE_TYPE,  typeName) + "> get() {",
             indent("return inner.get();"),
             "}"
         ));
     }
 
     private String importLens() {
-        return "import nl.bvkatwijk.lens.kind.ILens;\nimport nl.bvkatwijk.lens.kind.Lens;";
+        return Code.importStatements(
+            ILens.class.getName(),
+            Lens.class.getName()
+        );
     }
 
+    // Todo too ugly
     private Iterable<String> imports(List<? extends Element> fields) {
         return fields
             .map(LensProcessor::typeName)
             .map(LensProcessor::removeGenerics)
-            .map(LensProcessor::importElement);
+            .map(Code::importStatement);
     }
 
+    // Todo too ugly
     private static String removeGenerics(String it) {
         return it.indexOf('<') > 0 ? it.substring(0, it.indexOf('<')) : it;
-    }
-
-    private static String importElement(String qualifiedTypeName) {
-        return "import " + qualifiedTypeName + ";";
     }
 
     private static String typeName(Element it) {
         TypeMirror type = it.asType();
         return switch (type.getKind()) {
-            case BOOLEAN -> "java.lang.Boolean";
-            case BYTE -> "java.lang.Byte";
-            case SHORT -> "java.lang.Short";
-            case INT -> "java.lang.Integer";
-            case LONG -> "java.lang.Long";
-            case CHAR -> "java.lang.Character";
-            case FLOAT -> "java.lang.Float";
-            case DOUBLE -> "java.lang.Double";
-            case VOID -> "java.lang.Void";
+            case BOOLEAN -> Boolean.class.getName();
+            case BYTE -> Byte.class.getName();
+            case SHORT -> Short.class.getName();
+            case INT -> Integer.class.getName();
+            case LONG -> Long.class.getName();
+            case CHAR -> Character.class.getName();
+            case FLOAT -> Float.class.getName();
+            case DOUBLE -> Double.class.getName();
+            case VOID -> Void.class.getName(); // Does it make sense to support Void type?
             case DECLARED -> type.toString();
             case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
                 throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
         };
     }
 
-    public String lensConstant(String record, String field, String fieldType) {
-        return "public static final " + Const.LENS + "<" + record + ", " + fieldType + "> " + isoName(field) + " = new " + Const.LENS + "<>(" + record + "::" + witherName(
-            field) + ", " + record + "::" + field + ");";
+    String lensConstant(String record, String field, String fieldType) {
+        return "public static final " + Code.iLens(record, fieldType) + " " + lensName(field) + " = new " + Const.LENS + "<>("
+            + Code.params(Code.reference(record, field),  Code.reference(record, witherName(field)))
+            + ");";
     }
 
-    private static String isoName(String field) {
+    private static String lensName(String field) {
         return field.toUpperCase();
     }
 
-    public String witherName(String fieldName) {
+    String witherName(String fieldName) {
         return "with" + capitalize(fieldName);
     }
 
-    public String indent(String string) {
+    String indent(String string) {
         return Const.INDENT + string;
     }
 
-    public static String capitalize(String string) {
+    static String capitalize(String string) {
         return Pattern.compile("^.")
             .matcher(string)
             .replaceFirst(m -> m.group().toUpperCase());
     }
 
-    public List<String> indent(List<String> strings) {
+    List<String> indent(List<String> strings) {
         return strings.map(this::indent);
     }
 

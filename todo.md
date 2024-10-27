@@ -1,4 +1,0 @@
-- generate in package of source
-- apply to multiple
-- generate enum of lensabale field
-  - why?
