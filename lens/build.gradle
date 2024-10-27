@@ -51,7 +51,14 @@ publishing {
         maven(MavenPublication) {
             groupId = 'nl.bvkatwijk'
             artifactId = 'java-lens'
-            version = '0.1.0'
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
             from components.java
             pom {
                 name = 'java-lens'
@@ -62,6 +69,7 @@ publishing {
                         id = 'bvkatwijk'
                         name = 'Boris van Katwijk'
                         email = 'bvkatwijk@gmail.com'
+                        organizationUrl = 'https://bvankatwijk.nl/'
                     }
                 }
                 scm {
