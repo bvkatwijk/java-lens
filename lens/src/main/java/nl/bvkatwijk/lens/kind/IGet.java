@@ -1,9 +1,9 @@
 package nl.bvkatwijk.lens.kind;
 
-import io.vavr.Function1;
+import java.util.function.Function;
 
 public interface IGet<S, T> {
-    Function1<S, T> get();
+    Function<S, T> get();
 
     default T get(S s) {
         return get().apply(s);

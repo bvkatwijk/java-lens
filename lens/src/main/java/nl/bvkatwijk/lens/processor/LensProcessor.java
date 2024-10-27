@@ -149,7 +149,7 @@ public class LensProcessor extends AbstractProcessor {
             indent("return inner.with();"),
             "}",
             "",
-            "public io.vavr.Function1<T, " + typeName + "> get() {",
+            "public java.util.function.Function<T, " + typeName + "> get() {",
             indent("return inner.get();"),
             "}"
         ));

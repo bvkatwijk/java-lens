@@ -27,7 +27,7 @@ public interface ILens<S, T> extends IGet<S, T>, IWith<S, T> {
     default <U> ILens<S, U> andThen(ILens<T, U> lens) {
         return new Lens<>(
             (s, u) -> with(s, lens.with(get(s), u)),
-            get().andThen(lens.get()));
+            get().andThen(lens::get));
     }
 
     default <R> ILens<R, T> compose(ILens<R, S> lens) {
