@@ -1,7 +1,10 @@
 package nl.bvkatwijk.lens.processor;
 
+import io.vavr.collection.List;
 import io.vavr.collection.Vector;
 import nl.bvkatwijk.lens.Const;
+
+import javax.lang.model.element.RecordComponentElement;
 
 public class Code {
     static String params(String... args) {
@@ -38,5 +41,17 @@ public class Code {
 
     static String unqualify(String qualifiedType) {
         return qualifiedType.substring(qualifiedType.lastIndexOf(".") + 1);
+    }
+
+    static String indent(String string) {
+        return Const.INDENT + string;
+    }
+
+    static List<String> indent(List<String> strings) {
+        return strings.map(Code::indent);
+    }
+
+    static String fieldName(RecordComponentElement it) {
+        return it.getSimpleName().toString();
     }
 }

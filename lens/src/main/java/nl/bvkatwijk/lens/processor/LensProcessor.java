@@ -50,7 +50,8 @@ public class LensProcessor extends AbstractProcessor {
                 .append(importLens())
                 .appendAll(imports(List.of(element)))
                 .append("")
-                .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + Code.iLens(name) + " inner) implements " + Code.iLens(name) + " {")
+                .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + Code.iLens(name) + " inner) implements " + Code.iLens(
+                    name) + " {")
                 .append(rootLens(name))
                 .appendAll(lensConstants(fields, name))
                 .appendAll(lensMethods(fields))
@@ -60,30 +61,22 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private String rootLens(String name) {
-        return indent("public static final " + name + "Lens<" + name + "> " + Const.ROOT_LENS_NAME + " = new " + name + "Lens<>(Lens.identity());");
+        return Code.indent("public static final " + name + Const.LENS + "<" + name + "> " + Const.ROOT_LENS_NAME + " = new " + name + Const.LENS + "<>(" + Const.BASE_LENS + ".identity());");
     }
 
     private List<String> lensConstants(List<RecordComponentElement> fields, String name) {
         return fields
-            .map(it -> lensConstant(name, fieldName(it), typeName(it)))
-            .map(this::indent)
+            .map(it -> lensConstant(name, Code.fieldName(it), typeName(it)))
+            .map(Code::indent)
             .toList();
     }
 
-    private static String fieldName(RecordComponentElement it) {
-        return it.getSimpleName().toString();
+    private Iterable<String> lensMethods(List<RecordComponentElement> fields) {
+        return fields.flatMap(this::lensMethod);
     }
 
-    private Iterable<String> lensMethods(List<RecordComponentElement> fields) {
-        return fields.flatMap(field -> {
-            var lensType = qualifiedLens(field);
-            return indent(List.of(
-                "",
-                    "public " + lensType.returnValue() + " " + fieldName(field) + "() {",
-                indent(lensType.returnStatement()),
-                "}"
-            ));
-        });
+    private Iterable<String> lensMethod(RecordComponentElement element) {
+        return qualifiedLens(element).lensMethod();
     }
 
     private static FieldLens qualifiedLens(RecordComponentElement field) {
@@ -106,18 +99,21 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     static String lensName(RecordComponentElement field) {
-        return lensName(fieldName(field));
+        return lensName(Code.fieldName(field));
     }
 
     private Iterable<String> innerDelegation(String typeName) {
-        return indent(List.of(
+        return Code.indent(List.of(
             "",
-            "public java.util.function.BiFunction<" + Code.params(Const.PARAM_SOURCE_TYPE, typeName, Const.PARAM_SOURCE_TYPE) + "> with() {",
-            indent("return inner.with();"),
+            "public java.util.function.BiFunction<" + Code.params(
+                Const.PARAM_SOURCE_TYPE,
+                typeName,
+                Const.PARAM_SOURCE_TYPE) + "> with() {",
+            Code.indent("return inner.with();"),
             "}",
             "",
-            "public java.util.function.Function<" + Code.params(Const.PARAM_SOURCE_TYPE,  typeName) + "> get() {",
-            indent("return inner.get();"),
+            "public java.util.function.Function<" + Code.params(Const.PARAM_SOURCE_TYPE, typeName) + "> get() {",
+            Code.indent("return inner.get();"),
             "}"
         ));
     }
@@ -161,8 +157,10 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     String lensConstant(String record, String field, String fieldType) {
-        return "public static final " + Code.iLens(record, fieldType) + " " + lensName(field) + " = new " + Const.LENS + "<>("
-            + Code.params(Code.reference(record, field),  Code.reference(record, witherName(field)))
+        return "public static final " + Code.iLens(
+            record,
+            fieldType) + " " + lensName(field) + " = new " + Const.BASE_LENS + "<>("
+            + Code.params(Code.reference(record, field), Code.reference(record, witherName(field)))
             + ");";
     }
 
@@ -174,18 +172,10 @@ public class LensProcessor extends AbstractProcessor {
         return "with" + capitalize(fieldName);
     }
 
-    String indent(String string) {
-        return Const.INDENT + string;
-    }
-
     static String capitalize(String string) {
         return Pattern.compile("^.")
             .matcher(string)
             .replaceFirst(m -> m.group().toUpperCase());
-    }
-
-    List<String> indent(List<String> strings) {
-        return strings.map(this::indent);
     }
 
     private void writeSourceFile(String pack, String name, String content) throws IOException {
