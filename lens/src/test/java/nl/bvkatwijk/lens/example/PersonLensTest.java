@@ -1,5 +1,6 @@
 package nl.bvkatwijk.lens.example;
 
+import io.vavr.collection.List;
 import nl.bvkatwijk.lens.LensOps;
 import nl.bvkatwijk.lens.Lenses;
 import nl.bvkatwijk.lens.gen.AddressLens;
@@ -8,7 +9,6 @@ import org.instancio.Instancio;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -58,6 +58,14 @@ public class PersonLensTest {
             /// This can be useful to transform a value deep within nested records
             assertEquals("New York", moveToNewYork.apply(ALICE).address().city().name());
         }
+
+        @Test
+        void use_lens_ops_to_perform_multiple_transformations() {
+            /// Adding LensOps interface can be useful to apply multiple transformations on a single instance
+            ALICE
+                .with(PersonLens.NAME, "SuperAlice")
+                .modify(PersonLens.FRIENDS, friends -> friends.append(BOB));
+        }
     }
 
     @Nested
@@ -102,8 +110,8 @@ public class PersonLensTest {
         @Test
         void friendsTest() {
             assertEquals(
-                ALICE.withFriends(List.of()),
-                ALICE.modify(PersonLens.FRIENDS, i -> List.of()));
+                ALICE.withFriends(List.of(BOB)),
+                ALICE.modify(PersonLens.FRIENDS, i -> List.of(BOB)));
         }
     }
 
@@ -255,9 +263,11 @@ public class PersonLensTest {
     }
 
     public static final Person ALICE = Instancio.create(Person.class)
-        .withName("alice");
+        .withName("alice")
+        .withFriends(List.of());
     public static final Person BOB = Instancio.create(Person.class)
-        .withName("bob");
+        .withName("bob")
+        .withFriends(List.of());
     public static final Address HOME = Instancio.create(Address.class);
     public static final Address WORK = Instancio.create(Address.class);
     public static final int HOUSE_NUMBER = 10;
