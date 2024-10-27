@@ -7,5 +7,6 @@
 - also generate lombok-style with onto the lens?
     - so `PersonLens.ROOT.house().withAddress()` ?
 - generate with methods so that lombok is not necessary
+  - maybe lombok add-on module?
 - remove vavr transitive dependency
   - maybe vavr add-on module?

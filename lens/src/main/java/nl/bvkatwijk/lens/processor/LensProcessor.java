@@ -76,9 +76,7 @@ public class LensProcessor extends AbstractProcessor {
         return it.getSimpleName().toString();
     }
 
-    /**
-     * This is not accurate, not sure how to retrieve unqualified type name
-     */
+    // todo not very elegant
     public static String fieldTypeUnqualified(RecordComponentElement it) {
         var qualifiedType = it.asType().toString();
         return qualifiedType.substring(qualifiedType.lastIndexOf(".") + 1);
@@ -159,6 +157,7 @@ public class LensProcessor extends AbstractProcessor {
         return "import nl.bvkatwijk.lens.kind.ILens;\nimport nl.bvkatwijk.lens.kind.Lens;";
     }
 
+    // Todo too ugly
     private Iterable<String> imports(List<? extends Element> fields) {
         return fields
             .map(LensProcessor::typeName)
@@ -166,6 +165,7 @@ public class LensProcessor extends AbstractProcessor {
             .map(LensProcessor::importElement);
     }
 
+    // Todo too ugly
     private static String removeGenerics(String it) {
         return it.indexOf('<') > 0 ? it.substring(0, it.indexOf('<')) : it;
     }
@@ -177,15 +177,15 @@ public class LensProcessor extends AbstractProcessor {
     private static String typeName(Element it) {
         TypeMirror type = it.asType();
         return switch (type.getKind()) {
-            case BOOLEAN -> "java.lang.Boolean";
-            case BYTE -> "java.lang.Byte";
-            case SHORT -> "java.lang.Short";
-            case INT -> "java.lang.Integer";
-            case LONG -> "java.lang.Long";
-            case CHAR -> "java.lang.Character";
-            case FLOAT -> "java.lang.Float";
-            case DOUBLE -> "java.lang.Double";
-            case VOID -> "java.lang.Void";
+            case BOOLEAN -> Boolean.class.getName();
+            case BYTE -> Byte.class.getName();
+            case SHORT -> Short.class.getName();
+            case INT -> Integer.class.getName();
+            case LONG -> Long.class.getName();
+            case CHAR -> Character.class.getName();
+            case FLOAT -> Float.class.getName();
+            case DOUBLE -> Double.class.getName();
+            case VOID -> Void.class.getName(); // Does it make sense to support Void type?
             case DECLARED -> type.toString();
             case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
                 throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
@@ -193,8 +193,11 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     String lensConstant(String record, String field, String fieldType) {
-        return "public static final " + Const.LENS + "<" + record + ", " + fieldType + "> " + isoName(field) + " = new " + Const.LENS + "<>(" + record + "::" + witherName(
-            field) + ", " + record + "::" + field + ");";
+        return "public static final " + Const.LENS + "<" + record + ", " + fieldType + "> " + isoName(field) + " = new " + Const.LENS + "<>("
+            + record + "::" + field
+            + ", "
+            + record + "::" + witherName(field)
+            + ");";
     }
 
     private static String isoName(String field) {

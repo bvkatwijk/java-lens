@@ -225,39 +225,37 @@ public class PersonLensTest {
 
         @Nested
         class WithTests {
+            int newNumber = 2;
+            Address newAddress = new Address(STREET, newNumber, CITY);
+
             @Test
-            void with_and_apply() {
-                assertEquals(
-                    new Address(STREET, 2, CITY),
-                    AddressLens.NUMBER.with().apply(ADDRESS, 2)
-                );
+            void with_t_s() {
+                assertEquals(newAddress, AddressLens.NUMBER.with().apply(ADDRESS, newNumber));
             }
 
             @Test
-            void with_target_and_apply() {
-                assertEquals(
-                    new Address(STREET, 2, CITY),
-                    AddressLens.NUMBER.with(2).apply(ADDRESS)
-                );
+            void with_t_apply_s() {
+                assertEquals(newAddress, AddressLens.NUMBER.with(newNumber).apply(ADDRESS));
+            }
+
+            @Test
+            void with_apply_t_s() {
+                assertEquals(newAddress, AddressLens.NUMBER.with(ADDRESS, newNumber));
             }
         }
 
         @Nested
         class ModifyTests {
+            Address expected = new Address(STREET, ADDRESS.number() + 1, CITY);
+
             @Test
-            void modify_and_apply() {
-                assertEquals(
-                    new Address(STREET, ADDRESS.number() + 1, CITY),
-                    NUMBER.modify().apply(ADDRESS, i -> i + 1)
-                );
+            void modify_apply_s_f_t() {
+                assertEquals(expected, NUMBER.modify().apply(ADDRESS, i -> i + 1));
             }
 
             @Test
-            void modify_target_and_apply() {
-                assertEquals(
-                    new Address(STREET, ADDRESS.number() + 1, CITY),
-                    NUMBER.modify(i -> i + 1).apply(ADDRESS)
-                );
+            void modify_f_t_apply_s() {
+                assertEquals(expected, NUMBER.modify(i -> i + 1).apply(ADDRESS));
             }
         }
     }

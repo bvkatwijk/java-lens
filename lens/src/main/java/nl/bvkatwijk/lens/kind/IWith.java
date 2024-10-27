@@ -12,7 +12,7 @@ public interface IWith<S, T> {
      * @return {@link UnaryOperator} on S
      */
     default UnaryOperator<S> with(T t) {
-        return s -> with().apply(s, t);
+        return s -> with(s, t);
     }
 
     /**
