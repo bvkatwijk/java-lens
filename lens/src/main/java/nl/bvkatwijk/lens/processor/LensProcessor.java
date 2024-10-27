@@ -50,7 +50,7 @@ public class LensProcessor extends AbstractProcessor {
                 .append(importLens())
                 .appendAll(imports(List.of(element)))
                 .append("")
-                .append("public record " + name + Const.LENS + "<T>(" + Code.iLens(name) + " inner) implements " + Code.iLens(name) + " {")
+                .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + Code.iLens(name) + " inner) implements " + Code.iLens(name) + " {")
                 .append(rootLens(name))
                 .appendAll(lensConstants(fields, name))
                 .appendAll(lensMethods(fields))
@@ -101,7 +101,7 @@ public class LensProcessor extends AbstractProcessor {
     record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement field) {
         public String returnValue() {
             return switch (lensKind) {
-                case LENSED -> Const.PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<T>";
+                case LENSED -> Const.PACK + "." + fieldTypeUnqualified(field) + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">";
                 case PRIMITIVE, OTHER -> Code.iLens(qualifiedType);
             };
         }
@@ -141,11 +141,11 @@ public class LensProcessor extends AbstractProcessor {
     private Iterable<String> innerDelegation(String typeName) {
         return indent(List.of(
             "",
-            "public java.util.function.BiFunction<" + Code.params("T", typeName, "T") + "> with() {",
+            "public java.util.function.BiFunction<" + Code.params(Const.PARAM_SOURCE_TYPE, typeName, Const.PARAM_SOURCE_TYPE) + "> with() {",
             indent("return inner.with();"),
             "}",
             "",
-            "public java.util.function.Function<" + Code.params("T",  typeName) + "> get() {",
+            "public java.util.function.Function<" + Code.params(Const.PARAM_SOURCE_TYPE,  typeName) + "> get() {",
             indent("return inner.get();"),
             "}"
         ));
