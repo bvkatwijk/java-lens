@@ -31,4 +31,9 @@ public class Const {
      * Name of generated type-specific lens instance
      */
     public static final String ROOT_LENS_NAME = "ROOT";
+
+    /**
+     * Name of generated generic type parameter
+     */
+    public static final String PARAM_SOURCE_TYPE = "SOURCE";
 }
