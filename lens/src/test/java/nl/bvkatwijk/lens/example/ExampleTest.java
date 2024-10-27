@@ -15,7 +15,7 @@ import java.util.UUID;
 import static nl.bvkatwijk.lens.gen.AddressLens.NUMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PersonLensTest {
+public class ExampleTest {
     @lombok.With // Generate with functions (or you can write your own)
     @Lenses // Generate Lens helper class
     public record Person(String name, Address address, Address work, List<Person> friends)
