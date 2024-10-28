@@ -3,10 +3,11 @@ plugins {
     id 'jacoco'
     id 'com.adarshr.test-logger' version '4.0.0'
     id 'maven-publish'
+    id 'signing'
 }
 
 group = 'nl.bvkatwijk.java-lens'
-version = '0.1.0'
+version = '0.1.0-SNAPSHOT'
 sourceCompatibility = '21'
 
 repositories {
@@ -59,11 +60,13 @@ testlogger {
 
 clean { delete += "tmp" }
 
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
 publishing {
     repositories {
         maven {
-            def releaseRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            def releaseRepo = "https://central.sonatype.com/api/v1/publisher/upload/"
+            def snapshotRepo = "https://central.sonatype.com/api/v1/publisher/upload/"
 
             name = "OSSRH"
             url = isReleaseVersion ? releaseRepo : snapshotRepo
@@ -76,7 +79,7 @@ publishing {
     }
 
     publications {
-        maven(MavenPublication) {
+        mavenJava(MavenPublication) {
             from components.java
 
             groupId = 'nl.bvkatwijk'
