@@ -60,10 +60,28 @@ testlogger {
 clean { delete += "tmp" }
 
 publishing {
+    repositories {
+        maven {
+            def releaseRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+
+            name = "OSSRH"
+            url = isReleaseVersion ? releaseRepo : snapshotRepo
+
+            credentials {
+                username = findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
+                password = findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
+            }
+        }
+    }
+
     publications {
         maven(MavenPublication) {
+            from components.java
+
             groupId = 'nl.bvkatwijk'
             artifactId = 'java-lens'
+
             versionMapping {
                 usage('java-api') {
                     fromResolutionOf('runtimeClasspath')
@@ -72,7 +90,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
-            from components.java
+
             pom {
                 name = 'java-lens'
                 description = 'Lens generation for records'
@@ -85,6 +103,7 @@ publishing {
                         organizationUrl = 'https://bvankatwijk.nl/'
                     }
                 }
+
                 scm {
                     connection = 'scm:git:git://github.com/bvkatwijk/java-lens.git'
                     developerConnection = 'scm:git:ssh://github.com/bvkatwijk/java-lens.git'
@@ -93,4 +112,12 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+tasks.withType(Sign) {
+    onlyIf { isReleaseVersion }
 }
