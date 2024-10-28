@@ -3,7 +3,7 @@ plugins {
     id 'jacoco'
     id 'com.adarshr.test-logger' version '4.0.0'
     id 'maven-publish'
-    id 'signing'
+    id 'org.jreleaser' version '1.14.0'
 }
 
 group = 'nl.bvkatwijk.java-lens'
@@ -117,10 +117,20 @@ publishing {
     }
 }
 
-signing {
-    sign publishing.publications.mavenJava
-}
-
-tasks.withType(Sign) {
-    onlyIf { isReleaseVersion }
+jreleaser {
+    signing {
+        active = 'ALWAYS'
+        armored = true
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                sonatype {
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('target/staging-deploy')
+                }
+            }
+        }
+    }
 }
