@@ -3,7 +3,7 @@ plugins {
     id 'jacoco'
     id 'com.adarshr.test-logger' version '4.0.0'
     id 'maven-publish'
-    id 'org.jreleaser' version '1.14.0'
+    id 'signing'
 }
 
 group = 'nl.bvkatwijk.java-lens'
@@ -62,6 +62,15 @@ clean { delete += "tmp" }
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
+signing {
+    sign configurations.runtimeElements
+    // sign publishing.publications.mavenJava
+}
+
+tasks.withType(Sign) {
+    onlyIf { isReleaseVersion }
+}
+
 publishing {
     repositories {
         maven {
@@ -109,26 +118,6 @@ publishing {
                     url = "http://www.opensource.org/licenses/mit-license.php"
                 }
 
-            }
-        }
-    }
-}
-
-jreleaser {
-    dryrun = false
-    gitRootSearch = true
-    signing {
-        active = 'ALWAYS'
-        armored = true
-    }
-    deploy {
-        maven {
-            mavenCentral {
-                sonatype {
-                    active = 'ALWAYS'
-                    url = 'https://central.sonatype.com/api/v1/publisher'
-                    stagingRepository('target/staging-deploy')
-                }
             }
         }
     }
