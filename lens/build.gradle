@@ -118,6 +118,7 @@ publishing {
 }
 
 jreleaser {
+    gitRootSearch = true
     signing {
         active = 'ALWAYS'
         armored = true
@@ -132,5 +133,11 @@ jreleaser {
                 }
             }
         }
+    }
+}
+
+tasks.withType(Zip) { task ->
+    task.doLast {
+        ant.checksum file: it.archivePath
     }
 }
