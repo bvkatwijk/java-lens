@@ -4,30 +4,34 @@ set -euo pipefail
 
 set -a; source .env; set +a
 
-
-# POST /api/v1/publisher/deployment/{deploymentId}
-# POST /api/v1/publisher/upload
-
 upload() {
     curl --request POST \
         --verbose \
         --header "Authorization: Bearer $MAVEN_CENTRAL_TOKEN" \
-        --form bundle=@central-bundle.zip \
+        --form bundle=lens.zip \
         https://central.sonatype.com/api/v1/publisher/upload
 }
 
-
-# curl --request POST \
-#   --verbose \
-#   --header "Authorization: Bearer $TOKEN" \
-#   'https://central.sonatype.com/api/v1/publisher/deployment/28570f16-da32-4c14-bd2e-c1acc0782365
+cmdCheck() {
+    DEPLOYMENT=$1
+    curl --request POST \
+        --verbose \
+        --header "Authorization: Bearer $MAVEN_CENTRAL_TOKEN" \
+        "https://central.sonatype.com/api/v1/publisher/deployment/$DEPLOYMENT"
+}
 
 cmdPublish() {
-    ./gradlew clean publishMavenJavaPublicationToMavenLocal
+    rm -f ./lens.zip
+    ./gradlew clean publish
+    pushd ./lens/build/staging-deploy
+        zip -r ../../../lens.zip ./*
+    popd
+    upload
 }
 
 CMD=$1
 case "$CMD" in
-	"publish") echo "cmdPublish" ;;
+	"publish") cmdPublish ;;
+    "check") cmdCheck $2 ;;
 	*) echo "Unknown command $CMD"; exit 1 ;;
 esac
