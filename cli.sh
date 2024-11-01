@@ -4,9 +4,6 @@ set -euo pipefail
 
 set -a; source .env; set +a
 
-TOKEN=$(printf "$OSSRH_USERNAME:$OSSRH_PASSWORD" | base64 )
-
-echo $TOKEN
 
 # POST /api/v1/publisher/deployment/{deploymentId}
 # POST /api/v1/publisher/upload
@@ -14,7 +11,7 @@ echo $TOKEN
 upload() {
     curl --request POST \
         --verbose \
-        --header "Authorization: Bearer $TOKEN" \
+        --header "Authorization: Bearer $MAVEN_CENTRAL_TOKEN" \
         --form bundle=@central-bundle.zip \
         https://central.sonatype.com/api/v1/publisher/upload
 }
