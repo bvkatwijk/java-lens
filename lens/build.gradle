@@ -65,19 +65,10 @@ ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 publishing {
     repositories {
         maven {
-            def releaseRepo = "https://central.sonatype.com/api/v1/publisher/upload/"
-            def snapshotRepo = "https://central.sonatype.com/api/v1/publisher/upload/"
-
-            name = "OSSRH"
-            url = isReleaseVersion ? releaseRepo : snapshotRepo
-
-            credentials {
-                username = findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
-                password = findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
-            }
+            url = layout.buildDirectory.dir('staging-deploy')
         }
     }
-
+    
     publications {
         mavenJava(MavenPublication) {
             from components.java
@@ -118,6 +109,7 @@ publishing {
 }
 
 jreleaser {
+    dryrun = false
     gitRootSearch = true
     signing {
         active = 'ALWAYS'
