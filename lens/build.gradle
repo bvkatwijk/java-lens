@@ -63,8 +63,7 @@ clean { delete += "tmp" }
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 signing {
-    sign configurations.runtimeElements
-    // sign publishing.publications.mavenJava
+    sign publishing.publications
 }
 
 tasks.withType(Sign) {
