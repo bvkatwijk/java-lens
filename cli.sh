@@ -4,11 +4,13 @@ set -euo pipefail
 
 set -a; source .env; set +a
 
+MAVEN_CENTRAL_TOKEN=$(printf "$MAVEN_CENTRAL_USERNAME:$MAVEN_CENTRAL_PASSWORD" | base64 )
+
 upload() {
     curl --request POST \
         --verbose \
         --header "Authorization: Bearer $MAVEN_CENTRAL_TOKEN" \
-        --form bundle=lens.zip \
+        --form bundle=@lens.zip \
         https://central.sonatype.com/api/v1/publisher/upload
 }
 
