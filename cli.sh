@@ -17,7 +17,8 @@ cmdCheck() {
     curl --request POST \
         --verbose \
         --header "Authorization: Bearer $MAVEN_CENTRAL_TOKEN" \
-        "https://central.sonatype.com/api/v1/publisher/deployment/$DEPLOYMENT"
+        "https://central.sonatype.com/api/v1/publisher/deployment/$DEPLOYMENT" \
+        | jq
 }
 
 cmdPublish() {
