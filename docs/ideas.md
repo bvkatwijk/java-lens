@@ -1,5 +1,7 @@
-- generate in package of source
+- generate in package of source type
 - apply to multiple
+  - array/varargs/collection types
+    - vavr support?
 - generate enum of "lensabale" field
     - why?
 - component annotation to add shortcut lens?
@@ -8,5 +10,4 @@
     - so `PersonLens.ROOT.house().withAddress()` ?
 - generate with methods so that lombok is not necessary
   - maybe lombok add-on module?
-- remove vavr transitive dependency
-  - maybe vavr add-on module?
+- maybe vavr add-on module?
