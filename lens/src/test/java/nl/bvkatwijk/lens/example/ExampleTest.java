@@ -58,7 +58,7 @@ public class ExampleTest {
         @Test
         void use_chain_to_deep_transform() {
             /// Using ROOT you can call method chain to get deep lenses
-            UnaryOperator<Person> moveToNewYork = PersonLens.ROOT.address().city().name().with("New York");
+            UnaryOperator<Person> moveToNewYork = PersonLens.µ.address().city().name().with("New York");
 
             /// This can be useful to transform a value deep within nested records
             assertEquals("New York", moveToNewYork.apply(ALICE).address().city().name());
@@ -128,14 +128,14 @@ public class ExampleTest {
         void address() {
             assertEquals(
                 ALICE.withAddress(HOME),
-                ALICE.with(PersonLens.ROOT.address(), HOME));
+                ALICE.with(PersonLens.µ.address(), HOME));
         }
 
         @Test
         void address_number() {
             assertEquals(
                 ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
-                ALICE.with(PersonLens.ROOT.address().number(), HOUSE_NUMBER));
+                ALICE.with(PersonLens.µ.address().number(), HOUSE_NUMBER));
         }
 
         @Test
@@ -143,7 +143,7 @@ public class ExampleTest {
             var address = ALICE.address();
             assertEquals(
                 ALICE.withAddress(address.withNumber(address.number() + 1)),
-                ALICE.modify(PersonLens.ROOT.address().number(), i -> i + 1));
+                ALICE.modify(PersonLens.µ.address().number(), i -> i + 1));
         }
 
         @Test
@@ -151,7 +151,7 @@ public class ExampleTest {
             String newStreet = "new street";
             assertEquals(
                 ALICE.withAddress(ALICE.address().withStreet(newStreet)),
-                ALICE.with(PersonLens.ROOT.address().street(), newStreet));
+                ALICE.with(PersonLens.µ.address().street(), newStreet));
         }
 
         @Test
@@ -159,7 +159,7 @@ public class ExampleTest {
             String newCity = "new city";
             assertEquals(
                 ALICE.withAddress(ALICE.address().withCity(new City(newCity))),
-                ALICE.with(PersonLens.ROOT.address().city().name(), newCity));
+                ALICE.with(PersonLens.µ.address().city().name(), newCity));
         }
     }
 
@@ -235,38 +235,49 @@ public class ExampleTest {
         @Nested
         @DisplayName("With")
         class WithTests {
-            int newNumber = 2;
-            Address newAddress = new Address(STREET, newNumber, CITY);
+            public static final int newNumber = 2;
+            public static final int T = newNumber;
+            public static final Address S = ADDRESS;
+            public static final ILens<Address, Integer> L_S_T = AddressLens.NUMBER;
+            public static final Address newAddress = new Address(STREET, T, CITY);
 
             @Test
             void with_t_s() {
-                assertEquals(newAddress, AddressLens.NUMBER.with().apply(ADDRESS, newNumber));
+                assertEquals(newAddress, L_S_T.with().apply(S, T));
             }
 
             @Test
             void with_t_apply_s() {
-                assertEquals(newAddress, AddressLens.NUMBER.with(newNumber).apply(ADDRESS));
+                assertEquals(newAddress, L_S_T.with(T).apply(S));
             }
 
             @Test
             void with_apply_t_s() {
-                assertEquals(newAddress, AddressLens.NUMBER.with(ADDRESS, newNumber));
+                assertEquals(newAddress, L_S_T.with(S, T));
             }
         }
 
         @Nested
         @DisplayName("Modify")
         class ModifyTests {
-            Address expected = new Address(STREET, ADDRESS.number() + 1, CITY);
+            public static final UnaryOperator<Integer> F_T = i -> i + 1;
+            public static final Address S = ADDRESS;
+            public static final ILens<Address, Integer> L_S_T = NUMBER;
+            public static final Address expected = new Address(STREET, S.number() + 1, CITY);
 
             @Test
             void modify_apply_s_f_t() {
-                assertEquals(expected, NUMBER.modify().apply(ADDRESS, i -> i + 1));
+                assertEquals(expected, L_S_T.modify().apply(S, F_T));
             }
 
             @Test
             void modify_f_t_apply_s() {
-                assertEquals(expected, NUMBER.modify(i -> i + 1).apply(ADDRESS));
+                assertEquals(expected, L_S_T.modify(F_T).apply(S));
+            }
+
+            @Test
+            void modify_s_f_t() {
+                assertEquals(expected, L_S_T.modify(S, F_T));
             }
         }
     }
