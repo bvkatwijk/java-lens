@@ -3,6 +3,7 @@ plugins {
     id 'jacoco'
     id 'com.adarshr.test-logger' version '4.0.0'
     id 'maven-publish'
+    id 'signing'
 }
 
 group = 'nl.bvkatwijk.java-lens'
@@ -59,11 +60,30 @@ testlogger {
 
 clean { delete += "tmp" }
 
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+signing {
+    sign publishing.publications
+}
+
+tasks.withType(Sign) {
+    onlyIf { isReleaseVersion }
+}
+
 publishing {
+    repositories {
+        maven {
+            url = layout.buildDirectory.dir('staging-deploy')
+        }
+    }
+
     publications {
-        maven(MavenPublication) {
+        mavenJava(MavenPublication) {
+            from components.java
+
             groupId = 'nl.bvkatwijk'
             artifactId = 'java-lens'
+
             versionMapping {
                 usage('java-api') {
                     fromResolutionOf('runtimeClasspath')
@@ -72,7 +92,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
-            from components.java
+
             pom {
                 name = 'java-lens'
                 description = 'Lens generation for records'
@@ -85,12 +105,25 @@ publishing {
                         organizationUrl = 'https://bvankatwijk.nl/'
                     }
                 }
+
                 scm {
                     connection = 'scm:git:git://github.com/bvkatwijk/java-lens.git'
                     developerConnection = 'scm:git:ssh://github.com/bvkatwijk/java-lens.git'
                     url = 'https://github.com/bvkatwijk/java-lens/'
                 }
+
+                license {
+                    name = "MIT Licence"
+                    url = "http://www.opensource.org/licenses/mit-license.php"
+                }
+
             }
         }
+    }
+}
+
+tasks.withType(Zip) { task ->
+    task.doLast {
+        ant.checksum file: it.archivePath
     }
 }

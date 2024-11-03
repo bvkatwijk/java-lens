@@ -19,7 +19,13 @@ public interface LensOps<S extends LensOps<S>> {
         return lens.apply(s, op);
     }
 
-    /**Set the supplied value to the property through the lens */
+    /**
+     *
+     * @param lens Lens of S into T
+     * @param val new value T
+     * @return new S with updated value
+     * @param <T> lens target type
+     */
     default <T> S with(ILens<S, T> lens, T val) {
         return modify(lens, i -> val);
     }
