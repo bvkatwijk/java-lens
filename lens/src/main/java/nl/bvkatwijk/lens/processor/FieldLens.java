@@ -34,7 +34,6 @@ record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement
         return Const.PACK + "." + fieldTypeUnqualified(element) + Const.LENS;
     }
 
-    // todo not very elegant
     static String fieldTypeUnqualified(RecordComponentElement it) {
         return Code.unqualify(it.asType().toString());
     }
