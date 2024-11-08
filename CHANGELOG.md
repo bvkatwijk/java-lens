@@ -4,6 +4,7 @@
 
 ## [0.2.0] - [Unreleased]
 - Rename `apply` methods to `modify`
+- Move public API into `api` subpackage
 
 ## [0.1.0] - 2024-10-27
 - Initial release
