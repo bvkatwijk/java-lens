@@ -56,6 +56,29 @@ public class ExampleTest {
         }
 
         @Test
+        void vanilla_deep_transform() {
+            Person original = ALICE;
+            Address address = original.address;
+            var updatedCity = new City("New York");
+            var updatedAddress = new Address(address.street, address.number, updatedCity);
+            Person result = new Person(original.name, updatedAddress, original.work, original.friends);
+
+            assertEquals("New York", result.address().city().name());
+        }
+
+        @Test
+        void use_chain_to_deep_transform_inlined() {
+            var updatedPerson = PersonLens.µ
+                .address()
+                .city()
+                .name()
+                .with("New York")
+                .apply(ALICE);
+
+            assertEquals("New York", updatedPerson.address().city().name());
+        }
+
+        @Test
         void use_chain_to_deep_transform() {
             /// Using ROOT you can call method chain to get deep lenses
             UnaryOperator<Person> moveToNewYork = PersonLens.µ.address().city().name().with("New York");
