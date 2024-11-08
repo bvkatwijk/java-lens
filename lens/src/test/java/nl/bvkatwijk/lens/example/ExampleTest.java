@@ -5,7 +5,7 @@ import nl.bvkatwijk.lens.LensOps;
 import nl.bvkatwijk.lens.Lenses;
 import nl.bvkatwijk.lens.gen.AddressLens;
 import nl.bvkatwijk.lens.gen.PersonLens;
-import nl.bvkatwijk.lens.kind.ILens;
+import nl.bvkatwijk.lens.api.ILens;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

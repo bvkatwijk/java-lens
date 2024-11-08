@@ -1,4 +1,4 @@
-package nl.bvkatwijk.lens.kind;
+package nl.bvkatwijk.lens.api;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;

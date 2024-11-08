@@ -1,8 +1,12 @@
-package nl.bvkatwijk.lens.kind;
+package nl.bvkatwijk.lens.api;
+
+import nl.bvkatwijk.lens.ops.GetOps;
+import nl.bvkatwijk.lens.ops.ModifyOps;
+import nl.bvkatwijk.lens.ops.WithOps;
 
 import java.util.function.Function;
 
-public interface ILens<S, T> extends Modify<S, T>, IGet<S, T>, IWith<S, T> {
+public interface ILens<S, T> extends ModifyOps<S, T>, GetOps<S, T>, WithOps<S, T> {
     default <U> ILens<S, U> andThen(ILens<T, U> lens) {
         return new Lens<>(
             get().andThen(lens::get),

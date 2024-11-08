@@ -2,8 +2,8 @@ package nl.bvkatwijk.lens.processor;
 
 import io.vavr.collection.List;
 import nl.bvkatwijk.lens.Const;
-import nl.bvkatwijk.lens.kind.ILens;
-import nl.bvkatwijk.lens.kind.Lens;
+import nl.bvkatwijk.lens.api.ILens;
+import nl.bvkatwijk.lens.api.Lens;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.RecordComponentElement;

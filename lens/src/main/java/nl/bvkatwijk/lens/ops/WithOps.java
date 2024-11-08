@@ -1,18 +1,25 @@
-package nl.bvkatwijk.lens.kind;
+package nl.bvkatwijk.lens.ops;
+
+import nl.bvkatwijk.lens.api.ILens;
 
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 
-public interface IWith<S, T> {
+/**
+ * Operations for setting a new value
+ * @param <S> Source Type
+ * @param <T> Target Type
+ */
+public interface WithOps<S, T> {
     BiFunction<S, T, S> with();
 
     /**
      * Currying version of {@link ILens#with()}
-     * @param t new value
+     * @param value new value
      * @return {@link UnaryOperator} on S
      */
-    default UnaryOperator<S> with(T t) {
-        return s -> with(s, t);
+    default UnaryOperator<S> with(T value) {
+        return s -> with(s, value);
     }
 
     /**

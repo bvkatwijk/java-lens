@@ -1,6 +1,6 @@
 package nl.bvkatwijk.lens;
 
-import nl.bvkatwijk.lens.kind.ILens;
+import nl.bvkatwijk.lens.api.ILens;
 
 import java.util.function.UnaryOperator;
 

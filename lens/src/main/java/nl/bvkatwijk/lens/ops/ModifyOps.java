@@ -1,9 +1,16 @@
-package nl.bvkatwijk.lens.kind;
+package nl.bvkatwijk.lens.ops;
+
+import nl.bvkatwijk.lens.api.ILens;
 
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 
-public interface Modify<S, T> extends IGet<S, T>, IWith<S, T> {
+/**
+ * Operations for applying a value transformation
+ * @param <S> Source Type
+ * @param <T> Source Type
+ */
+public interface ModifyOps<S, T> extends GetOps<S, T>, WithOps<S, T> {
     default BiFunction<S, UnaryOperator<T>, S> modify() {
         return (s, f) -> modify(f).apply(s);
     }
