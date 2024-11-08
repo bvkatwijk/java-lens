@@ -25,12 +25,6 @@ public final class Const {
     public static final String INDENT = "\t";
 
     /**
-     * Pack of generated lenses
-     */
-    // Todo generate in source package instead?
-    public static final String PACK = "nl.bvkatwijk.lens.gen";
-
-    /**
      * Qualified name of {@link Lenses}
      */
     public static final String LENS_ANNOTATION_QUALIFIED = "nl.bvkatwijk.lens.Lenses";

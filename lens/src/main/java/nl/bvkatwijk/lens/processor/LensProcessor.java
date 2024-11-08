@@ -41,8 +41,6 @@ public class LensProcessor extends AbstractProcessor {
             .map(RecordComponentElement.class::cast)
             .toList());
 
-        var lens = new DetectedLens(name, fields);
-
         writeSourceFile(packageElement(element).toString(), name, String.join(
             "\n",
             lensSourceCode(element, name, fields)
@@ -67,22 +65,6 @@ public class LensProcessor extends AbstractProcessor {
             .appendAll(lensMethods(fields))
             .appendAll(LensCode.innerDelegation(name))
             .append("}");
-    }
-
-    record DetectedLens(String name, List<RecordComponentElement> fields) {
-//        public String source() {
-//            return List.of("package " + Const.PACK + ";", "")
-//                .appendAll(imports(List.of(element)))
-//                .append("")
-//                .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + Code.iLens(name) + " inner) implements " + Code.iLens(
-//                    name) + " {")
-//                .append(rootLens(name))
-//                .appendAll(lensConstants(fields, name))
-//                .appendAll(lensMethods(fields))
-//                .appendAll(innerDelegation(name))
-//                .append("}")
-//                .toJavaList());
-//        }
     }
 
     static Iterable<String> lensMethods(List<RecordComponentElement> fields) {
