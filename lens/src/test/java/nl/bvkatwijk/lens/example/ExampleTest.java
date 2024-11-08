@@ -3,8 +3,6 @@ package nl.bvkatwijk.lens.example;
 import io.vavr.collection.List;
 import nl.bvkatwijk.lens.LensOps;
 import nl.bvkatwijk.lens.Lenses;
-import nl.bvkatwijk.lens.gen.AddressLens;
-import nl.bvkatwijk.lens.gen.PersonLens;
 import nl.bvkatwijk.lens.api.ILens;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +13,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 
-import static nl.bvkatwijk.lens.gen.AddressLens.NUMBER;
+import static nl.bvkatwijk.lens.example.AddressLens.NUMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExampleTest {
@@ -132,7 +130,7 @@ public class ExampleTest {
         void address_number_composed() {
             assertEquals(
                 ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
-                ALICE.modify(AddressLens.NUMBER.compose(PersonLens.ADDRESS), i -> HOUSE_NUMBER)
+                ALICE.modify(NUMBER.compose(PersonLens.ADDRESS), i -> HOUSE_NUMBER)
             );
         }
 
@@ -234,7 +232,7 @@ public class ExampleTest {
         void modify_number() {
             assertEquals(
                 new Address(STREET, ADDRESS.number() + 1, CITY),
-                ADDRESS.modify(AddressLens.NUMBER, i -> i + 1)
+                ADDRESS.modify(NUMBER, i -> i + 1)
             );
         }
 
@@ -251,7 +249,7 @@ public class ExampleTest {
             assertEquals(
                 new Address(STREET.toUpperCase(), ADDRESS.number() + 1, CITY),
                 ADDRESS.modify(AddressLens.STREET, String::toUpperCase)
-                    .modify(AddressLens.NUMBER, i -> i + 1)
+                    .modify(NUMBER, i -> i + 1)
             );
         }
 
@@ -261,7 +259,7 @@ public class ExampleTest {
             public static final int newNumber = 2;
             public static final int T = newNumber;
             public static final Address S = ADDRESS;
-            public static final ILens<Address, Integer> L_S_T = AddressLens.NUMBER;
+            public static final ILens<Address, Integer> L_S_T = NUMBER;
             public static final Address newAddress = new Address(STREET, T, CITY);
 
             @Test

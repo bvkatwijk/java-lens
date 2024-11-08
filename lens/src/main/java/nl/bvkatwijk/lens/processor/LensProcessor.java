@@ -43,14 +43,21 @@ public class LensProcessor extends AbstractProcessor {
 
         var lens = new DetectedLens(name, fields);
 
-        writeSourceFile(Const.PACK, name, String.join(
+        writeSourceFile(packageElement(element).toString(), name, String.join(
             "\n",
             lensSourceCode(element, name, fields)
                 .toJavaList()));
     }
 
+    public static PackageElement packageElement(Element element) {
+        return switch (element.getKind()) {
+            case PACKAGE -> (PackageElement) element;
+            default -> packageElement(element.getEnclosingElement());
+        };
+    }
+
     private static List<String> lensSourceCode(Element element, String name, List<RecordComponentElement> fields) {
-        return List.of("package " + Const.PACK + ";", "")
+        return List.of("package " + packageElement(element).toString() + ";", "")
             .appendAll(LensCode.imports(List.of(element)))
             .append("")
             .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + LensCode.iLens(name) + " inner) implements " + LensCode.iLens(

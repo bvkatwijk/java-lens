@@ -31,7 +31,7 @@ record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement
     }
 
     static String typeLens(RecordComponentElement element) {
-        return Const.PACK + "." + fieldTypeUnqualified(element) + Const.LENS;
+        return LensProcessor.packageElement(element) + "." + fieldTypeUnqualified(element) + Const.LENS;
     }
 
     static String fieldTypeUnqualified(RecordComponentElement it) {
