@@ -1,3 +1,7 @@
+# Backlog
+
+
+
 - generate in package of source type
 - apply to multiple
   - array/varargs/collection types
@@ -10,4 +14,8 @@
     - so `PersonLens.ROOT.house().withAddress()` ?
 - generate with methods so that lombok is not necessary
   - maybe lombok add-on module?
+- special lenses for java types
+  - optional
+  - map
+  - collection
 - maybe vavr add-on module?
