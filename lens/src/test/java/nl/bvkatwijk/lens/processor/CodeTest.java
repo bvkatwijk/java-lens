@@ -31,12 +31,12 @@ class CodeTest {
     class ILensTest {
         @Test
         void generate() {
-            assertEquals("ILens<A, B>", Code.iLens("A", "B"));
+            assertEquals("ILens<A, B>", LensCode.iLens("A", "B"));
         }
 
         @Test
         void generate_const() {
-            assertEquals("ILens<" + Const.PARAM_SOURCE_TYPE + ", A>", Code.iLens("A"));
+            assertEquals("ILens<" + Const.PARAM_SOURCE_TYPE + ", A>", LensCode.iLens("A"));
         }
     }
 

@@ -18,12 +18,12 @@ record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement
     public String returnType() {
         return switch (lensKind) {
             case LENSED -> typeLens(field) + "<" + Const.PARAM_SOURCE_TYPE + ">";
-            case PRIMITIVE, OTHER -> Code.iLens(qualifiedType);
+            case PRIMITIVE, OTHER -> LensCode.iLens(qualifiedType);
         };
     }
 
     public String returnStatement() {
-        var chainInner = "inner.andThen(" + LensProcessor.lensName(field) + ")";
+        var chainInner = "inner.andThen(" + LensCode.lensName(field) + ")";
         return Code.ret(switch (lensKind) {
             case LENSED -> "new " + typeLens(field) + "<>(" + chainInner + ")";
             case PRIMITIVE, OTHER -> chainInner;
