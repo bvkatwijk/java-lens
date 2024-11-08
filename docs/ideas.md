@@ -1,8 +1,4 @@
 # Backlog
-
-
-
-- generate in package of source type
 - apply to multiple
   - array/varargs/collection types
     - vavr support?

@@ -1,3 +1,2 @@
 - verify that no transitive lombok is required
-- generate lens in package of annotated type
-  - this allows lenses where non-public classes are used
+- 
