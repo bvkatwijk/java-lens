@@ -1,2 +1,2 @@
 - verify that no transitive lombok is required
-- release to maven
+- 

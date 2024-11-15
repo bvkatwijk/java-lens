@@ -1,6 +1,6 @@
 package nl.bvkatwijk.lens;
 
-import nl.bvkatwijk.lens.kind.ILens;
+import nl.bvkatwijk.lens.api.ILens;
 
 import java.util.function.UnaryOperator;
 
@@ -16,7 +16,7 @@ public interface LensOps<S extends LensOps<S>> {
     default <T> S modify(ILens<S, T> lens, UnaryOperator<T> op) {
         /* can this cast be prevented? */
         @SuppressWarnings("unchecked") S s = (S) this;
-        return lens.apply(s, op);
+        return lens.modify(s, op);
     }
 
     /**

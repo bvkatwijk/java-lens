@@ -1,11 +1,11 @@
 package nl.bvkatwijk.lens;
 
-import nl.bvkatwijk.lens.kind.ILens;
-import nl.bvkatwijk.lens.kind.Lens;
+import nl.bvkatwijk.lens.api.ILens;
+import nl.bvkatwijk.lens.api.Lens;
 
 public final class Const {
     /**
-     * Name of interface
+     * Qualified name of {@link ILens}
      */
     public static final String ILENS = ILens.class.getSimpleName();
 
@@ -14,6 +14,9 @@ public final class Const {
      */
     public static final String LENS = "Lens";
 
+    /**
+     * Qualified name of {@link Lens}
+     */
     public static final String BASE_LENS = Lens.class.getSimpleName();
 
     /**
@@ -22,20 +25,14 @@ public final class Const {
     public static final String INDENT = "\t";
 
     /**
-     * Pack of generated lenses
-     */
-    // Todo generate in source package instead?
-    public static final String PACK = "nl.bvkatwijk.lens.gen";
-
-    /**
-     * Qualified
+     * Qualified name of {@link Lenses}
      */
     public static final String LENS_ANNOTATION_QUALIFIED = "nl.bvkatwijk.lens.Lenses";
 
     /**
      * Name of generated type-specific lens instance
      */
-    public static final String ROOT_LENS_NAME = "ROOT";
+    public static final String ROOT_LENS_NAME = "µ";
 
     /**
      * Name of generated generic type parameter
