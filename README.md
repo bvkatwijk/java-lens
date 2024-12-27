@@ -10,11 +10,11 @@ Automatic lens generation to support transformations to records.
 If you use records and you want to apply some transformation, code can get verbose, repetitive and error-prone. For example:
 ```java
 public record Person(String name, Address address, Address work, List<Person> friends) { }
-public record Address(String street, int number, City city) implements LensOps<Address> { }
+public record Address(String street, int number, City city) { }
 public record City(String name) { }
 
 public static Person moveToNewYork(Person person) {
-    Address address = original.address;
+    Address address = person.address;
     var updatedCity = new City("New York");
     var updatedAddress = new Address(address.street, address.number, updatedCity);
     return new Person(person.name, updatedAddress, person.work, person.friends);

@@ -25,7 +25,7 @@ dependencies {
     testImplementation libs.junit.jupiter
     testImplementation libs.junit.jupiter.api
     testImplementation group: 'com.karuslabs', name: 'elementary', version: '3.0.0'
-    testImplementation 'org.instancio:instancio-junit:5.0.2'
+    testImplementation 'org.instancio:instancio-junit:5.2.1'
     testAnnotationProcessor(project(":lens"))
 }
 
