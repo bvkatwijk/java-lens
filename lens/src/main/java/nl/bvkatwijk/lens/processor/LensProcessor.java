@@ -13,6 +13,7 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.Set;
@@ -47,9 +48,16 @@ public class LensProcessor extends AbstractProcessor {
                 .toJavaList()));
     }
 
-    public static PackageElement packageElement(Element element) {
+    public static String packageElement(Element element) {
         return switch (element.getKind()) {
-            case PACKAGE -> (PackageElement) element;
+            case PACKAGE -> element.toString();
+            case RECORD_COMPONENT -> {
+                var typeMirror =  element.asType();
+                if (typeMirror.getKind().equals(TypeKind.DECLARED)) {
+                    yield packageElement(((DeclaredType) typeMirror).asElement());
+                }
+                yield "can this happen? primitives maybe?";
+            }
             default -> packageElement(element.getEnclosingElement());
         };
     }
@@ -80,7 +88,7 @@ public class LensProcessor extends AbstractProcessor {
         TypeMirror type = field.asType();
         return switch (type.getKind()) {
             case BOOLEAN, BYTE, SHORT, INT, LONG, CHAR, FLOAT, DOUBLE, VOID ->
-                new FieldLens(Code.typeName(field), LensKind.PRIMITIVE, field);
+                new FieldLens(Code.typeName(field), LensKind.PRIMITIVE, packageElement(field), field);
             case DECLARED -> declared(field);
             case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
                 throw new IllegalArgumentException("Type " + field + " (" + field.getKind() + " " + type.getKind() + ") not yet supported.");
@@ -91,8 +99,8 @@ public class LensProcessor extends AbstractProcessor {
         return List.ofAll(((DeclaredType) field.asType()).asElement().getAnnotationMirrors())
             .map(AnnotationMirror::toString)
             .contains("@" + Lenses.class.getName())
-            ? new FieldLens("unused?", LensKind.LENSED, field)
-            : new FieldLens(Code.typeName(field), LensKind.OTHER, field);
+            ? new FieldLens("unused?", LensKind.LENSED, packageElement(field), field)
+            : new FieldLens(Code.typeName(field), LensKind.OTHER, packageElement(field), field);
     }
 
     private void writeSourceFile(String pack, String name, String content) throws IOException {

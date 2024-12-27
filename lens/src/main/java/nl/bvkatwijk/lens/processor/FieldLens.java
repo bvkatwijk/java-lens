@@ -5,7 +5,7 @@ import nl.bvkatwijk.lens.Const;
 
 import javax.lang.model.element.RecordComponentElement;
 
-record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement field) {
+record FieldLens(String qualifiedType, LensKind lensKind, String pack, RecordComponentElement field) {
     public List<String> lensMethod() {
         return Code.indent(List.of(
             "",
@@ -30,8 +30,8 @@ record FieldLens(String qualifiedType, LensKind lensKind, RecordComponentElement
         });
     }
 
-    static String typeLens(RecordComponentElement element) {
-        return LensProcessor.packageElement(element) + "." + fieldTypeUnqualified(element) + Const.LENS;
+    String typeLens(RecordComponentElement element) {
+        return pack + "." + fieldTypeUnqualified(element) + Const.LENS;
     }
 
     static String fieldTypeUnqualified(RecordComponentElement it) {
