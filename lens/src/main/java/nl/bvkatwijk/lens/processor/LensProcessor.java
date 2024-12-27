@@ -54,14 +54,9 @@ public class LensProcessor extends AbstractProcessor {
             case RECORD_COMPONENT -> {
                 var typeMirror =  element.asType();
                 if (typeMirror.getKind().equals(TypeKind.DECLARED)) {
-                    DeclaredType declaredType = (DeclaredType) typeMirror;
-                    TypeElement typeElement = (TypeElement) declaredType.asElement();
-//
-//                    String qualified = typeElement.getQualifiedName().toString();
-//                    yield qualified.substring(0, qualified.lastIndexOf("."));
-                    yield packageElement(typeElement);
+                    yield packageElement(((DeclaredType) typeMirror).asElement());
                 }
-                yield "boo";
+                yield "can this happen? primitives maybe?";
             }
             default -> packageElement(element.getEnclosingElement());
         };
