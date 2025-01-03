@@ -1,2 +1,0 @@
-- verify that no transitive lombok is required
-- 

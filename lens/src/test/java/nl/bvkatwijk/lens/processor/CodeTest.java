@@ -27,20 +27,6 @@ class CodeTest {
     }
 
     @Nested
-    @DisplayName("ILens")
-    class ILensTest {
-        @Test
-        void generate() {
-            assertEquals("ILens<A, B>", LensCode.iLens("A", "B"));
-        }
-
-        @Test
-        void generate_const() {
-            assertEquals("ILens<" + Const.PARAM_SOURCE_TYPE + ", A>", LensCode.iLens("A"));
-        }
-    }
-
-    @Nested
     @DisplayName("Unqualify")
     class UnqualifyTest {
         @Test

@@ -23,7 +23,8 @@ public class LensCode {
     }
 
     static String lensName(String field) {
-        return field.toUpperCase();
+        return field.replaceAll("([a-z])([A-Z])", "$1_$2")
+                .toUpperCase();
     }
 
     static Iterable<String> imports(List<? extends Element> fields) {
