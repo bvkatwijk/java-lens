@@ -63,7 +63,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private static List<String> lensSourceCode(Element element, String name, List<RecordComponentElement> fields) {
-        return List.of("package " + packageElement(element).toString() + ";", "")
+        return List.of("package " + packageElement(element) + ";", "")
             .appendAll(LensCode.imports(List.of(element)))
             .append("")
             .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + LensCode.iLens(name) + " inner) implements " + LensCode.iLens(
