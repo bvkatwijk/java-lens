@@ -6,8 +6,6 @@
     - why?
 - component annotation to add shortcut lens?
     - so `House(Address)` and `Person(@Direct House house)` => `PersonLens.µ.house().address`, but then also `PersonLens.ROOT.address()`
-- also generate lombok-style with onto the lens?
-    - so `PersonLens.µ.house().withAddress()` ?
 - generate with methods so that lombok is not necessary
   - maybe lombok add-on module?
 - special lenses for java types
