@@ -25,4 +25,22 @@ class LensCodeTest {
                     LensCode.witherName("fieldName"));
         }
     }
+
+    @Nested
+    class LensName {
+        @Test
+        void name() {
+            assertEquals("NAME", LensCode.lensName("name"));
+        }
+
+        @Test
+        void lensName() {
+            assertEquals("LENS_NAME", LensCode.lensName("lensName"));
+        }
+
+        @Test
+        void anotherLensName() {
+            assertEquals("ANOTHER_LENS_NAME", LensCode.lensName("anotherLensName"));
+        }
+    }
 }
