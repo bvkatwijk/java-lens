@@ -12,4 +12,5 @@
   - optional
   - map
   - collection
+    - modifyEach
 - maybe vavr add-on module?
