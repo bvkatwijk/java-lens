@@ -78,7 +78,7 @@ public class ExampleTest {
 
         @Test
         void use_chain_to_deep_transform() {
-            /// Using ROOT you can call method chain to get deep lenses
+            /// Using µ you can call method chain to get deep lenses
             UnaryOperator<Person> moveToNewYork = PersonLens.µ.address().city().name().with("New York");
 
             /// This can be useful to transform a value deep within nested records
