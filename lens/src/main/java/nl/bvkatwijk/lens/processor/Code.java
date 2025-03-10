@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 /**
  * Code generation for generic java
  */
-public class Code {
+public final class Code {
     public static final String PSF = "public static final ";
 
     static String params(String... args) {
