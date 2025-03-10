@@ -35,7 +35,14 @@ class LensCodeTest {
     @Nested
     class WitherName {
         @Test
-        void test() {
+        void name() {
+            assertEquals(
+                "withName",
+                LensCode.witherName("name"));
+        }
+
+        @Test
+        void fieldName() {
             assertEquals(
                     "withFieldName",
                     LensCode.witherName("fieldName"));
