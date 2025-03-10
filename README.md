@@ -39,7 +39,7 @@ Add `@Lenses` annotation to your record(s)
 @Lenses
 public record Person(String name, Address address, Address work, List<Person> friends) { }
 ```
-See [Examples](./example) for more usage examples.
+See [ExampleTest](./lens/src/test/java/nl/bvkatwijk/lens/example/ExampleTest.java) for more usage examples.
 
 ## Development
 
