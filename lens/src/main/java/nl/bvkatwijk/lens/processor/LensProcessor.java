@@ -42,7 +42,7 @@ public class LensProcessor extends AbstractProcessor {
             .map(RecordComponentElement.class::cast)
             .toList());
 
-        writeSourceFile(packageElement(element).toString(), name, String.join(
+        writeSourceFile(packageElement(element), name, String.join(
             "\n",
             lensSourceCode(element, name, fields)
                 .toJavaList()));
