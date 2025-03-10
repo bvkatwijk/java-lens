@@ -2,6 +2,10 @@
 - [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-03-09
+- Fix: convert camelCase field name to SCREAMING_SNAKE_CASE lens name
+- Bump: vavr 0.10.6
+
 ## [0.3.0] - 2024-11-15
 - Fix: generate correct package for type lens qualifier
 
