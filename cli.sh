@@ -27,6 +27,12 @@ cmdPublish() {
     rm -f ./lens.zip
     ./gradlew clean publish
     pushd ./lens/build/staging-deploy
+        pushd ./nl/bvkatwijk/java-lens
+            VERSION=$(ls -lA | awk '/^d/ {print $9}')
+            pushd ./$VERSION
+                gpg --verify java-lens-$VERSION.jar.asc java-lens-$VERSION.jar
+            popd
+        popd
         zip -r ../../../lens.zip ./*
     popd
     upload
