@@ -15,30 +15,33 @@ class ElementOpsTest {
 
     @Nested
     class OnString {
-        public static final RecordComponentElement ELEMENT = processedRecordComponentElement();
+        public static final RecordComponentElement STRING_STREET = processedRecordComponentElement();
 
         @Test
         void unqualifiedTypeName() {
-            assertEquals("String", ElementOps.unqualifiedTypeName(ELEMENT));
+            assertEquals("String", ElementOps.unqualifiedTypeName(STRING_STREET));
+        }
+
+        @Test
+        void typeName() {
+            assertEquals("java.lang.String", ElementOps.typeName(STRING_STREET));
         }
 
         @Test
         void packageElement() {
-            assertEquals("java.lang", ElementOps.packageElement(ELEMENT));
+            assertEquals("java.lang", ElementOps.packageElement(STRING_STREET));
         }
 
         @Test
         void fieldName() {
-            assertEquals("street", ElementOps.fieldName(ELEMENT));
+            assertEquals("street", ElementOps.fieldName(STRING_STREET));
         }
-    }
 
-    private static RecordComponentElement processedRecordComponentElement() {
-        LensProcessor lensProcessor = new LensProcessor();
-        Compilation compilation = Compiler.javac()
-            .withProcessors(
-                lensProcessor)
-            .compile(JavaFileObjects.forSourceString("pack.Address", """
+        private static RecordComponentElement processedRecordComponentElement() {
+            var lensProcessor = new LensProcessor();
+            assertThat(Compiler.javac()
+                .withProcessors(lensProcessor)
+                .compile(JavaFileObjects.forSourceString("pack.Address", """
                     package pack;
                 
                     @nl.bvkatwijk.lens.Lenses
@@ -47,10 +50,10 @@ class ElementOpsTest {
                             return new Address(newName);
                         }
                     }
-                """));
-        assertThat(compilation).succeeded();
-        return lensProcessor
-            .elements()
-            .head();
+                """))).succeeded();
+            return lensProcessor
+                .elements()
+                .head();
+        }
     }
 }
