@@ -1,8 +1,6 @@
 package nl.bvkatwijk.lens.example;
 
 import io.vavr.collection.List;
-import nl.bvkatwijk.lens.LensOps;
-import nl.bvkatwijk.lens.Lenses;
 import nl.bvkatwijk.lens.api.ILens;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
@@ -16,22 +14,6 @@ import java.util.function.UnaryOperator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExampleTest {
-    @lombok.With // Generate with functions (or you can write your own)
-    @Lenses // Generate Lens helper class
-    public record Person(String name, Address address, Address work, List<Person> friends)
-        implements LensOps<Person> /* (optional) add convenience methods on record */ {
-    }
-
-    @lombok.With
-    @Lenses
-    public record Address(String street, int number, City city) implements LensOps<Address> {
-
-    }
-
-    @lombok.With
-    @Lenses
-    public record City(String name) {
-    }
 
     @SuppressWarnings("unused")
     @Nested
@@ -55,10 +37,10 @@ public class ExampleTest {
         @Test
         void vanilla_deep_transform() {
             Person original = ALICE;
-            Address address = original.address;
+            Address address = original.address();
             var updatedCity = new City("New York");
-            var updatedAddress = new Address(address.street, address.number, updatedCity);
-            Person result = new Person(original.name, updatedAddress, original.work, original.friends);
+            var updatedAddress = new Address(address.street(), address.number(), updatedCity);
+            Person result = new Person(original.name(), updatedAddress, original.work(), original.friends());
 
             assertEquals("New York", result.address().city().name());
         }
