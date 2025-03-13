@@ -1,5 +1,6 @@
 package nl.bvkatwijk.lens.processor;
 
+import io.vavr.Value;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import lombok.SneakyThrows;
@@ -50,17 +51,21 @@ public class LensProcessor extends AbstractProcessor {
             .append("")
             .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + LensCode.iLens(name) + " inner) implements " + LensCode.iLens(
                 name) + " {")
-            .append(LensCode.rootLens(name))
-            .appendAll(LensCode.lensConstants(fields, name))
-            .appendAll(lensMethods(fields))
-            .appendAll(LensCode.innerDelegation(name))
+            .appendAll(Code.indent(lensContent(name, fields)))
             .append("}");
     }
 
+    private static Value<String> lensContent(String name, List<RecordComponentElement> fields) {
+        return List.of(LensCode.rootLens(name))
+            .appendAll(LensCode.lensConstants(fields, name))
+            .appendAll(lensMethods(fields))
+            .appendAll(LensCode.innerDelegation(name));
+    }
+
     static Iterable<String> lensMethods(List<RecordComponentElement> fields) {
-        return Code.indent(fields
+        return fields
             .map(FieldLens::from)
-            .flatMap(FieldLens::lensMethod));
+            .flatMap(FieldLens::lensMethod);
     }
 
     private void writeSourceFile(String pack, String name, String content) throws IOException {

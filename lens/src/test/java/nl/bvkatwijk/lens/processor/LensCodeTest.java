@@ -13,7 +13,7 @@ class LensCodeTest {
         @Test
         void test() {
             assertEquals(
-                    "\tpublic static final bLens<b> µ = new bLens<>(Lens.identity());",
+                    "public static final bLens<b> µ = new bLens<>(Lens.identity());",
                     LensCode.rootLens("b"));
         }
     }
