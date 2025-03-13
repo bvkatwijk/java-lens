@@ -3,6 +3,7 @@ package nl.bvkatwijk.lens.processor;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import javax.lang.model.element.RecordComponentElement;
@@ -11,11 +12,20 @@ import static com.google.testing.compile.CompilationSubject.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ElementOpsTest {
-    public static final RecordComponentElement ELEMENT = processedRecordComponentElement();
 
-    @Test
-    void testRecordComponentElement_getSimpleName() {
-        assertEquals("street", ElementOps.unqualifiedTypeName(ELEMENT));
+    @Nested
+    class OnString {
+        public static final RecordComponentElement ELEMENT = processedRecordComponentElement();
+
+        @Test
+        void packageElement() {
+            assertEquals("java.lang", ElementOps.packageElement(ELEMENT));
+        }
+
+        @Test
+        void fieldName() {
+            assertEquals("street", ElementOps.fieldName(ELEMENT));
+        }
     }
 
     private static RecordComponentElement processedRecordComponentElement() {
