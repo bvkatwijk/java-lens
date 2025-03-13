@@ -72,11 +72,9 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     static Iterable<String> lensMethods(List<RecordComponentElement> fields) {
-        return fields.flatMap(LensProcessor::lensMethod);
-    }
-
-    static Iterable<String> lensMethod(RecordComponentElement element) {
-        return Code.indent(FieldLens.from(element).lensMethod());
+        return Code.indent(fields
+            .map(FieldLens::from)
+            .flatMap(FieldLens::lensMethod));
     }
 
     private void writeSourceFile(String pack, String name, String content) throws IOException {
