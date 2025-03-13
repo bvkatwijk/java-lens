@@ -18,10 +18,12 @@ import javax.lang.model.element.*;
 import java.io.IOException;
 import java.util.Set;
 
+@Getter
 @SupportedSourceVersion(SourceVersion.RELEASE_23)
 @SupportedAnnotationTypes(Const.LENS_ANNOTATION_QUALIFIED)
 public class LensProcessor extends AbstractProcessor {
-    @NonFinal @Getter List<RecordComponentElement> elements = List.of();
+    @NonFinal
+    List<RecordComponentElement> elements = List.of();
 
     @Override
     @SneakyThrows
