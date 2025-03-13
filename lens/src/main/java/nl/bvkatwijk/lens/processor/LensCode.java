@@ -24,7 +24,8 @@ public class LensCode {
     }
 
     static String lensName(String field) {
-        return field.replaceAll("([a-z])([A-Z])", "$1_$2")
+        return field
+            .replaceAll("([a-z])([A-Z])", "$1_$2")
             .toUpperCase();
     }
 
