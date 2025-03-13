@@ -13,7 +13,6 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.Set;
@@ -94,11 +93,16 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private static FieldLens declared(RecordComponentElement field) {
+        var packageElement = packageElement(field);
+        return hasLensAnnotation(field)
+            ? new FieldLens("unused?", LensKind.LENSED, packageElement, field)
+            : new FieldLens(Code.typeName(field), LensKind.OTHER, packageElement, field);
+    }
+
+    private static boolean hasLensAnnotation(RecordComponentElement field) {
         return List.ofAll(((DeclaredType) field.asType()).asElement().getAnnotationMirrors())
             .map(AnnotationMirror::toString)
-            .contains("@" + Lenses.class.getName())
-            ? new FieldLens("unused?", LensKind.LENSED, packageElement(field), field)
-            : new FieldLens(Code.typeName(field), LensKind.OTHER, packageElement(field), field);
+            .contains("@" + Lenses.class.getName());
     }
 
     private void writeSourceFile(String pack, String name, String content) throws IOException {
