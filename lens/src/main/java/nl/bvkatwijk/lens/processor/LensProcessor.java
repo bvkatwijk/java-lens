@@ -24,12 +24,11 @@ public class LensProcessor extends AbstractProcessor {
     @Override
     @SneakyThrows
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if (annotations.isEmpty() && roundEnv.processingOver()) {
-            return true;
+        if (!annotations.isEmpty() || !roundEnv.processingOver()) {
+            lensElements(roundEnv)
+                .filter(it -> ElementKind.RECORD.equals(it.getKind()))
+                .forEach(this::writeSourceFile);
         }
-        lensElements(roundEnv)
-            .filter(it -> ElementKind.RECORD.equals(it.getKind()))
-            .forEach(this::writeSourceFile);
         return true;
     }
 
