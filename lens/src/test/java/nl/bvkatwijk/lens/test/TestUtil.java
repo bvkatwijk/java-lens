@@ -5,7 +5,6 @@ import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
 import lombok.SneakyThrows;
 import nl.bvkatwijk.lens.processor.LensProcessor;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
