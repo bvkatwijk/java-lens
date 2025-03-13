@@ -2,6 +2,8 @@ package nl.bvkatwijk.lens.processor;
 
 import io.vavr.Value;
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
+import io.vavr.collection.Traversable;
 import nl.bvkatwijk.lens.Const;
 import nl.bvkatwijk.lens.api.ILens;
 import nl.bvkatwijk.lens.api.Lens;
@@ -29,7 +31,7 @@ public class LensCode {
             .toUpperCase();
     }
 
-    static Iterable<String> imports(List<? extends Element> fields) {
+    static Value<String> imports(Seq<Element> fields) {
         return fields
             .map(ElementOps::typeName)
             .map(Code::removeGenerics)
