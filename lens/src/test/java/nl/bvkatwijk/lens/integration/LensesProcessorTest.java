@@ -29,20 +29,19 @@ public class LensesProcessorTest {
                 (Processor) lombokAnnotationProcessor.getDeclaredConstructor().newInstance(),
                 (Processor) lombokClaimingProcessor.getDeclaredConstructor().newInstance(),
                 lensProcessor)
-            .compile(loadJavaFileFromTestSrc("nl/bvkatwijk/lens/example/Person.java"));
+            .compile(load("nl/bvkatwijk/lens/example/Person.java"));
         assertThat(compile).succeeded();
-        Approvals.verify(compile.generatedSourceFiles().get(0).getCharContent(true).toString());
+        Approvals.verify(compile.generatedSourceFiles()
+            .getFirst()
+            .getCharContent(true)
+            .toString());
     }
 
     @SneakyThrows
-    static JavaFileObject loadJavaFileFromTestSrc(String packagePath) {
-        // Convert package name to path (e.g., "test/Person.java" → "src/test/java/test/Person.java")
+    static JavaFileObject load(String packagePath) {
         Path path = Paths.get("src/test/java", packagePath);
-        String content = Files.readString(path);
-
-        // Convert file path to qualified class name (e.g., "test/Person.java" → "test.Person")
-        String qualifiedName = packagePath.replace('/', '.').replace(".java", "");
-
-        return JavaFileObjects.forSourceString(qualifiedName, content);
+        return JavaFileObjects.forSourceString(
+            packagePath.replace('/', '.').replace(".java", ""),
+            Files.readString(path));
     }
 }
