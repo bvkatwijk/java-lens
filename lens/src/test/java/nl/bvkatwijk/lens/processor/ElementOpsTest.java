@@ -3,10 +3,12 @@ package nl.bvkatwijk.lens.processor;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
+import nl.bvkatwijk.lens.test.TestUtil;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import javax.lang.model.element.RecordComponentElement;
+import javax.tools.JavaFileObject;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,18 +41,13 @@ class ElementOpsTest {
 
         private static RecordComponentElement processedRecordComponentElement() {
             var lensProcessor = new LensProcessor();
-            assertThat(Compiler.javac()
-                .withProcessors(lensProcessor)
-                .compile(JavaFileObjects.forSourceString("pack.Address", """
+            TestUtil.compile(lensProcessor, JavaFileObjects.forSourceString("pack.Address", """
                     package pack;
                 
                     @nl.bvkatwijk.lens.Lenses
-                    public record Address(String street) {
-                        public Address withStreet(String newName) {
-                            return new Address(newName);
-                        }
-                    }
-                """))).succeeded();
+                    @lombok.With
+                    public record Address(String street) { }
+                """));
             return lensProcessor
                 .elements()
                 .head();
