@@ -18,15 +18,25 @@ class FieldLensTest {
     class LensMethod {
         @Test
         void primitive() {
-            FieldLens lens = FIELD_LENS.withLensKind(LensKind.PRIMITIVE);
-            assertEquals("public ILens<SOURCE, " + lens.qualifiedType() + "> " + lens.fieldName() + "() {\treturn inner.andThen(" + lens.fieldName() + ");}",
+            var lens = FIELD_LENS.withLensKind(LensKind.PRIMITIVE);
+            assertEquals("public ILens<SOURCE, " + lens.qualifiedType() + "> " + lens.fieldName() + "() {" +
+                    "\treturn inner.andThen(" + lens.fieldName() + ");}",
                 lens.lensMethod().mkString());
         }
 
         @Test
         void other() {
-            FieldLens lens = FIELD_LENS.withLensKind(LensKind.OTHER);
-            assertEquals("public ILens<SOURCE, " + lens.qualifiedType() + "> " + lens.fieldName() + "() {\treturn inner.andThen(" + lens.fieldName() + ");}",
+            var lens = FIELD_LENS.withLensKind(LensKind.OTHER);
+            assertEquals("public ILens<SOURCE, " + lens.qualifiedType() + "> " + lens.fieldName() + "() {" +
+                    "\treturn inner.andThen(" + lens.fieldName() + ");}",
+                lens.lensMethod().mkString());
+        }
+
+        @Test
+        void lensed() {
+            var lens = FIELD_LENS.withLensKind(LensKind.LENSED);
+            assertEquals("public " + FIELD_LENS.typeLens() + "<SOURCE> " + lens.fieldName() + "() {" +
+                    "\treturn new " + FIELD_LENS.typeLens() + "<>(inner.andThen(" + lens.fieldName() + "));}",
                 lens.lensMethod().mkString());
         }
     }
