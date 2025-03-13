@@ -10,8 +10,8 @@ class FieldLensTest {
     public static final FieldLens FIELD_LENS = Instancio.create(FieldLens.class);
 
     @Test
-    void typeLens() {
-        assertEquals(FIELD_LENS.pack() + "." + Code.unqualify(FIELD_LENS.qualifiedType()) + "Lens", FIELD_LENS.typeLens());
+    void qualifiedLens() {
+        assertEquals(FIELD_LENS.pack() + "." + Code.unqualify(FIELD_LENS.qualifiedType()) + "Lens", FIELD_LENS.qualifiedLens());
     }
 
     @Nested
@@ -35,8 +35,8 @@ class FieldLensTest {
         @Test
         void lensed() {
             var lens = FIELD_LENS.withLensKind(LensKind.LENSED);
-            assertEquals("public " + FIELD_LENS.typeLens() + "<SOURCE> " + lens.fieldName() + "() {" +
-                    "\treturn new " + FIELD_LENS.typeLens() + "<>(inner.andThen(" + lens.fieldName() + "));}",
+            assertEquals("public " + FIELD_LENS.qualifiedLens() + "<SOURCE> " + lens.fieldName() + "() {" +
+                    "\treturn new " + FIELD_LENS.qualifiedLens() + "<>(inner.andThen(" + lens.fieldName() + "));}",
                 lens.lensMethod().mkString());
         }
     }

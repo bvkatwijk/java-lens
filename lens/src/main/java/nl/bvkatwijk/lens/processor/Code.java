@@ -1,12 +1,9 @@
 package nl.bvkatwijk.lens.processor;
 
-import io.vavr.collection.List;
+import io.vavr.Value;
 import io.vavr.collection.Vector;
 import nl.bvkatwijk.lens.Const;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.RecordComponentElement;
-import javax.lang.model.type.TypeMirror;
 import java.util.regex.Pattern;
 
 /**
@@ -42,12 +39,8 @@ public final class Code {
         return Const.INDENT + string;
     }
 
-    static List<String> indent(List<String> strings) {
+    static Value<String> indent(Value<String> strings) {
         return strings.map(Code::indent);
-    }
-
-    static String fieldName(RecordComponentElement it) {
-        return it.getSimpleName().toString();
     }
 
     static String removeGenerics(String arg) {
@@ -64,21 +57,4 @@ public final class Code {
             .replaceFirst(m -> m.group().toUpperCase());
     }
 
-    static String typeName(Element it) {
-        TypeMirror type = it.asType();
-        return switch (type.getKind()) {
-            case BOOLEAN -> Boolean.class.getName();
-            case BYTE -> Byte.class.getName();
-            case SHORT -> Short.class.getName();
-            case INT -> Integer.class.getName();
-            case LONG -> Long.class.getName();
-            case CHAR -> Character.class.getName();
-            case FLOAT -> Float.class.getName();
-            case DOUBLE -> Double.class.getName();
-            case VOID -> Void.class.getName(); // Does it make sense to support Void type?
-            case DECLARED -> type.toString();
-            case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
-                throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
-        };
-    }
 }

@@ -1,5 +1,6 @@
 package nl.bvkatwijk.lens.processor;
 
+import io.vavr.Value;
 import io.vavr.collection.List;
 import nl.bvkatwijk.lens.Const;
 import nl.bvkatwijk.lens.api.ILens;
@@ -24,37 +25,47 @@ public class LensCode {
 
     static String lensName(String field) {
         return field.replaceAll("([a-z])([A-Z])", "$1_$2")
-                .toUpperCase();
+            .toUpperCase();
     }
 
     static Iterable<String> imports(List<? extends Element> fields) {
         return fields
-            .map(Code::typeName)
+            .map(ElementOps::typeName)
             .map(Code::removeGenerics)
             .append(ILens.class.getName())
             .append(Lens.class.getName())
             .map(Code::importStatement);
     }
 
-    static Iterable<String> innerDelegation(String typeName) {
-        return Code.indent(List.of(
-            "",
+    static Value<String> innerDelegation(String typeName) {
+        return Code.indent(List.of("")
+            .appendAll(delegateWith(typeName))
+            .append("")
+            .appendAll(delegateGet(typeName)));
+    }
+
+    static Value<String> delegateWith(String typeName) {
+        return List.of(
             "public java.util.function.BiFunction<" + Code.params(
                 Const.PARAM_SOURCE_TYPE,
                 typeName,
                 Const.PARAM_SOURCE_TYPE) + "> with() {",
             Code.indent(Code.ret("inner.with()")),
-            "}",
-            "",
+            "}"
+        );
+    }
+
+    static Value<String> delegateGet(String typeName) {
+        return List.of(
             "public java.util.function.Function<" + Code.params(Const.PARAM_SOURCE_TYPE, typeName) + "> get() {",
             Code.indent(Code.ret("inner.get()")),
             "}"
-        ));
+        );
     }
 
     static List<String> lensConstants(List<RecordComponentElement> fields, String name) {
         return fields
-            .map(it -> lensConstant(name, Code.fieldName(it), Code.typeName(it)))
+            .map(it -> lensConstant(name, ElementOps.fieldName(it), ElementOps.typeName(it)))
             .map(Code::indent)
             .toList();
     }

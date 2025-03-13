@@ -6,14 +6,21 @@ import nl.bvkatwijk.lens.Const;
 
 import javax.lang.model.element.RecordComponentElement;
 
+/**
+ * @param fieldName
+ * @param qualifiedType
+ * @param lensKind      {@link LensKind}
+ * @param pack
+ */
 @With
-record FieldLens(String fieldName, String qualifiedType, LensKind lensKind, String pack) {
+record FieldLens(String fieldName, String qualifiedType, String unqualifiedType, LensKind lensKind, String pack) {
     public static FieldLens from(RecordComponentElement element) {
         return new FieldLens(
-            Code.fieldName(element),
-            Code.typeName(element),
+            ElementOps.fieldName(element),
+            ElementOps.typeName(element),
+            ElementOps.unqualifiedTypeName(element),
             LensKind.from(element),
-            LensProcessor.packageElement(element));
+            ElementOps.packageElement(element));
     }
 
     public List<String> lensMethod() {
@@ -27,7 +34,7 @@ record FieldLens(String fieldName, String qualifiedType, LensKind lensKind, Stri
 
     private String returnType() {
         return switch (lensKind) {
-            case LENSED -> typeLens() + "<" + Const.PARAM_SOURCE_TYPE + ">";
+            case LENSED -> qualifiedLens() + "<" + Const.PARAM_SOURCE_TYPE + ">";
             case PRIMITIVE, OTHER -> LensCode.iLens(qualifiedType);
         };
     }
@@ -35,12 +42,12 @@ record FieldLens(String fieldName, String qualifiedType, LensKind lensKind, Stri
     private String returnStatement() {
         var chainInner = "inner.andThen(" + LensCode.lensName(fieldName) + ")";
         return Code.ret(switch (lensKind) {
-            case LENSED -> "new " + typeLens() + "<>(" + chainInner + ")";
+            case LENSED -> "new " + qualifiedLens() + "<>(" + chainInner + ")";
             case PRIMITIVE, OTHER -> chainInner;
         });
     }
 
-    String typeLens() {
+    String qualifiedLens() {
         return pack + "." + Code.unqualify(qualifiedType) + Const.LENS;
     }
 }

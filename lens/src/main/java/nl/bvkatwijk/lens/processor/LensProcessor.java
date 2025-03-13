@@ -12,7 +12,6 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
-import javax.lang.model.type.DeclaredType;
 import java.io.IOException;
 import java.util.Set;
 
@@ -39,27 +38,14 @@ public class LensProcessor extends AbstractProcessor {
             .map(RecordComponentElement.class::cast)
             .toList());
 
-        writeSourceFile(packageElement(element), name, String.join(
+        writeSourceFile(ElementOps.packageElement(element), name, String.join(
             "\n",
             lensSourceCode(element, name, fields)
                 .toJavaList()));
     }
 
-    public static String packageElement(Element element) {
-        return switch (element.getKind()) {
-            case PACKAGE -> element.toString();
-            case RECORD_COMPONENT -> {
-                if (element.asType() instanceof DeclaredType declaredType) {
-                    yield packageElement((declaredType).asElement());
-                }
-                yield "can this happen? primitives maybe?";
-            }
-            default -> packageElement(element.getEnclosingElement());
-        };
-    }
-
     private static List<String> lensSourceCode(Element element, String name, List<RecordComponentElement> fields) {
-        return List.of("package " + packageElement(element) + ";", "")
+        return List.of("package " + ElementOps.packageElement(element) + ";", "")
             .appendAll(LensCode.imports(List.of(element)))
             .append("")
             .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + LensCode.iLens(name) + " inner) implements " + LensCode.iLens(
