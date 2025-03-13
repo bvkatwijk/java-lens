@@ -19,6 +19,7 @@ dependencies {
     annotationProcessor libs.lombok
     testCompileOnly libs.lombok
     testAnnotationProcessor libs.lombok
+    testImplementation libs.lombok
 
     implementation libs.vavr
 
@@ -26,6 +27,7 @@ dependencies {
     testImplementation libs.junit.jupiter.api
     testImplementation group: 'com.karuslabs', name: 'elementary', version: '3.0.0'
     testImplementation group: 'com.google.testing.compile', name: 'compile-testing', version: '0.21.0'
+    testImplementation group: 'com.approvaltests', name: 'approvaltests', version: '24.17.0'
     testImplementation 'org.instancio:instancio-junit:5.4.0'
     testAnnotationProcessor(project(":lens"))
 }
