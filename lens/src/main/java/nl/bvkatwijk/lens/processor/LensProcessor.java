@@ -1,8 +1,11 @@
 package nl.bvkatwijk.lens.processor;
 
+import io.vavr.Value;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
+import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.experimental.NonFinal;
 import nl.bvkatwijk.lens.Const;
 import nl.bvkatwijk.lens.Lenses;
 
@@ -12,24 +15,24 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.Set;
 
+@Getter
 @SupportedSourceVersion(SourceVersion.RELEASE_23)
 @SupportedAnnotationTypes(Const.LENS_ANNOTATION_QUALIFIED)
 public class LensProcessor extends AbstractProcessor {
+    @NonFinal
+    List<RecordComponentElement> elements = List.of();
+
     @Override
     @SneakyThrows
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if (annotations.isEmpty() && roundEnv.processingOver()) {
-            return true;
+        if (!annotations.isEmpty() || !roundEnv.processingOver()) {
+            lensElements(roundEnv)
+                .filter(it -> ElementKind.RECORD.equals(it.getKind()))
+                .forEach(this::writeSourceFile);
         }
-        lensElements(roundEnv)
-            .filter(it -> ElementKind.RECORD.equals(it.getKind()))
-            .forEach(this::writeSourceFile);
         return true;
     }
 
@@ -42,65 +45,35 @@ public class LensProcessor extends AbstractProcessor {
             .map(RecordComponentElement.class::cast)
             .toList());
 
-        writeSourceFile(packageElement(element), name, String.join(
+        this.elements = elements.appendAll(fields);
+
+        writeSourceFile(ElementOps.packageElement(element), name, String.join(
             "\n",
             lensSourceCode(element, name, fields)
                 .toJavaList()));
     }
 
-    public static String packageElement(Element element) {
-        return switch (element.getKind()) {
-            case PACKAGE -> element.toString();
-            case RECORD_COMPONENT -> {
-                var typeMirror =  element.asType();
-                if (typeMirror.getKind().equals(TypeKind.DECLARED)) {
-                    yield packageElement(((DeclaredType) typeMirror).asElement());
-                }
-                yield "can this happen? primitives maybe?";
-            }
-            default -> packageElement(element.getEnclosingElement());
-        };
-    }
-
     private static List<String> lensSourceCode(Element element, String name, List<RecordComponentElement> fields) {
-        return List.of("package " + packageElement(element) + ";", "")
+        return List.of("package " + ElementOps.packageElement(element) + ";", "")
             .appendAll(LensCode.imports(List.of(element)))
             .append("")
             .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + LensCode.iLens(name) + " inner) implements " + LensCode.iLens(
                 name) + " {")
-            .append(LensCode.rootLens(name))
-            .appendAll(LensCode.lensConstants(fields, name))
-            .appendAll(lensMethods(fields))
-            .appendAll(LensCode.innerDelegation(name))
+            .appendAll(Code.indent(lensContent(name, fields)))
             .append("}");
     }
 
+    private static Value<String> lensContent(String name, List<RecordComponentElement> fields) {
+        return List.of(LensCode.rootLens(name))
+            .appendAll(LensCode.lensConstants(fields, name))
+            .appendAll(lensMethods(fields))
+            .appendAll(LensCode.innerDelegation(name));
+    }
+
     static Iterable<String> lensMethods(List<RecordComponentElement> fields) {
-        return fields.flatMap(LensProcessor::lensMethod);
-    }
-
-    static Iterable<String> lensMethod(RecordComponentElement element) {
-        return qualifiedLens(element)
-            .lensMethod();
-    }
-
-    private static FieldLens qualifiedLens(RecordComponentElement field) {
-        TypeMirror type = field.asType();
-        return switch (type.getKind()) {
-            case BOOLEAN, BYTE, SHORT, INT, LONG, CHAR, FLOAT, DOUBLE, VOID ->
-                new FieldLens(Code.typeName(field), LensKind.PRIMITIVE, packageElement(field), field);
-            case DECLARED -> declared(field);
-            case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
-                throw new IllegalArgumentException("Type " + field + " (" + field.getKind() + " " + type.getKind() + ") not yet supported.");
-        };
-    }
-
-    private static FieldLens declared(RecordComponentElement field) {
-        return List.ofAll(((DeclaredType) field.asType()).asElement().getAnnotationMirrors())
-            .map(AnnotationMirror::toString)
-            .contains("@" + Lenses.class.getName())
-            ? new FieldLens("unused?", LensKind.LENSED, packageElement(field), field)
-            : new FieldLens(Code.typeName(field), LensKind.OTHER, packageElement(field), field);
+        return fields
+            .map(FieldLens::from)
+            .flatMap(FieldLens::lensMethod);
     }
 
     private void writeSourceFile(String pack, String name, String content) throws IOException {

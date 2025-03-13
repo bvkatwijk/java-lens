@@ -1,8 +1,6 @@
 package nl.bvkatwijk.lens.example;
 
 import io.vavr.collection.List;
-import nl.bvkatwijk.lens.LensOps;
-import nl.bvkatwijk.lens.Lenses;
 import nl.bvkatwijk.lens.api.ILens;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
@@ -13,26 +11,9 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 
-import static nl.bvkatwijk.lens.example.AddressLens.NUMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExampleTest {
-    @lombok.With // Generate with functions (or you can write your own)
-    @Lenses // Generate Lens helper class
-    public record Person(String name, Address address, Address work, List<Person> friends)
-        implements LensOps<Person> /* (optional) add convenience methods on record */ {
-    }
-
-    @lombok.With
-    @Lenses
-    public record Address(String street, int number, City city) implements LensOps<Address> {
-
-    }
-
-    @lombok.With
-    @Lenses
-    public record City(String name) {
-    }
 
     @SuppressWarnings("unused")
     @Nested
@@ -56,10 +37,10 @@ public class ExampleTest {
         @Test
         void vanilla_deep_transform() {
             Person original = ALICE;
-            Address address = original.address;
+            Address address = original.address();
             var updatedCity = new City("New York");
-            var updatedAddress = new Address(address.street, address.number, updatedCity);
-            Person result = new Person(original.name, updatedAddress, original.work, original.friends);
+            var updatedAddress = new Address(address.street(), address.number(), updatedCity);
+            Person result = new Person(original.name(), updatedAddress, original.work(), original.friends(), original.cool());
 
             assertEquals("New York", result.address().city().name());
         }
@@ -122,7 +103,7 @@ public class ExampleTest {
         void address_number() {
             assertEquals(
                 ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
-                ALICE.modify(PersonLens.ADDRESS.andThen(NUMBER), i -> HOUSE_NUMBER)
+                ALICE.modify(PersonLens.ADDRESS.andThen(AddressLens.NUMBER), i -> HOUSE_NUMBER)
             );
         }
 
@@ -130,7 +111,7 @@ public class ExampleTest {
         void address_number_composed() {
             assertEquals(
                 ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
-                ALICE.modify(NUMBER.compose(PersonLens.ADDRESS), i -> HOUSE_NUMBER)
+                ALICE.modify(AddressLens.NUMBER.compose(PersonLens.ADDRESS), i -> HOUSE_NUMBER)
             );
         }
 
@@ -205,7 +186,7 @@ public class ExampleTest {
         void address_number() {
             assertEquals(
                 ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
-                ALICE.with(PersonLens.ADDRESS.andThen(NUMBER), HOUSE_NUMBER)
+                ALICE.with(PersonLens.ADDRESS.andThen(AddressLens.NUMBER), HOUSE_NUMBER)
             );
         }
 
@@ -213,7 +194,7 @@ public class ExampleTest {
         void address_number_lens_composed() {
             assertEquals(
                 ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
-                ALICE.with(NUMBER.compose(PersonLens.ADDRESS), HOUSE_NUMBER)
+                ALICE.with(AddressLens.NUMBER.compose(PersonLens.ADDRESS), HOUSE_NUMBER)
             );
         }
 
@@ -232,7 +213,7 @@ public class ExampleTest {
         void modify_number() {
             assertEquals(
                 new Address(STREET, ADDRESS.number() + 1, CITY),
-                ADDRESS.modify(NUMBER, i -> i + 1)
+                ADDRESS.modify(AddressLens.NUMBER, i -> i + 1)
             );
         }
 
@@ -249,7 +230,7 @@ public class ExampleTest {
             assertEquals(
                 new Address(STREET.toUpperCase(), ADDRESS.number() + 1, CITY),
                 ADDRESS.modify(AddressLens.STREET, String::toUpperCase)
-                    .modify(NUMBER, i -> i + 1)
+                    .modify(AddressLens.NUMBER, i -> i + 1)
             );
         }
 
@@ -259,7 +240,7 @@ public class ExampleTest {
             public static final int newNumber = 2;
             public static final int T = newNumber;
             public static final Address S = ADDRESS;
-            public static final ILens<Address, Integer> L_S_T = NUMBER;
+            public static final ILens<Address, Integer> L_S_T = AddressLens.NUMBER;
             public static final Address newAddress = new Address(STREET, T, CITY);
 
             @Test
@@ -283,7 +264,7 @@ public class ExampleTest {
         class ModifyTests {
             public static final UnaryOperator<Integer> F_T = i -> i + 1;
             public static final Address S = ADDRESS;
-            public static final ILens<Address, Integer> L_S_T = NUMBER;
+            public static final ILens<Address, Integer> L_S_T = AddressLens.NUMBER;
             public static final Address expected = new Address(STREET, S.number() + 1, CITY);
 
             @Test
