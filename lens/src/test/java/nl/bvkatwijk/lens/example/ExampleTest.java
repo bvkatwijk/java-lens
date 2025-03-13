@@ -40,7 +40,7 @@ public class ExampleTest {
             Address address = original.address();
             var updatedCity = new City("New York");
             var updatedAddress = new Address(address.street(), address.number(), updatedCity);
-            Person result = new Person(original.name(), updatedAddress, original.work(), original.friends());
+            Person result = new Person(original.name(), updatedAddress, original.work(), original.friends(), original.cool());
 
             assertEquals("New York", result.address().city().name());
         }

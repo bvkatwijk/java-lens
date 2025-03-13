@@ -10,6 +10,7 @@ public record PersonLens<SOURCE>(ILens<SOURCE, Person> inner) implements ILens<S
 	public static final ILens<Person, nl.bvkatwijk.lens.example.Address> ADDRESS = new Lens<>(Person::address, Person::withAddress);
 	public static final ILens<Person, nl.bvkatwijk.lens.example.Address> WORK = new Lens<>(Person::work, Person::withWork);
 	public static final ILens<Person, io.vavr.collection.List<nl.bvkatwijk.lens.example.Person>> FRIENDS = new Lens<>(Person::friends, Person::withFriends);
+	public static final ILens<Person, java.lang.Boolean> COOL = new Lens<>(Person::cool, Person::withCool);
 	
 	public ILens<SOURCE, java.lang.String> name() {
 		return inner.andThen(NAME);
@@ -25,6 +26,10 @@ public record PersonLens<SOURCE>(ILens<SOURCE, Person> inner) implements ILens<S
 	
 	public ILens<SOURCE, io.vavr.collection.List<nl.bvkatwijk.lens.example.Person>> friends() {
 		return inner.andThen(FRIENDS);
+	}
+	
+	public ILens<SOURCE, java.lang.Boolean> cool() {
+		return inner.andThen(COOL);
 	}
 	
 	public java.util.function.BiFunction<SOURCE, Person, SOURCE> with() {

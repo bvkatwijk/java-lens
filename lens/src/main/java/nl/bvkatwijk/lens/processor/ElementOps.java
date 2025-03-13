@@ -8,7 +8,7 @@ import javax.lang.model.type.TypeMirror;
 /**
  * Utiilty functions on {@link javax.lang.model.element.Element} and subclasses
  */
-public class ElementOps {
+public final class ElementOps {
     static String fieldName(RecordComponentElement it) {
         return it.getSimpleName().toString();
     }
