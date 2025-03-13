@@ -10,7 +10,7 @@ import javax.lang.model.type.TypeMirror;
  */
 public class ElementOps {
     static String fieldName(RecordComponentElement it) {
-        return qualifiedName(it);
+        return it.getSimpleName().toString();
     }
 
     static String typeName(Element it) {
@@ -32,11 +32,7 @@ public class ElementOps {
     }
 
     static String unqualifiedTypeName(RecordComponentElement element) {
-        return Code.unqualify(qualifiedName(element));
-    }
-
-    private static String qualifiedName(RecordComponentElement element) {
-        return element.getSimpleName().toString();
+        return Code.unqualify(typeName(element));
     }
 
     static String packageElement(Element element) {

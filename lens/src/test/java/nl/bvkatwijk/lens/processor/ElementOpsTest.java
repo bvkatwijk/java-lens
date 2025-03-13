@@ -18,6 +18,11 @@ class ElementOpsTest {
         public static final RecordComponentElement ELEMENT = processedRecordComponentElement();
 
         @Test
+        void unqualifiedTypeName() {
+            assertEquals("String", ElementOps.unqualifiedTypeName(ELEMENT));
+        }
+
+        @Test
         void packageElement() {
             assertEquals("java.lang", ElementOps.packageElement(ELEMENT));
         }
