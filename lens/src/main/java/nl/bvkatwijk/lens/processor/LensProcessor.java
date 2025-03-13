@@ -13,7 +13,6 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.util.Set;
 
@@ -77,32 +76,7 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     static Iterable<String> lensMethod(RecordComponentElement element) {
-        return qualifiedLens(element)
-            .lensMethod();
-    }
-
-    private static FieldLens qualifiedLens(RecordComponentElement field) {
-        TypeMirror type = field.asType();
-        return switch (type.getKind()) {
-            case BOOLEAN, BYTE, SHORT, INT, LONG, CHAR, FLOAT, DOUBLE, VOID ->
-                new FieldLens(Code.typeName(field), LensKind.PRIMITIVE, packageElement(field), field);
-            case DECLARED -> declared(field);
-            case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
-                throw new IllegalArgumentException("Type " + field + " (" + field.getKind() + " " + type.getKind() + ") not yet supported.");
-        };
-    }
-
-    private static FieldLens declared(RecordComponentElement field) {
-        var packageElement = packageElement(field);
-        return hasLensAnnotation(field)
-            ? new FieldLens("unused?", LensKind.LENSED, packageElement, field)
-            : new FieldLens(Code.typeName(field), LensKind.OTHER, packageElement, field);
-    }
-
-    private static boolean hasLensAnnotation(RecordComponentElement field) {
-        return List.ofAll(((DeclaredType) field.asType()).asElement().getAnnotationMirrors())
-            .map(AnnotationMirror::toString)
-            .contains("@" + Lenses.class.getName());
+        return Code.indent(FieldLens.from(element).lensMethod());
     }
 
     private void writeSourceFile(String pack, String name, String content) throws IOException {

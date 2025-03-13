@@ -52,10 +52,6 @@ public class LensCode {
         ));
     }
 
-    static String lensName(RecordComponentElement field) {
-        return lensName(Code.fieldName(field));
-    }
-
     static List<String> lensConstants(List<RecordComponentElement> fields, String name) {
         return fields
             .map(it -> lensConstant(name, Code.fieldName(it), Code.typeName(it)))

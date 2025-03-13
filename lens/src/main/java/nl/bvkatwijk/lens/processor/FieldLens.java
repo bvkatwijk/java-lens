@@ -1,40 +1,46 @@
 package nl.bvkatwijk.lens.processor;
 
 import io.vavr.collection.List;
+import lombok.With;
 import nl.bvkatwijk.lens.Const;
 
 import javax.lang.model.element.RecordComponentElement;
 
-record FieldLens(String qualifiedType, LensKind lensKind, String pack, RecordComponentElement field) {
+@With
+record FieldLens(String fieldName, String qualifiedType, LensKind lensKind, String pack) {
+    public static FieldLens from(RecordComponentElement element) {
+        return new FieldLens(
+            Code.fieldName(element),
+            Code.typeName(element),
+            LensKind.from(element),
+            LensProcessor.packageElement(element));
+    }
+
     public List<String> lensMethod() {
-        return Code.indent(List.of(
+        return List.of(
             "",
-            "public " + returnType() + " " + Code.fieldName(field) + "() {",
+            "public " + returnType() + " " + fieldName + "() {",
             Code.indent(returnStatement()),
             "}"
-        ));
+        );
     }
 
     public String returnType() {
         return switch (lensKind) {
-            case LENSED -> typeLens(field) + "<" + Const.PARAM_SOURCE_TYPE + ">";
+            case LENSED -> typeLens() + "<" + Const.PARAM_SOURCE_TYPE + ">";
             case PRIMITIVE, OTHER -> LensCode.iLens(qualifiedType);
         };
     }
 
     public String returnStatement() {
-        var chainInner = "inner.andThen(" + LensCode.lensName(field) + ")";
+        var chainInner = "inner.andThen(" + LensCode.lensName(fieldName) + ")";
         return Code.ret(switch (lensKind) {
-            case LENSED -> "new " + typeLens(field) + "<>(" + chainInner + ")";
+            case LENSED -> "new " + typeLens() + "<>(" + chainInner + ")";
             case PRIMITIVE, OTHER -> chainInner;
         });
     }
 
-    String typeLens(RecordComponentElement element) {
-        return pack + "." + fieldTypeUnqualified(element) + Const.LENS;
-    }
-
-    static String fieldTypeUnqualified(RecordComponentElement it) {
-        return Code.unqualify(it.asType().toString());
+    String typeLens() {
+        return pack + "." + Code.unqualify(qualifiedType) + Const.LENS;
     }
 }
