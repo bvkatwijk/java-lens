@@ -23,3 +23,4 @@ gradle-app.setting
 .vscode/settings.json
 *.zip
 .DS_Store
+lens/.approval_tests_temp/
