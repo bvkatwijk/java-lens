@@ -25,14 +25,14 @@ record FieldLens(String fieldName, String qualifiedType, LensKind lensKind, Stri
         );
     }
 
-    public String returnType() {
+    private String returnType() {
         return switch (lensKind) {
             case LENSED -> typeLens() + "<" + Const.PARAM_SOURCE_TYPE + ">";
             case PRIMITIVE, OTHER -> LensCode.iLens(qualifiedType);
         };
     }
 
-    public String returnStatement() {
+    private String returnStatement() {
         var chainInner = "inner.andThen(" + LensCode.lensName(fieldName) + ")";
         return Code.ret(switch (lensKind) {
             case LENSED -> "new " + typeLens() + "<>(" + chainInner + ")";
