@@ -6,7 +6,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * Utiilty functions on {@link javax.lang.model.element.Element} and subclasses
+ * Utiilty functions on {@link Element} and subclasses
  */
 public final class ElementOps {
     static String fieldName(RecordComponentElement it) {
@@ -39,6 +39,8 @@ public final class ElementOps {
             case RECORD_COMPONENT -> {
                 if (element.asType() instanceof DeclaredType declaredType) {
                     yield packageElement(declaredType.asElement());
+                } else if(element.asType().getKind().isPrimitive()) {
+                    yield "java.lang";
                 }
                 yield packageElement(element.getEnclosingElement());
             }
