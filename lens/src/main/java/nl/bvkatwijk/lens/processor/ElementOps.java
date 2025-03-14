@@ -10,43 +10,37 @@ import javax.lang.model.type.TypeMirror;
  * Utility functions on {@link Element} and subclasses
  */
 public final class ElementOps {
+
     static String fieldName(RecordComponentElement it) {
         return it.getSimpleName().toString();
     }
 
-    static String qualifiedType(Element it) {
-        TypeMirror type = it.asType();
-        return switch (type.getKind()) {
-            case BOOLEAN, BYTE, SHORT, INT, LONG, CHAR, FLOAT, DOUBLE, VOID -> classOf(it).getName();
-            case DECLARED -> type.toString();
-            case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
-                throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
+    static String qualifiedType(Element element) {
+        return switch (ParamKind.of(element)) {
+            case PRIMITIVE -> classOf(element).getName();
+            case DECLARED -> element.asType().toString();
         };
     }
 
     static String unqualifiedType(Element it) {
-        TypeMirror type = it.asType();
-        return switch (type.getKind()) {
-            case BOOLEAN, BYTE, SHORT, INT, LONG, CHAR, FLOAT, DOUBLE, VOID -> classOf(it).getSimpleName();
-            case DECLARED -> ((DeclaredType) type).asElement().getSimpleName().toString();
-            case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
-                throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
+        return switch (ParamKind.of(it)) {
+            case PRIMITIVE -> classOf(it).getSimpleName();
+            case DECLARED -> ((DeclaredType) it.asType()).asElement().getSimpleName().toString();
         };
     }
 
     static String packageElement(Element element) {
         return switch (element.getKind()) {
             case PACKAGE -> element.toString();
-            case RECORD_COMPONENT -> switch (element.asType()) {
-                case DeclaredType declaredType -> packageElement(declaredType.asElement());
-                case PrimitiveType primitiveType -> "java.lang";
-                default -> packageElement(element.getEnclosingElement());
+            case RECORD_COMPONENT -> switch (ParamKind.of(element)) {
+                case DECLARED -> packageElement(((DeclaredType) element.asType()).asElement());
+                case PRIMITIVE -> "java.lang";
             };
             default -> packageElement(element.getEnclosingElement());
         };
     }
 
-    private static Class<?> classOf(Element it) {
+    static Class<?> classOf(Element it) {
         TypeMirror type = it.asType();
         return switch (type.getKind()) {
             case BOOLEAN -> Boolean.class;
