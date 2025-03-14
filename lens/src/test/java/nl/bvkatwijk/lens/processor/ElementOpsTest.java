@@ -13,51 +13,51 @@ class ElementOpsTest {
 
     @Nested
     class OnString {
-        public static final RecordComponentElement STRING_STREET = create("String street");
+        public static final RecordComponentElement ELEMENT = create("String street");
 
         @Test
         void unqualifiedTypeName() {
-            assertEquals("String", ElementOps.unqualifiedType(STRING_STREET));
+            assertEquals("String", ElementOps.unqualifiedType(ELEMENT));
         }
 
         @Test
         void typeName() {
-            assertEquals("java.lang.String", ElementOps.qualifiedType(STRING_STREET));
+            assertEquals("java.lang.String", ElementOps.qualifiedType(ELEMENT));
         }
 
         @Test
         void packageElement() {
-            assertEquals("java.lang", ElementOps.packageElement(STRING_STREET));
+            assertEquals("java.lang", ElementOps.packageElement(ELEMENT));
         }
 
         @Test
         void fieldName() {
-            assertEquals("street", ElementOps.fieldName(STRING_STREET));
+            assertEquals("street", ElementOps.fieldName(ELEMENT));
         }
     }
 
     @Nested
     class OnByte {
-        public static final RecordComponentElement STRING_STREET = create("byte someByte");
+        public static final RecordComponentElement ELEMENT = create("byte someByte");
 
         @Test
         void unqualifiedTypeName() {
-            assertEquals("Byte", ElementOps.unqualifiedType(STRING_STREET));
+            assertEquals("Byte", ElementOps.unqualifiedType(ELEMENT));
         }
 
         @Test
         void typeName() {
-            assertEquals("java.lang.Byte", ElementOps.qualifiedType(STRING_STREET));
+            assertEquals("java.lang.Byte", ElementOps.qualifiedType(ELEMENT));
         }
 
         @Test
         void packageElement() {
-            assertEquals("java.lang", ElementOps.packageElement(STRING_STREET));
+            assertEquals("java.lang", ElementOps.packageElement(ELEMENT));
         }
 
         @Test
         void fieldName() {
-            assertEquals("someByte", ElementOps.fieldName(STRING_STREET));
+            assertEquals("someByte", ElementOps.fieldName(ELEMENT));
         }
     }
 
