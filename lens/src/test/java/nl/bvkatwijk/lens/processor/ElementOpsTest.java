@@ -13,16 +13,16 @@ class ElementOpsTest {
 
     @Nested
     class OnString {
-        public static final RecordComponentElement STRING_STREET = processedRecordComponentElement();
+        public static final RecordComponentElement STRING_STREET = create("String street");
 
         @Test
         void unqualifiedTypeName() {
-            assertEquals("String", ElementOps.unqualifiedTypeName(STRING_STREET));
+            assertEquals("String", ElementOps.unqualifiedType(STRING_STREET));
         }
 
         @Test
         void typeName() {
-            assertEquals("java.lang.String", ElementOps.typeName(STRING_STREET));
+            assertEquals("java.lang.String", ElementOps.qualifiedType(STRING_STREET));
         }
 
         @Test
@@ -34,19 +34,20 @@ class ElementOpsTest {
         void fieldName() {
             assertEquals("street", ElementOps.fieldName(STRING_STREET));
         }
+    }
 
-        private static RecordComponentElement processedRecordComponentElement() {
-            var lensProcessor = new LensProcessor();
-            TestUtil.compile(lensProcessor, JavaFileObjects.forSourceString("pack.Address", """
-                    package pack;
-                
-                    @nl.bvkatwijk.lens.Lenses
-                    @lombok.With
-                    public record Address(String street) { }
-                """));
-            return lensProcessor
-                .elements()
-                .head();
-        }
+    public static RecordComponentElement create(String fieldComponent) {
+        var lensProcessor = new LensProcessor();
+        TestUtil.compile(lensProcessor, JavaFileObjects.forSourceString(
+            "pack.Address", "    package pack;\n" +
+                            "\n" +
+                            "    @nl.bvkatwijk.lens.Lenses\n" +
+                            "    @lombok.With\n" +
+                            "    public record Address(\n" +
+                            "        " + fieldComponent + "\n" +
+                            "    ) { }\n"));
+        return lensProcessor
+            .elements()
+            .head();
     }
 }
