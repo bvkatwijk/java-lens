@@ -46,7 +46,7 @@ public final class ElementOps {
         };
     }
 
-    static Class<?> classOf(Element it) {
+    private static Class<?> classOf(Element it) {
         TypeMirror type = it.asType();
         return switch (type.getKind()) {
             case BOOLEAN -> Boolean.class;
