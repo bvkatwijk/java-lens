@@ -32,6 +32,7 @@ public class LensCode {
 
     static Value<String> imports(Seq<Element> fields) {
         return fields
+            .map(ElementOps::qualifiedType)
             .map(Code::removeGenerics)
             .append(ILens.class.getName())
             .append(Lens.class.getName())
