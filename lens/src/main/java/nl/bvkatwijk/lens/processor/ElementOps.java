@@ -57,7 +57,6 @@ public final class ElementOps {
             case CHAR -> Character.class;
             case FLOAT -> Float.class;
             case DOUBLE -> Double.class;
-            case VOID -> Void.class;
             default ->
                 throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
         };
