@@ -3,7 +3,6 @@ package nl.bvkatwijk.lens.processor;
 import io.vavr.Value;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
-import io.vavr.collection.Traversable;
 import nl.bvkatwijk.lens.Const;
 import nl.bvkatwijk.lens.api.ILens;
 import nl.bvkatwijk.lens.api.Lens;
@@ -33,7 +32,6 @@ public class LensCode {
 
     static Value<String> imports(Seq<Element> fields) {
         return fields
-            .map(ElementOps::typeName)
             .map(Code::removeGenerics)
             .append(ILens.class.getName())
             .append(Lens.class.getName())
@@ -67,7 +65,11 @@ public class LensCode {
     }
 
     static List<String> lensConstants(List<RecordComponentElement> fields, String name) {
-        return fields.map(it -> lensConstant(name, ElementOps.fieldName(it), ElementOps.typeName(it)));
+        return fields.map(it -> lensConstant(name, it));
+    }
+
+    static String lensConstant(String name, RecordComponentElement it) {
+        return lensConstant(name, ElementOps.fieldName(it), ElementOps.qualifiedType(it));
     }
 
     static String rootLens(String name) {
