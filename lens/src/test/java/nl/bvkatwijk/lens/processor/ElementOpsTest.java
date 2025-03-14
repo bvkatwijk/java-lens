@@ -36,6 +36,31 @@ class ElementOpsTest {
         }
     }
 
+    @Nested
+    class OnByte {
+        public static final RecordComponentElement STRING_STREET = create("byte someByte");
+
+        @Test
+        void unqualifiedTypeName() {
+            assertEquals("Byte", ElementOps.unqualifiedType(STRING_STREET));
+        }
+
+        @Test
+        void typeName() {
+            assertEquals("java.lang.Byte", ElementOps.qualifiedType(STRING_STREET));
+        }
+
+        @Test
+        void packageElement() {
+            assertEquals("java.lang", ElementOps.packageElement(STRING_STREET));
+        }
+
+        @Test
+        void fieldName() {
+            assertEquals("someByte", ElementOps.fieldName(STRING_STREET));
+        }
+    }
+
     public static RecordComponentElement create(String fieldComponent) {
         var lensProcessor = new LensProcessor();
         TestUtil.compile(lensProcessor, JavaFileObjects.forSourceString(
