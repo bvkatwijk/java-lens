@@ -13,26 +13,24 @@ public final class ElementOps {
         return it.getSimpleName().toString();
     }
 
-    static String typeName(Element it) {
+    static String qualifiedType(Element it) {
         TypeMirror type = it.asType();
         return switch (type.getKind()) {
-            case BOOLEAN -> Boolean.class.getName();
-            case BYTE -> Byte.class.getName();
-            case SHORT -> Short.class.getName();
-            case INT -> Integer.class.getName();
-            case LONG -> Long.class.getName();
-            case CHAR -> Character.class.getName();
-            case FLOAT -> Float.class.getName();
-            case DOUBLE -> Double.class.getName();
-            case VOID -> Void.class.getName(); // Does it make sense to support Void type?
+            case BOOLEAN, BYTE, SHORT, INT, LONG, CHAR, FLOAT, DOUBLE, VOID -> classOf(it).getName();
             case DECLARED -> type.toString();
             case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
                 throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
         };
     }
 
-    static String unqualifiedTypeName(RecordComponentElement element) {
-        return Code.unqualify(typeName(element));
+    static String unqualifiedType(Element it) {
+        TypeMirror type = it.asType();
+        return switch (type.getKind()) {
+            case BOOLEAN, BYTE, SHORT, INT, LONG, CHAR, FLOAT, DOUBLE, VOID -> classOf(it).getSimpleName();
+            case DECLARED -> ((DeclaredType) type).asElement().getSimpleName().toString();
+            case OTHER, NONE, MODULE, INTERSECTION, UNION, EXECUTABLE, PACKAGE, WILDCARD, TYPEVAR, ERROR, ARRAY, NULL ->
+                throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
+        };
     }
 
     static String packageElement(Element element) {
@@ -42,9 +40,26 @@ public final class ElementOps {
                 if (element.asType() instanceof DeclaredType declaredType) {
                     yield packageElement(declaredType.asElement());
                 }
-                yield "can this happen? primitives maybe?";
+                yield packageElement(element.getEnclosingElement());
             }
             default -> packageElement(element.getEnclosingElement());
+        };
+    }
+
+    static Class<?> classOf(Element it) {
+        TypeMirror type = it.asType();
+        return switch (type.getKind()) {
+            case BOOLEAN -> Boolean.class;
+            case BYTE -> Byte.class;
+            case SHORT -> Short.class;
+            case INT -> Integer.class;
+            case LONG -> Long.class;
+            case CHAR -> Character.class;
+            case FLOAT -> Float.class;
+            case DOUBLE -> Double.class;
+            case VOID -> Void.class;
+            default ->
+                throw new IllegalArgumentException("Type " + it + " (" + it.getKind() + " " + type.getKind() + ") not yet supported.");
         };
     }
 }
