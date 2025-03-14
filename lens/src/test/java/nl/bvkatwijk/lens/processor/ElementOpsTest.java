@@ -1,15 +1,43 @@
 package nl.bvkatwijk.lens.processor;
 
 import com.google.testing.compile.JavaFileObjects;
+import junit.framework.AssertionFailedError;
 import nl.bvkatwijk.lens.test.TestUtil;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import javax.lang.model.element.RecordComponentElement;
+import javax.lang.model.type.TypeKind;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ElementOpsTest {
+    @Nested
+    class UnqualifiedType {
+        @ParameterizedTest
+        @EnumSource(value = TypeKind.class, names = {
+            "BOOLEAN",
+            "BYTE",
+            "SHORT",
+            "INT",
+            "LONG",
+            "CHAR",
+            "FLOAT",
+            "DOUBLE"
+        })
+        void works(TypeKind kind) {
+            var kindName = kind.toString().toLowerCase();
+            assertEquals(switch (kind) {
+                    case BOOLEAN, BYTE, SHORT, LONG, FLOAT, DOUBLE -> Code.capitalize(kindName);
+                    case INT -> "Integer";
+                    case CHAR -> "Character";
+                    default -> throw new AssertionFailedError("Unreachable code reached");
+                },
+                ElementOps.unqualifiedType(create(kindName + " param")));
+        }
+    }
 
     @Nested
     class OnString {
