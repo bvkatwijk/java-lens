@@ -3,10 +3,11 @@ package nl.bvkatwijk.lens.processor;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * Utiilty functions on {@link Element} and subclasses
+ * Utility functions on {@link Element} and subclasses
  */
 public final class ElementOps {
     static String fieldName(RecordComponentElement it) {
@@ -36,14 +37,11 @@ public final class ElementOps {
     static String packageElement(Element element) {
         return switch (element.getKind()) {
             case PACKAGE -> element.toString();
-            case RECORD_COMPONENT -> {
-                if (element.asType() instanceof DeclaredType declaredType) {
-                    yield packageElement(declaredType.asElement());
-                } else if(element.asType().getKind().isPrimitive()) {
-                    yield "java.lang";
-                }
-                yield packageElement(element.getEnclosingElement());
-            }
+            case RECORD_COMPONENT -> switch (element.asType()) {
+                case DeclaredType declaredType -> packageElement(declaredType.asElement());
+                case PrimitiveType primitiveType -> "java.lang";
+                default -> packageElement(element.getEnclosingElement());
+            };
             default -> packageElement(element.getEnclosingElement());
         };
     }
