@@ -57,21 +57,32 @@ public final class Code {
             .replaceFirst(m -> m.group().toUpperCase());
     }
 
-    static Value<String> with(String typeName, int index, List<String> fieldNames) {
-        var fieldName = fieldNames.get(index);
-        return List.of("")
-            .append("public " + typeName + " with" + Code.capitalize(fieldName) + "(" + typeName + " " + typeName.toLowerCase() + ", int " + fieldName + ") {")
-            .appendAll(Code.indent(withBody(typeName, index, fieldNames)))
+    static Value<String> with(String typeName, int index, List<Field> fields) {
+        var fieldName = fields.get(index).fieldName();
+        return List.of("public static " + typeName + " with" + Code.capitalize(fieldName) + "(" + typeName + " " + typeName.toLowerCase() + ", " + fields.get(index).typeName() + " " + fieldName + ") {")
+            .appendAll(Code.indent(withBody(typeName, index, fields)))
             .append("}");
     }
 
-    private static Value<String> withBody(String typeName, int index, List<String> fieldNames) {
-        var fieldName = fieldNames.get(index);
-        return List.of("return " + access(typeName, fieldName) + ".equals(" + fieldName + ")")
+    private static Value<String> withBody(String typeName, int index, List<Field> fields) {
+        var fieldNames = fields.map(Field::fieldName);
+        var field = fields.get(index);
+        return List.of("return " + eq(field, typeName))
             .append(Code.indent("? " + typeName.toLowerCase()))
             .append(Code.indent(": new " + typeName + "(" + params(typeName, index, fieldNames) + ");"));
     }
 
+    private static String eq(Field field, String typeName) {
+        var fieldName = field.fieldName();
+        return access(typeName, fieldName) +
+               (fieldName.toLowerCase() == fieldName
+                   ? " == " + fieldName
+                   : ".equals(" + fieldName + ")");
+    }
+
+    /**
+     * Record constructor params in wither
+     */
     private static String params(String typeName, int index, List<String> fieldNames) {
         return fieldNames
             .zipWithIndex()
@@ -79,6 +90,9 @@ public final class Code {
             .mkString(", ");
     }
 
+    /**
+     * Record accessor
+     */
     public static String access(String typeName, String fieldName) {
         return typeName.toLowerCase() + "." + fieldName + "()";
     }
