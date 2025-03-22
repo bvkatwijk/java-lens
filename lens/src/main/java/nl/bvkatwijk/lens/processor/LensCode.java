@@ -93,6 +93,9 @@ public class LensCode {
     }
 
     private static Value<String> wither(String name, Tuple2<RecordComponentElement, Integer> field, List<RecordComponentElement> fields) {
-        return Code.with(name, field._2(), fields.map(ElementOps::fieldName));
+        return Code.with(
+            name,
+            field._2(),
+            fields.map(it -> new Field(ElementOps.qualifiedType(it), ElementOps.fieldName(it), it)));
     }
 }
