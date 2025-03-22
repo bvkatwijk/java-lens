@@ -59,7 +59,8 @@ public final class Code {
 
     static Value<String> with(String typeName, int index, List<Field> fields) {
         var fieldName = fields.get(index).fieldName();
-        return List.of(withDeclareMethod(typeName, index, fields, fieldName))
+        return List.of("")
+            .append(withDeclareMethod(typeName, index, fields, fieldName))
             .appendAll(Code.indent(withBody(typeName, index, fields)))
             .append("}");
     }
