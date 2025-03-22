@@ -6,11 +6,11 @@ import nl.bvkatwijk.lens.api.Lens;
 
 public record PersonLens<SOURCE>(ILens<SOURCE, Person> inner) implements ILens<SOURCE, Person> {
 	public static final PersonLens<Person> µ = new PersonLens<>(Lens.identity());
-	public static final ILens<Person, java.lang.String> NAME = new Lens<>(Person::name, Person::withName);
-	public static final ILens<Person, nl.bvkatwijk.lens.example.Address> ADDRESS = new Lens<>(Person::address, Person::withAddress);
-	public static final ILens<Person, nl.bvkatwijk.lens.example.Address> WORK = new Lens<>(Person::work, Person::withWork);
-	public static final ILens<Person, io.vavr.collection.List<nl.bvkatwijk.lens.example.Person>> FRIENDS = new Lens<>(Person::friends, Person::withFriends);
-	public static final ILens<Person, java.lang.Boolean> COOL = new Lens<>(Person::cool, Person::withCool);
+	public static final ILens<Person, java.lang.String> NAME = new Lens<>(Person::name, PersonLens::withName);
+	public static final ILens<Person, nl.bvkatwijk.lens.example.Address> ADDRESS = new Lens<>(Person::address, PersonLens::withAddress);
+	public static final ILens<Person, nl.bvkatwijk.lens.example.Address> WORK = new Lens<>(Person::work, PersonLens::withWork);
+	public static final ILens<Person, io.vavr.collection.List<nl.bvkatwijk.lens.example.Person>> FRIENDS = new Lens<>(Person::friends, PersonLens::withFriends);
+	public static final ILens<Person, java.lang.Boolean> COOL = new Lens<>(Person::cool, PersonLens::withCool);
 	
 	public ILens<SOURCE, java.lang.String> name() {
 		return inner.andThen(NAME);

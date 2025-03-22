@@ -17,8 +17,15 @@ import javax.lang.model.element.RecordComponentElement;
 public class LensCode {
     static String lensConstant(String record, String field, String fieldType) {
         return Code.PSF + iLens(record, fieldType) + " " + lensName(field) + " = new " + Const.BASE_LENS + "<>("
-               + Code.params(Code.reference(record, field), Code.reference(record, witherName(field)))
+               + lensParams(record, field)
                + ");";
+    }
+
+    private static String lensParams(String record, String field) {
+        return Code.params(
+            Code.reference(record, field),
+            Code.reference(record + Const.LENS, witherName(field))
+        );
     }
 
     static String witherName(String fieldName) {

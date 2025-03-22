@@ -73,7 +73,7 @@ class LensCodeTest {
         @Test
         void works() {
             assertEquals(
-                "public static final ILens<Person, Boolean> COOL = new Lens<>(Person::cool, Person::withCool);",
+                "public static final ILens<Person, Boolean> COOL = new Lens<>(Person::cool, PersonLens::withCool);",
                 LensCode.lensConstant("Person", "cool", "Boolean"));
         }
     }
