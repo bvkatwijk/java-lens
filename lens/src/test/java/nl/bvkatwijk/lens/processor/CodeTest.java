@@ -1,5 +1,6 @@
 package nl.bvkatwijk.lens.processor;
 
+import io.vavr.collection.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ class CodeTest {
                 \treturn this.age == age
                 \t\t? this
                 \t\t: new WithExample(name, age);
-                }""", Code.with("WithExample", "age"));
+                }""", Code.with("WithExample", 0, List.of("age")));
         }
     }
 }

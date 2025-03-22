@@ -57,16 +57,29 @@ public final class Code {
             .replaceFirst(m -> m.group().toUpperCase());
     }
 
-    static Value<String> with(String typeName, String fieldName) {
+    static Value<String> with(String typeName, int index, List<String> fieldNames) {
+        var fieldName = fieldNames.get(index);
         return List.of("")
-            .append("public " + typeName + " with" + Code.capitalize(fieldName) + "(int " + fieldName + ") {")
-            .appendAll(Code.indent(withBody(typeName, fieldName)))
+            .append("public " + typeName + " with" + Code.capitalize(fieldName) + "(" + typeName + " " + typeName.toLowerCase() + ", int " + fieldName + ") {")
+            .appendAll(Code.indent(withBody(typeName, index, fieldNames)))
             .append("}");
     }
 
-    private static Value<String> withBody(String typeName, String fieldName) {
-        return List.of("return this." + fieldName + " == " + fieldName + "")
-            .append(Code.indent("? this"))
-            .append(Code.indent(": new " + typeName + "(name, " + fieldName + ");"));
+    private static Value<String> withBody(String typeName, int index, List<String> fieldNames) {
+        var fieldName = fieldNames.get(index);
+        return List.of("return " + access(typeName, fieldName) + ".equals(" + fieldName + ")")
+            .append(Code.indent("? " + typeName.toLowerCase()))
+            .append(Code.indent(": new " + typeName + "(" + params(typeName, index, fieldNames) + ");"));
+    }
+
+    private static String params(String typeName, int index, List<String> fieldNames) {
+        return fieldNames
+            .zipWithIndex()
+            .map(i -> i._2() == index ? fieldNames.get(i._2()) : access(typeName, fieldNames.get(i._2())))
+            .mkString(", ");
+    }
+
+    public static String access(String typeName, String fieldName) {
+        return typeName.toLowerCase() + "." + fieldName + "()";
     }
 }

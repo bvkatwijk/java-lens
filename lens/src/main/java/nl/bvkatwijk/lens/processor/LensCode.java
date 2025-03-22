@@ -17,8 +17,8 @@ import javax.lang.model.element.RecordComponentElement;
 public class LensCode {
     static String lensConstant(String record, String field, String fieldType) {
         return Code.PSF + iLens(record, fieldType) + " " + lensName(field) + " = new " + Const.BASE_LENS + "<>("
-            + Code.params(Code.reference(record, field), Code.reference(record, witherName(field)))
-            + ");";
+               + Code.params(Code.reference(record, field), Code.reference(record, witherName(field)))
+               + ");";
     }
 
     static String witherName(String fieldName) {
@@ -87,13 +87,12 @@ public class LensCode {
     }
 
     public static Value<String> withers(String name, List<RecordComponentElement> fields) {
-        return List.of("")
-            .appendAll(fields
-                .zipWithIndex()
-                .flatMap(field -> wither(name, field, fields)));
+        return fields
+            .zipWithIndex()
+            .flatMap(field -> wither(name, field, fields));
     }
 
     private static Value<String> wither(String name, Tuple2<RecordComponentElement, Integer> field, List<RecordComponentElement> fields) {
-        return Code.with(name, ElementOps.fieldName(field._1));
+        return Code.with(name, field._2(), fields.map(ElementOps::fieldName));
     }
 }
