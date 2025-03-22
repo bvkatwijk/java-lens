@@ -62,8 +62,7 @@ public final class Code {
         return List.of(
                 "public " + typeName + " with" + Code.capitalize(fieldName) + "(int " + fieldName + ") {",
                 Code.indent("return this." + fieldName + " == " + fieldName + " ? this : new " + typeName + "(name, " + fieldName + ");"),
-                "}"
-            )
+                "}")
             .mkString("\n");
     }
 }
