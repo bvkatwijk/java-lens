@@ -17,8 +17,8 @@ record FieldLens(String fieldName, String qualifiedType, String unqualifiedType,
     public static FieldLens from(RecordComponentElement element) {
         return new FieldLens(
             ElementOps.fieldName(element),
-            ElementOps.typeName(element),
-            ElementOps.unqualifiedTypeName(element),
+            ElementOps.qualifiedType(element),
+            ElementOps.unqualifiedType(element),
             LensKind.from(element),
             ElementOps.packageElement(element));
     }

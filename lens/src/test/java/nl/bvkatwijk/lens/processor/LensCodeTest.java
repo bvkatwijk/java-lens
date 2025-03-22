@@ -1,11 +1,12 @@
 package nl.bvkatwijk.lens.processor;
 
 import nl.bvkatwijk.lens.Const;
+import org.checkerframework.checker.units.qual.N;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LensCodeTest {
     @Nested
@@ -64,6 +65,16 @@ class LensCodeTest {
         @Test
         void anotherLensName() {
             assertEquals("ANOTHER_LENS_NAME", LensCode.lensName("anotherLensName"));
+        }
+    }
+
+    @Nested
+    class LensConstant {
+        @Test
+        void works() {
+            assertEquals(
+                "public static final ILens<Person, Boolean> COOL = new Lens<>(Person::cool, Person::withCool);",
+                LensCode.lensConstant("Person", "cool", "Boolean"));
         }
     }
 }
