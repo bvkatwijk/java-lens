@@ -103,6 +103,11 @@ public class LensCode {
         return Code.with(
             name,
             field._2(),
-            fields.map(it -> new Field(ElementOps.qualifiedType(it), ElementOps.fieldName(it), it)));
+            fields.map(it -> new Field(
+                ElementOps.qualifiedType(it),
+                ElementOps.fieldName(it),
+                ParamKind.of(it),
+                it))
+        );
     }
 }

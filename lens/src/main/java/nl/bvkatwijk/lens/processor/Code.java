@@ -81,10 +81,12 @@ public final class Code {
 
     private static String eq(Field field, String typeName) {
         var fieldName = field.fieldName();
-        return access(typeName, fieldName) +
-               (field.isPrimitive()
-                   ? " == " + fieldName
-                   : ".equals(" + fieldName + ")");
+        boolean primitive = field.isPrimitive();
+        return switch (field.paramKind()) {
+            case PRIMITIVE -> access(typeName, fieldName) + " == " + fieldName;
+            case DECLARED -> access(typeName, fieldName) + " != null && " +
+                          access(typeName, fieldName) + ".equals(" + fieldName + ")";
+        };
     }
 
     /**
