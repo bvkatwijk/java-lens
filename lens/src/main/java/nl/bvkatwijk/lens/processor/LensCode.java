@@ -1,5 +1,6 @@
 package nl.bvkatwijk.lens.processor;
 
+import io.vavr.Tuple2;
 import io.vavr.Value;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
@@ -83,5 +84,16 @@ public class LensCode {
 
     static String iLens(String from, String to) {
         return Const.ILENS + "<" + Code.params(from, to) + ">";
+    }
+
+    public static Value<String> withers(String name, List<RecordComponentElement> fields) {
+        return List.of("")
+            .appendAll(fields
+                .zipWithIndex()
+                .flatMap(field -> wither(name, field, fields)));
+    }
+
+    private static Value<String> wither(String name, Tuple2<RecordComponentElement, Integer> field, List<RecordComponentElement> fields) {
+        return Code.with(name, ElementOps.fieldName(field._1));
     }
 }

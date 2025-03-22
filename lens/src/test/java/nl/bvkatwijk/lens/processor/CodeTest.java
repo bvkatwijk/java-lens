@@ -48,8 +48,10 @@ class CodeTest {
         @Test
         void generate() {
             assertEquals("""
-                public WithExample withAge(int age) {
-                \treturn this.age == age ? this : new WithExample(name, age);
+                public WithExample withAge(WithExample withExample, int age) {
+                \treturn this.age == age
+                \t\t? this
+                \t\t: new WithExample(name, age);
                 }""", Code.with("WithExample", "age"));
         }
     }

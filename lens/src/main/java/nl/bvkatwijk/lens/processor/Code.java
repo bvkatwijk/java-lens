@@ -31,7 +31,6 @@ public final class Code {
         return "import " + qualifiedTypeName + ";";
     }
 
-    // todo not very elegant
     static String unqualify(String qualifiedType) {
         return qualifiedType.substring(qualifiedType.lastIndexOf(".") + 1);
     }
@@ -58,11 +57,16 @@ public final class Code {
             .replaceFirst(m -> m.group().toUpperCase());
     }
 
-    static String with(String typeName, String fieldName) {
-        return List.of(
-                "public " + typeName + " with" + Code.capitalize(fieldName) + "(int " + fieldName + ") {",
-                Code.indent("return this." + fieldName + " == " + fieldName + " ? this : new " + typeName + "(name, " + fieldName + ");"),
-                "}")
-            .mkString("\n");
+    static Value<String> with(String typeName, String fieldName) {
+        return List.of("")
+            .append("public " + typeName + " with" + Code.capitalize(fieldName) + "(int " + fieldName + ") {")
+            .appendAll(Code.indent(withBody(typeName, fieldName)))
+            .append("}");
+    }
+
+    private static Value<String> withBody(String typeName, String fieldName) {
+        return List.of("return this." + fieldName + " == " + fieldName + "")
+            .append(Code.indent("? this"))
+            .append(Code.indent(": new " + typeName + "(name, " + fieldName + ");"));
     }
 }

@@ -70,7 +70,8 @@ public class LensProcessor extends AbstractProcessor {
         return List.of(LensCode.rootLens(name))
             .appendAll(LensCode.lensConstants(fields, name))
             .appendAll(lensMethods(fields))
-            .appendAll(LensCode.innerDelegation(name));
+            .appendAll(LensCode.innerDelegation(name))
+            .appendAll(LensCode.withers(name, fields));
     }
 
     static Value<String> lensMethods(List<RecordComponentElement> fields) {
