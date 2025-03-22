@@ -3,7 +3,6 @@ package nl.bvkatwijk.lens.example;
 import io.vavr.collection.List;
 import nl.bvkatwijk.lens.api.ILens;
 import org.instancio.Instancio;
-import org.instancio.TargetSelector;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,16 +21,16 @@ public class ExampleTest {
     class ReadmeExamples {
         @Test
         void lenses_are_objects() {
-            /// A Lens is an immutable object
+            // A Lens is an immutable object
             ILens<Person, String> nameLens = PersonLens.NAME;
         }
 
         @Test
         void use_with_to_transform() {
-            /// Using Lens#with you get a UnaryOperator
+            // Using Lens#with you get a UnaryOperator
             UnaryOperator<Person> renameToBob = PersonLens.NAME.with("bob");
 
-            /// You can apply this to instances to perform internal transformations
+            // You can apply this to instances to perform internal transformations
             assertEquals("bob", renameToBob.apply(ALICE).name());
         }
 
@@ -60,19 +59,19 @@ public class ExampleTest {
 
         @Test
         void use_chain_to_deep_transform() {
-            /// Using µ you can call method chain to get deep lenses
+            // Using µ you can call method chain to get deep lenses
             UnaryOperator<Person> moveToNewYork = PersonLens.µ.address().city().name().with("New York");
 
-            /// This can be useful to transform a value deep within nested records
+            // This can be useful to transform a value deep within nested records
             assertEquals("New York", moveToNewYork.apply(ALICE).address().city().name());
         }
 
         @Test
         void use_lens_ops_to_perform_multiple_transformations() {
-            /// Adding LensOps interface can be useful to apply multiple transformations on a single instance
+            // Adding LensOps interface can be useful to apply multiple transformations on a single instance
             ALICE
                 .with(PersonLens.NAME, "SuperAlice")
-                .modify(PersonLens.FRIENDS, friends -> friends.append(BOB));
+                .with(PersonLens.COOL, true);
         }
     }
 
@@ -124,6 +123,7 @@ public class ExampleTest {
         }
     }
 
+    @SuppressWarnings("NonAsciiCharacters")
     @Nested
     @DisplayName("Root")
     class RootTest {
