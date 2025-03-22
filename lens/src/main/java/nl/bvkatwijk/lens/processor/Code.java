@@ -19,7 +19,7 @@ public final class Code {
 
     /**
      * @param typeName type name
-     * @param method method name
+     * @param method   method name
      * @return method reference
      */
     static String reference(String typeName, String method) {
@@ -57,4 +57,10 @@ public final class Code {
             .replaceFirst(m -> m.group().toUpperCase());
     }
 
+    static String with(String typeName, String fieldName) {
+        return String.format("""
+            public %1$s with%3$s(int %2$s) {
+                return this.%2$s == %2$s ? this : new %1$s(name, %2$s);
+            }""", typeName, fieldName, Code.capitalize(fieldName));
+    }
 }

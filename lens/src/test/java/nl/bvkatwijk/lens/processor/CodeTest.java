@@ -36,10 +36,21 @@ class CodeTest {
 
     @Nested
     @DisplayName("Remove Generics")
-    class RemoveGenericsTest{
+    class RemoveGenericsTest {
         @Test
         void generate() {
             assertEquals("A", Code.removeGenerics("A<B, C<D>>"));
+        }
+    }
+
+    @Nested
+    class With {
+        @Test
+        void generate() {
+            assertEquals("""
+                public WithExample withAge(int age) {
+                    return this.age == age ? this : new WithExample(name, age);
+                }""", Code.with("WithExample", "age"));
         }
     }
 }
