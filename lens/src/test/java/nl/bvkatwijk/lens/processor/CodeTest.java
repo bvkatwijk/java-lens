@@ -1,6 +1,7 @@
 package nl.bvkatwijk.lens.processor;
 
 import io.vavr.collection.List;
+import org.approvaltests.Approvals;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -48,12 +49,10 @@ class CodeTest {
     class With {
         @Test
         void generate() {
-            assertEquals("""
-                public WithExample withAge(WithExample withExample, int age) {
-                \treturn this.age == age
-                \t\t? this
-                \t\t: new WithExample(name, age);
-                }""", Code.with("WithExample", 0, List.of("age")));
+            Approvals.verify(Code.with("WithExample", 0, List.of(new Field("int", "age", null)))
+                .toList()
+                .mkString("\n")
+            );
         }
     }
 }
