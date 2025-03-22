@@ -1,0 +1,5 @@
+public static WithExample withAge(WithExample withexample, int age) {
+	return withexample.age() == age
+		? withexample
+		: new WithExample(age);
+}

@@ -1,5 +1,6 @@
 package nl.bvkatwijk.lens.processor;
 
+import io.vavr.Tuple2;
 import io.vavr.Value;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
@@ -16,8 +17,8 @@ import javax.lang.model.element.RecordComponentElement;
 public class LensCode {
     static String lensConstant(String record, String field, String fieldType) {
         return Code.PSF + iLens(record, fieldType) + " " + lensName(field) + " = new " + Const.BASE_LENS + "<>("
-            + Code.params(Code.reference(record, field), Code.reference(record, witherName(field)))
-            + ");";
+               + Code.params(Code.reference(record, field), Code.reference(record, witherName(field)))
+               + ");";
     }
 
     static String witherName(String fieldName) {
@@ -83,5 +84,18 @@ public class LensCode {
 
     static String iLens(String from, String to) {
         return Const.ILENS + "<" + Code.params(from, to) + ">";
+    }
+
+    public static Value<String> withers(String name, List<RecordComponentElement> fields) {
+        return fields
+            .zipWithIndex()
+            .flatMap(field -> wither(name, field, fields));
+    }
+
+    private static Value<String> wither(String name, Tuple2<RecordComponentElement, Integer> field, List<RecordComponentElement> fields) {
+        return Code.with(
+            name,
+            field._2(),
+            fields.map(it -> new Field(ElementOps.qualifiedType(it), ElementOps.fieldName(it), it)));
     }
 }
