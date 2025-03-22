@@ -1,6 +1,7 @@
 package nl.bvkatwijk.lens.processor;
 
 import io.vavr.Value;
+import io.vavr.collection.List;
 import io.vavr.collection.Vector;
 import nl.bvkatwijk.lens.Const;
 
@@ -58,9 +59,11 @@ public final class Code {
     }
 
     static String with(String typeName, String fieldName) {
-        return String.format("""
-            public %1$s with%3$s(int %2$s) {
-                return this.%2$s == %2$s ? this : new %1$s(name, %2$s);
-            }""", typeName, fieldName, Code.capitalize(fieldName));
+        return List.of(
+                "public " + typeName + " with" + Code.capitalize(fieldName) + "(int " + fieldName + ") {",
+                Code.indent("return this." + fieldName + " == " + fieldName + " ? this : new " + typeName + "(name, " + fieldName + ");"),
+                "}"
+            )
+            .mkString("\n");
     }
 }

@@ -49,7 +49,7 @@ class CodeTest {
         void generate() {
             assertEquals("""
                 public WithExample withAge(int age) {
-                    return this.age == age ? this : new WithExample(name, age);
+                \treturn this.age == age ? this : new WithExample(name, age);
                 }""", Code.with("WithExample", "age"));
         }
     }
