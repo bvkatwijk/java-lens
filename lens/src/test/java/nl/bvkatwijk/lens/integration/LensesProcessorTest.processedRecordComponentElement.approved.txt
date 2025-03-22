@@ -39,4 +39,29 @@ public record PersonLens<SOURCE>(ILens<SOURCE, Person> inner) implements ILens<S
 	public java.util.function.Function<SOURCE, Person> get() {
 		return inner.get();
 	}
+	public static Person withName(Person person, java.lang.String name) {
+		return person.name() == name
+			? person
+			: new Person(name, person.address(), person.work(), person.friends(), person.cool());
+	}
+	public static Person withAddress(Person person, nl.bvkatwijk.lens.example.Address address) {
+		return person.address() == address
+			? person
+			: new Person(person.name(), address, person.work(), person.friends(), person.cool());
+	}
+	public static Person withWork(Person person, nl.bvkatwijk.lens.example.Address work) {
+		return person.work() == work
+			? person
+			: new Person(person.name(), person.address(), work, person.friends(), person.cool());
+	}
+	public static Person withFriends(Person person, io.vavr.collection.List<nl.bvkatwijk.lens.example.Person> friends) {
+		return person.friends() == friends
+			? person
+			: new Person(person.name(), person.address(), person.work(), friends, person.cool());
+	}
+	public static Person withCool(Person person, java.lang.Boolean cool) {
+		return person.cool() == cool
+			? person
+			: new Person(person.name(), person.address(), person.work(), person.friends(), cool);
+	}
 }
