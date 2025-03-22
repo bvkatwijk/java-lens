@@ -59,15 +59,22 @@ public final class Code {
 
     static Value<String> with(String typeName, int index, List<Field> fields) {
         var fieldName = fields.get(index).fieldName();
-        return List.of("public static " + typeName + " with" + Code.capitalize(fieldName) + "(" + typeName + " " + typeName.toLowerCase() + ", " + fields.get(index).typeName() + " " + fieldName + ") {")
+        return List.of(withDeclareMethod(typeName, index, fields, fieldName))
             .appendAll(Code.indent(withBody(typeName, index, fields)))
             .append("}");
     }
 
+    private static String withDeclareMethod(String typeName, int index, List<Field> fields, String fieldName) {
+        return "public static " + typeName + " with" + Code.capitalize(fieldName) + "(" + withParams(typeName, index, fields, fieldName) + ") {";
+    }
+
+    private static String withParams(String typeName, int index, List<Field> fields, String fieldName) {
+        return typeName + " " + typeName.toLowerCase() + ", " + fields.get(index).typeName() + " " + fieldName;
+    }
+
     private static Value<String> withBody(String typeName, int index, List<Field> fields) {
         var fieldNames = fields.map(Field::fieldName);
-        var field = fields.get(index);
-        return List.of("return " + eq(field, typeName))
+        return List.of("return " + eq(fields.get(index), typeName))
             .append(Code.indent("? " + typeName.toLowerCase()))
             .append(Code.indent(": new " + typeName + "(" + params(typeName, index, fieldNames) + ");"));
     }
