@@ -20,18 +20,4 @@ public enum ParamKind {
             default -> throw  new IllegalStateException("Unsupported param kind: " + it);
         };
     }
-
-    public String qualifiedType(Element element) {
-        return switch (this) {
-            case PRIMITIVE -> ElementOps.classOf(element).getName();
-            case DECLARED -> element.asType().toString();
-        };
-    }
-
-    public String unqualifiedType(Element element) {
-        return switch (this) {
-            case PRIMITIVE -> ElementOps.classOf(element).getSimpleName();
-            case DECLARED -> ((DeclaredType) element.asType()).asElement().getSimpleName().toString();
-        };
-    }
 }
