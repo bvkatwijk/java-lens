@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExampleTest {
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "NonAsciiCharacters"})
     @Nested
     @DisplayName("Readme Examples")
     class ReadmeExamples {
