@@ -75,7 +75,7 @@ public final class Code {
     private static String eq(Field field, String typeName) {
         var fieldName = field.fieldName();
         return access(typeName, fieldName) +
-               (fieldName.toLowerCase() == fieldName
+               (field.isPrimitive()
                    ? " == " + fieldName
                    : ".equals(" + fieldName + ")");
     }
