@@ -105,4 +105,9 @@ public final class Code {
     public static String access(String typeName, String fieldName) {
         return typeName.toLowerCase() + "." + fieldName + "()";
     }
+
+    public static String render(Value<String> code) {
+        return code.toList()
+            .mkString("\n");
+    }
 }
