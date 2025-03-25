@@ -106,8 +106,7 @@ public class LensCode {
             fields.map(it -> new Field(
                 ElementOps.qualifiedType(it),
                 ElementOps.fieldName(it),
-                ParamKind.of(it),
-                it))
+                ParamKind.of(it)))
         );
     }
 }
