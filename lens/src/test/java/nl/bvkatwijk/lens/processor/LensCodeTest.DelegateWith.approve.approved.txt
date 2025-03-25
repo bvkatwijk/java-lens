@@ -1,0 +1,3 @@
+public java.util.function.BiFunction<SOURCE, TypeName, SOURCE> with() {
+	return inner.with();
+}

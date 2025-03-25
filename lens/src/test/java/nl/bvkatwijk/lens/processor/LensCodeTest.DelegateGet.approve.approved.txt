@@ -1,0 +1,3 @@
+public java.util.function.Function<SOURCE, TypeName> get() {
+	return inner.get();
+}

@@ -1,6 +1,7 @@
 package nl.bvkatwijk.lens.processor;
 
 import nl.bvkatwijk.lens.Const;
+import org.approvaltests.Approvals;
 import org.checkerframework.checker.units.qual.N;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -75,6 +76,22 @@ class LensCodeTest {
             assertEquals(
                 "public static final ILens<Person, Boolean> COOL = new Lens<>(Person::cool, PersonLens::withCool);",
                 LensCode.lensConstant("Person", "cool", "Boolean"));
+        }
+    }
+
+    @Nested
+    class DelegateGet {
+        @Test
+        void approve() {
+            Approvals.verify(Code.render(LensCode.delegateGet("TypeName")));
+        }
+    }
+
+    @Nested
+    class DelegateWith {
+        @Test
+        void approve() {
+            Approvals.verify(Code.render(LensCode.delegateWith("TypeName")));
         }
     }
 }
