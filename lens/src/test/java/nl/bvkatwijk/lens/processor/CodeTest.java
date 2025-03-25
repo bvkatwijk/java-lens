@@ -2,7 +2,6 @@ package nl.bvkatwijk.lens.processor;
 
 import io.vavr.collection.List;
 import org.approvaltests.Approvals;
-import org.approvaltests.core.Options;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

@@ -2,7 +2,6 @@ package nl.bvkatwijk.lens.processor;
 
 import nl.bvkatwijk.lens.Const;
 import org.approvaltests.Approvals;
-import org.checkerframework.checker.units.qual.N;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

@@ -60,10 +60,14 @@ public class LensProcessor extends AbstractProcessor {
         return List.of("package " + ElementOps.packageElement(element) + ";", "")
             .appendAll(LensCode.imports(List.of(element)))
             .append("")
-            .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + LensCode.iLens(name) + " inner) implements " + LensCode.iLens(
-                name) + " {")
+            .append(lensRecordDeclaration(name))
             .appendAll(Code.indent(lensContent(name, fields)))
             .append("}");
+    }
+
+    private static String lensRecordDeclaration(String name) {
+        var lens = LensCode.iLens(name);
+        return "public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + lens + " inner) implements " + lens + " {";
     }
 
     private static Value<String> lensContent(String name, List<RecordComponentElement> fields) {
