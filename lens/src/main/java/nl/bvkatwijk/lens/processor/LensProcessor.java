@@ -19,6 +19,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Set;
 
 @Getter
@@ -85,11 +86,15 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private void writeSourceFile(String pack, String name, String content) throws IOException {
-        processingEnv.getFiler()
+        try (var writer = sourceWriter(pack, name)) {
+            writer.append(content);
+        }
+    }
+
+    private Writer sourceWriter(String pack, String name) throws IOException {
+        return processingEnv.getFiler()
             .createSourceFile(pack + "." + name + Const.LENS)
-            .openWriter()
-            .append(content)
-            .close();
+            .openWriter();
     }
 
     private static HashSet<? extends Element> lensElements(RoundEnvironment roundEnv) {
