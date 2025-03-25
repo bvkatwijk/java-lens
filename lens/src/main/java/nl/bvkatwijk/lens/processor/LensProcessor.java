@@ -19,6 +19,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Set;
 
 @Getter
@@ -60,17 +61,22 @@ public class LensProcessor extends AbstractProcessor {
         return List.of("package " + ElementOps.packageElement(element) + ";", "")
             .appendAll(LensCode.imports(List.of(element)))
             .append("")
-            .append("public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + LensCode.iLens(name) + " inner) implements " + LensCode.iLens(
-                name) + " {")
+            .append(lensRecordDeclaration(name))
             .appendAll(Code.indent(lensContent(name, fields)))
             .append("}");
+    }
+
+    private static String lensRecordDeclaration(String name) {
+        var lens = LensCode.iLens(name);
+        return "public record " + name + Const.LENS + "<" + Const.PARAM_SOURCE_TYPE + ">(" + lens + " inner) implements " + lens + " {";
     }
 
     private static Value<String> lensContent(String name, List<RecordComponentElement> fields) {
         return List.of(LensCode.rootLens(name))
             .appendAll(LensCode.lensConstants(fields, name))
             .appendAll(lensMethods(fields))
-            .appendAll(LensCode.innerDelegation(name));
+            .appendAll(LensCode.innerDelegation(name))
+            .appendAll(LensCode.withers(name, fields));
     }
 
     static Value<String> lensMethods(List<RecordComponentElement> fields) {
@@ -80,11 +86,15 @@ public class LensProcessor extends AbstractProcessor {
     }
 
     private void writeSourceFile(String pack, String name, String content) throws IOException {
-        processingEnv.getFiler()
+        try (var writer = sourceWriter(pack, name)) {
+            writer.append(content);
+        }
+    }
+
+    private Writer sourceWriter(String pack, String name) throws IOException {
+        return processingEnv.getFiler()
             .createSourceFile(pack + "." + name + Const.LENS)
-            .openWriter()
-            .append(content)
-            .close();
+            .openWriter();
     }
 
     private static HashSet<? extends Element> lensElements(RoundEnvironment roundEnv) {

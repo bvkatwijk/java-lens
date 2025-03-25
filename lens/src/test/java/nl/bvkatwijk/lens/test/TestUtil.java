@@ -9,7 +9,6 @@ import nl.bvkatwijk.lens.processor.LensProcessor;
 import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
@@ -17,8 +16,8 @@ import static com.google.testing.compile.CompilationSubject.assertThat;
 public class TestUtil {
     @SneakyThrows
     public static JavaFileObject load(String packagePath) {
-        String qualifiedPath = "nl/bvkatwijk/lens/" + packagePath;
-        Path path = Paths.get("src/test/java/", qualifiedPath);
+        var qualifiedPath = "nl/bvkatwijk/lens/" + packagePath;
+        var path = Paths.get("src/test/java/", qualifiedPath);
         return JavaFileObjects.forSourceString(
             qualifiedName(qualifiedPath),
             Files.readString(path));

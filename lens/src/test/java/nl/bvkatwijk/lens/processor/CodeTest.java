@@ -1,8 +1,12 @@
 package nl.bvkatwijk.lens.processor;
 
+import io.vavr.collection.List;
+import org.approvaltests.Approvals;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,10 +40,21 @@ class CodeTest {
 
     @Nested
     @DisplayName("Remove Generics")
-    class RemoveGenericsTest{
+    class RemoveGenericsTest {
         @Test
         void generate() {
             assertEquals("A", Code.removeGenerics("A<B, C<D>>"));
+        }
+    }
+
+    @Nested
+    class WithTest {
+        @ParameterizedTest
+        @EnumSource(ParamKind.class)
+        void approve(ParamKind paramKind) {
+            Approvals.verify(Code.render(Code.with("TypeName", 0, List.of(
+                new Field("FieldTypeName", "fieldName", paramKind)
+            ))), Approvals.NAMES.withParameters(paramKind.name()));
         }
     }
 }

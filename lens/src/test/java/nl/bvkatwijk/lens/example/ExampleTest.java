@@ -15,22 +15,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExampleTest {
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "NonAsciiCharacters"})
     @Nested
     @DisplayName("Readme Examples")
     class ReadmeExamples {
         @Test
         void lenses_are_objects() {
-            /// A Lens is an immutable object
+            // A Lens is an immutable object
             ILens<Person, String> nameLens = PersonLens.NAME;
         }
 
         @Test
         void use_with_to_transform() {
-            /// Using Lens#with you get a UnaryOperator
+            // Using Lens#with you get a UnaryOperator
             UnaryOperator<Person> renameToBob = PersonLens.NAME.with("bob");
 
-            /// You can apply this to instances to perform internal transformations
+            // You can apply this to instances to perform internal transformations
             assertEquals("bob", renameToBob.apply(ALICE).name());
         }
 
@@ -59,19 +59,19 @@ public class ExampleTest {
 
         @Test
         void use_chain_to_deep_transform() {
-            /// Using µ you can call method chain to get deep lenses
+            // Using µ you can call method chain to get deep lenses
             UnaryOperator<Person> moveToNewYork = PersonLens.µ.address().city().name().with("New York");
 
-            /// This can be useful to transform a value deep within nested records
+            // This can be useful to transform a value deep within nested records
             assertEquals("New York", moveToNewYork.apply(ALICE).address().city().name());
         }
 
         @Test
         void use_lens_ops_to_perform_multiple_transformations() {
-            /// Adding LensOps interface can be useful to apply multiple transformations on a single instance
+            // Adding LensOps interface can be useful to apply multiple transformations on a single instance
             ALICE
                 .with(PersonLens.NAME, "SuperAlice")
-                .modify(PersonLens.FRIENDS, friends -> friends.append(BOB));
+                .with(PersonLens.COOL, true);
         }
     }
 
@@ -81,28 +81,28 @@ public class ExampleTest {
         @Test
         void name() {
             assertEquals(
-                ALICE.withName(ALICE.name().toUpperCase()),
+                PersonLens.withName(ALICE, ALICE.name().toUpperCase()),
                 ALICE.modify(PersonLens.NAME, String::toUpperCase));
         }
 
         @Test
         void address() {
             assertEquals(
-                ALICE.withAddress(HOME),
+                PersonLens.withAddress(ALICE, HOME),
                 ALICE.modify(PersonLens.ADDRESS, i -> HOME));
         }
 
         @Test
         void work() {
             assertEquals(
-                ALICE.withWork(HOME),
+                PersonLens.withWork(ALICE, HOME),
                 ALICE.modify(PersonLens.WORK, i -> HOME));
         }
 
         @Test
         void address_number() {
             assertEquals(
-                ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
+                PersonLens.withAddress(ALICE, ALICE.address().withNumber(HOUSE_NUMBER)),
                 ALICE.modify(PersonLens.ADDRESS.andThen(AddressLens.NUMBER), i -> HOUSE_NUMBER)
             );
         }
@@ -110,7 +110,7 @@ public class ExampleTest {
         @Test
         void address_number_composed() {
             assertEquals(
-                ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
+                PersonLens.withAddress(ALICE, ALICE.address().withNumber(HOUSE_NUMBER)),
                 ALICE.modify(AddressLens.NUMBER.compose(PersonLens.ADDRESS), i -> HOUSE_NUMBER)
             );
         }
@@ -118,25 +118,26 @@ public class ExampleTest {
         @Test
         void friends() {
             assertEquals(
-                ALICE.withFriends(List.of(BOB)),
+                PersonLens.withFriends(ALICE, List.of(BOB)),
                 ALICE.modify(PersonLens.FRIENDS, i -> List.of(BOB)));
         }
     }
 
+    @SuppressWarnings("NonAsciiCharacters")
     @Nested
     @DisplayName("Root")
     class RootTest {
         @Test
         void address() {
             assertEquals(
-                ALICE.withAddress(HOME),
+                PersonLens.withAddress(ALICE, HOME),
                 ALICE.with(PersonLens.µ.address(), HOME));
         }
 
         @Test
         void address_number() {
             assertEquals(
-                ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
+                PersonLens.withAddress(ALICE, ALICE.address().withNumber(HOUSE_NUMBER)),
                 ALICE.with(PersonLens.µ.address().number(), HOUSE_NUMBER));
         }
 
@@ -144,7 +145,7 @@ public class ExampleTest {
         void address_number_modify() {
             var address = ALICE.address();
             assertEquals(
-                ALICE.withAddress(address.withNumber(address.number() + 1)),
+                PersonLens.withAddress(ALICE, address.withNumber(address.number() + 1)),
                 ALICE.modify(PersonLens.µ.address().number(), i -> i + 1));
         }
 
@@ -152,7 +153,7 @@ public class ExampleTest {
         void address_street() {
             String newStreet = "new street";
             assertEquals(
-                ALICE.withAddress(ALICE.address().withStreet(newStreet)),
+                PersonLens.withAddress(ALICE, ALICE.address().withStreet(newStreet)),
                 ALICE.with(PersonLens.µ.address().street(), newStreet));
         }
 
@@ -160,7 +161,7 @@ public class ExampleTest {
         void address_city_name() {
             String newCity = "new city";
             assertEquals(
-                ALICE.withAddress(ALICE.address().withCity(new City(newCity))),
+                PersonLens.withAddress(ALICE, ALICE.address().withCity(new City(newCity))),
                 ALICE.with(PersonLens.µ.address().city().name(), newCity));
         }
     }
@@ -171,21 +172,21 @@ public class ExampleTest {
         @Test
         void name() {
             assertEquals(
-                ALICE.withName("bob"),
+                PersonLens.withName(ALICE, "bob"),
                 ALICE.with(PersonLens.NAME, "bob"));
         }
 
         @Test
         void address() {
             assertEquals(
-                ALICE.withAddress(WORK),
+                PersonLens.withAddress(ALICE, WORK),
                 ALICE.with(PersonLens.ADDRESS, WORK));
         }
 
         @Test
         void address_number() {
             assertEquals(
-                ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
+                PersonLens.withAddress(ALICE, ALICE.address().withNumber(HOUSE_NUMBER)),
                 ALICE.with(PersonLens.ADDRESS.andThen(AddressLens.NUMBER), HOUSE_NUMBER)
             );
         }
@@ -193,7 +194,7 @@ public class ExampleTest {
         @Test
         void address_number_lens_composed() {
             assertEquals(
-                ALICE.withAddress(ALICE.address().withNumber(HOUSE_NUMBER)),
+                PersonLens.withAddress(ALICE, ALICE.address().withNumber(HOUSE_NUMBER)),
                 ALICE.with(AddressLens.NUMBER.compose(PersonLens.ADDRESS), HOUSE_NUMBER)
             );
         }
@@ -201,7 +202,7 @@ public class ExampleTest {
         @Test
         void friends() {
             assertEquals(
-                ALICE.withFriends(List.of(BOB)),
+                PersonLens.withFriends(ALICE, List.of(BOB)),
                 ALICE.with(PersonLens.FRIENDS, List.of(BOB)));
         }
     }
@@ -284,12 +285,8 @@ public class ExampleTest {
         }
     }
 
-    public static final Person ALICE = Instancio.create(Person.class)
-        .withName("alice")
-        .withFriends(List.of());
-    public static final Person BOB = Instancio.create(Person.class)
-        .withName("bob")
-        .withFriends(List.of());
+    public static final Person ALICE = Instancio.create(Person.class);
+    public static final Person BOB = Instancio.create(Person.class);
     public static final Address HOME = Instancio.create(Address.class);
     public static final Address WORK = Instancio.create(Address.class);
     public static final int HOUSE_NUMBER = 10;
