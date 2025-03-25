@@ -1,10 +1,11 @@
 [versions]
-junit-jupiter = "5.11.4"
+junit-jupiter = "5.12.1"
 lombok = "1.18.36"
 vavr = "0.10.6"
 
 [libraries]
-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-jupiter" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit-jupiter" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 vavr = { module = "io.vavr:vavr", version.ref = "vavr" }
