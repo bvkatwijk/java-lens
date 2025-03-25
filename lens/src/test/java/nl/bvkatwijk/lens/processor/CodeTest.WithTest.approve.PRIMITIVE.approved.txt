@@ -1,0 +1,6 @@
+
+public static TypeName withFieldName(TypeName typename, FieldTypeName fieldName) {
+	return typename.fieldName() == fieldName
+		? typename
+		: new TypeName(fieldName);
+}

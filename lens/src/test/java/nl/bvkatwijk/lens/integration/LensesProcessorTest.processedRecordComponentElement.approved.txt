@@ -6,11 +6,11 @@ import nl.bvkatwijk.lens.api.Lens;
 
 public record PersonLens<SOURCE>(ILens<SOURCE, Person> inner) implements ILens<SOURCE, Person> {
 	public static final PersonLens<Person> µ = new PersonLens<>(Lens.identity());
-	public static final ILens<Person, java.lang.String> NAME = new Lens<>(Person::name, Person::withName);
-	public static final ILens<Person, nl.bvkatwijk.lens.example.Address> ADDRESS = new Lens<>(Person::address, Person::withAddress);
-	public static final ILens<Person, nl.bvkatwijk.lens.example.Address> WORK = new Lens<>(Person::work, Person::withWork);
-	public static final ILens<Person, io.vavr.collection.List<nl.bvkatwijk.lens.example.Person>> FRIENDS = new Lens<>(Person::friends, Person::withFriends);
-	public static final ILens<Person, java.lang.Boolean> COOL = new Lens<>(Person::cool, Person::withCool);
+	public static final ILens<Person, java.lang.String> NAME = new Lens<>(Person::name, PersonLens::withName);
+	public static final ILens<Person, nl.bvkatwijk.lens.example.Address> ADDRESS = new Lens<>(Person::address, PersonLens::withAddress);
+	public static final ILens<Person, nl.bvkatwijk.lens.example.Address> WORK = new Lens<>(Person::work, PersonLens::withWork);
+	public static final ILens<Person, io.vavr.collection.List<nl.bvkatwijk.lens.example.Person>> FRIENDS = new Lens<>(Person::friends, PersonLens::withFriends);
+	public static final ILens<Person, java.lang.Boolean> COOL = new Lens<>(Person::cool, PersonLens::withCool);
 	
 	public ILens<SOURCE, java.lang.String> name() {
 		return inner.andThen(NAME);
@@ -38,5 +38,35 @@ public record PersonLens<SOURCE>(ILens<SOURCE, Person> inner) implements ILens<S
 	
 	public java.util.function.Function<SOURCE, Person> get() {
 		return inner.get();
+	}
+	
+	public static Person withName(Person person, java.lang.String name) {
+		return person.name() != null && person.name().equals(name)
+			? person
+			: new Person(name, person.address(), person.work(), person.friends(), person.cool());
+	}
+	
+	public static Person withAddress(Person person, nl.bvkatwijk.lens.example.Address address) {
+		return person.address() != null && person.address().equals(address)
+			? person
+			: new Person(person.name(), address, person.work(), person.friends(), person.cool());
+	}
+	
+	public static Person withWork(Person person, nl.bvkatwijk.lens.example.Address work) {
+		return person.work() != null && person.work().equals(work)
+			? person
+			: new Person(person.name(), person.address(), work, person.friends(), person.cool());
+	}
+	
+	public static Person withFriends(Person person, io.vavr.collection.List<nl.bvkatwijk.lens.example.Person> friends) {
+		return person.friends() != null && person.friends().equals(friends)
+			? person
+			: new Person(person.name(), person.address(), person.work(), friends, person.cool());
+	}
+	
+	public static Person withCool(Person person, java.lang.Boolean cool) {
+		return person.cool() == cool
+			? person
+			: new Person(person.name(), person.address(), person.work(), person.friends(), cool);
 	}
 }

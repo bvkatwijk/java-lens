@@ -1,6 +1,7 @@
 package nl.bvkatwijk.lens.processor;
 
 import io.vavr.Value;
+import io.vavr.collection.List;
 import io.vavr.collection.Vector;
 import nl.bvkatwijk.lens.Const;
 
@@ -19,7 +20,7 @@ public final class Code {
 
     /**
      * @param typeName type name
-     * @param method method name
+     * @param method   method name
      * @return method reference
      */
     static String reference(String typeName, String method) {
@@ -30,7 +31,6 @@ public final class Code {
         return "import " + qualifiedTypeName + ";";
     }
 
-    // todo not very elegant
     static String unqualify(String qualifiedType) {
         return qualifiedType.substring(qualifiedType.lastIndexOf(".") + 1);
     }
@@ -57,4 +57,57 @@ public final class Code {
             .replaceFirst(m -> m.group().toUpperCase());
     }
 
+    static Value<String> with(String typeName, int index, List<Field> fields) {
+        var fieldName = fields.get(index).fieldName();
+        return List.of("")
+            .append(withDeclareMethod(typeName, index, fields, fieldName))
+            .appendAll(Code.indent(withBody(typeName, index, fields)))
+            .append("}");
+    }
+
+    private static String withDeclareMethod(String typeName, int index, List<Field> fields, String fieldName) {
+        return "public static " + typeName + " with" + Code.capitalize(fieldName) + "(" + withParams(typeName, index, fields, fieldName) + ") {";
+    }
+
+    private static String withParams(String typeName, int index, List<Field> fields, String fieldName) {
+        return typeName + " " + typeName.toLowerCase() + ", " + fields.get(index).typeName() + " " + fieldName;
+    }
+
+    private static Value<String> withBody(String typeName, int index, List<Field> fields) {
+        var fieldNames = fields.map(Field::fieldName);
+        return List.of("return " + eq(fields.get(index), typeName))
+            .append(Code.indent("? " + typeName.toLowerCase()))
+            .append(Code.indent(": new " + typeName + "(" + params(typeName, index, fieldNames) + ");"));
+    }
+
+    private static String eq(Field field, String typeName) {
+        var fieldName = field.fieldName();
+        return switch (field.paramKind()) {
+            case PRIMITIVE -> access(typeName, fieldName) + " == " + fieldName;
+            case DECLARED -> access(typeName, fieldName) + " != null && " +
+                          access(typeName, fieldName) + ".equals(" + fieldName + ")";
+        };
+    }
+
+    /**
+     * Record constructor params in wither
+     */
+    private static String params(String typeName, int index, List<String> fieldNames) {
+        return fieldNames
+            .zipWithIndex()
+            .map(i -> i._2() == index ? fieldNames.get(i._2()) : access(typeName, fieldNames.get(i._2())))
+            .mkString(", ");
+    }
+
+    /**
+     * Record accessor
+     */
+    public static String access(String typeName, String fieldName) {
+        return typeName.toLowerCase() + "." + fieldName + "()";
+    }
+
+    public static String render(Value<String> code) {
+        return code.toList()
+            .mkString("\n");
+    }
 }
