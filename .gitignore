@@ -24,3 +24,4 @@ gradle-app.setting
 *.zip
 .DS_Store
 lens/.approval_tests_temp/
+*.received.txt
