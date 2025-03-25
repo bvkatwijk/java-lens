@@ -82,7 +82,6 @@ public final class Code {
 
     private static String eq(Field field, String typeName) {
         var fieldName = field.fieldName();
-        boolean primitive = field.isPrimitive();
         return switch (field.paramKind()) {
             case PRIMITIVE -> access(typeName, fieldName) + " == " + fieldName;
             case DECLARED -> access(typeName, fieldName) + " != null && " +
