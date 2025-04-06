@@ -2,6 +2,8 @@ package nl.bvkatwijk.lens.processor;
 
 import io.vavr.Value;
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
+import io.vavr.collection.Traversable;
 import io.vavr.collection.Vector;
 import nl.bvkatwijk.lens.Const;
 
@@ -57,10 +59,9 @@ public final class Code {
             .replaceFirst(m -> m.group().toUpperCase());
     }
 
-    static Value<String> with(String typeName, int index, List<Field> fields) {
+    static Seq<String> with(String typeName, int index, List<Field> fields) {
         var fieldName = fields.get(index).fieldName();
-        return List.of("")
-            .append(withDeclareMethod(typeName, index, fields, fieldName))
+        return List.of(withDeclareMethod(typeName, index, fields, fieldName))
             .appendAll(Code.indent(withBody(typeName, index, fields)))
             .append("}");
     }
@@ -106,8 +107,7 @@ public final class Code {
         return typeName.toLowerCase() + "." + fieldName + "()";
     }
 
-    public static String render(Value<String> code) {
-        return code.toList()
-            .mkString("\n");
+    public static String render(Traversable<String> code) {
+        return code.mkString("\n");
     }
 }

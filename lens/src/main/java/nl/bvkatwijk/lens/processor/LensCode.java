@@ -4,6 +4,7 @@ import io.vavr.Tuple2;
 import io.vavr.Value;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
+import io.vavr.collection.Traversable;
 import nl.bvkatwijk.lens.Const;
 import nl.bvkatwijk.lens.api.ILens;
 import nl.bvkatwijk.lens.api.Lens;
@@ -54,7 +55,7 @@ public class LensCode {
             .appendAll(delegateGet(typeName));
     }
 
-    static Value<String> delegateWith(String typeName) {
+    static Seq<String> delegateWith(String typeName) {
         return List.of(
             "public java.util.function.BiFunction<" + Code.params(
                 Const.PARAM_SOURCE_TYPE,
@@ -65,7 +66,7 @@ public class LensCode {
         );
     }
 
-    static Value<String> delegateGet(String typeName) {
+    static Seq<String> delegateGet(String typeName) {
         return List.of(
             "public java.util.function.Function<" + Code.params(Const.PARAM_SOURCE_TYPE, typeName) + "> get() {",
             Code.indent(Code.ret("inner.get()")),
@@ -96,10 +97,10 @@ public class LensCode {
     public static Value<String> withers(String name, List<RecordComponentElement> fields) {
         return fields
             .zipWithIndex()
-            .flatMap(field -> wither(name, field, fields));
+            .flatMap(field -> wither(name, field, fields).prepend(""));
     }
 
-    private static Value<String> wither(String name, Tuple2<RecordComponentElement, Integer> field, List<RecordComponentElement> fields) {
+    private static Seq<String> wither(String name, Tuple2<RecordComponentElement, Integer> field, List<RecordComponentElement> fields) {
         return Code.with(
             name,
             field._2(),
