@@ -40,12 +40,16 @@ public class LensCode {
     }
 
     static Value<String> imports(Seq<Element> fields) {
-        return fields
-            .map(ElementOps::qualifiedType)
-            .map(Code::removeGenerics)
+        return qualified(fields)
             .append(ILens.class.getName())
             .append(Lens.class.getName())
             .map(Code::importStatement);
+    }
+
+    private static Seq<String> qualified(Seq<Element> fields) {
+        return fields
+            .map(ElementOps::qualifiedType)
+            .map(Code::removeGenerics);
     }
 
     static Value<String> innerDelegation(String typeName) {
@@ -56,19 +60,18 @@ public class LensCode {
     }
 
     static Seq<String> delegateWith(String typeName) {
+        String S_T_S = Code.params(Const.PARAM_SOURCE_TYPE, typeName, Const.PARAM_SOURCE_TYPE);
         return List.of(
-            "public java.util.function.BiFunction<" + Code.params(
-                Const.PARAM_SOURCE_TYPE,
-                typeName,
-                Const.PARAM_SOURCE_TYPE) + "> with() {",
+            "public java.util.function.BiFunction<" + S_T_S + "> with() {",
             Code.indent(Code.ret("inner.with()")),
             "}"
         );
     }
 
     static Seq<String> delegateGet(String typeName) {
+        String S_T = Code.params(Const.PARAM_SOURCE_TYPE, typeName);
         return List.of(
-            "public java.util.function.Function<" + Code.params(Const.PARAM_SOURCE_TYPE, typeName) + "> get() {",
+            "public java.util.function.Function<" + S_T + "> get() {",
             Code.indent(Code.ret("inner.get()")),
             "}"
         );
