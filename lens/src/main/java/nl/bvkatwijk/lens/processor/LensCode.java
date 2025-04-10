@@ -60,19 +60,19 @@ public class LensCode {
     }
 
     static Seq<String> delegateWith(String typeName) {
-        String S_T_S = Code.params(Const.PARAM_SOURCE_TYPE, typeName, Const.PARAM_SOURCE_TYPE);
+        var S_T_S = Code.params(Const.PARAM_SOURCE_TYPE, typeName, Const.PARAM_SOURCE_TYPE);
         return List.of(
             "public java.util.function.BiFunction<" + S_T_S + "> with() {",
-            Code.indent(Code.ret("inner.with()")),
+            Code.indent("return inner.with()"),
             "}"
         );
     }
 
     static Seq<String> delegateGet(String typeName) {
-        String S_T = Code.params(Const.PARAM_SOURCE_TYPE, typeName);
+        var S_T = Code.params(Const.PARAM_SOURCE_TYPE, typeName);
         return List.of(
             "public java.util.function.Function<" + S_T + "> get() {",
-            Code.indent(Code.ret("inner.get()")),
+            Code.indent("return inner.get()"),
             "}"
         );
     }
