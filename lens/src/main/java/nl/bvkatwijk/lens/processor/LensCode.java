@@ -63,7 +63,7 @@ public class LensCode {
         var S_T_S = Code.params(Const.PARAM_SOURCE_TYPE, typeName, Const.PARAM_SOURCE_TYPE);
         return List.of(
             "public java.util.function.BiFunction<" + S_T_S + "> with() {",
-            Code.indent("return inner.with()"),
+            Code.indent("return inner.with();"),
             "}"
         );
     }
@@ -72,7 +72,7 @@ public class LensCode {
         var S_T = Code.params(Const.PARAM_SOURCE_TYPE, typeName);
         return List.of(
             "public java.util.function.Function<" + S_T + "> get() {",
-            Code.indent("return inner.get()"),
+            Code.indent("return inner.get();"),
             "}"
         );
     }
