@@ -106,13 +106,14 @@ public class LensCode {
     }
 
     private static Seq<String> wither(String name, Tuple2<RecordComponentElement, Integer> field, List<RecordComponentElement> fields) {
-        return Code.with(
-            name,
-            field._2(),
-            fields.map(it -> new Field(
-                ElementOps.qualifiedType(it),
-                ElementOps.fieldName(it),
-                ParamKind.of(it)))
-        );
+        return new With(name, field._2(), fields.map(LensCode::toField))
+            .render();
+    }
+
+    private static Field toField(RecordComponentElement it) {
+        return new Field(
+            ElementOps.qualifiedType(it),
+            ElementOps.fieldName(it),
+            ParamKind.of(it));
     }
 }
