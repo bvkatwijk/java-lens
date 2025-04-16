@@ -52,9 +52,9 @@ class CodeTest {
         @ParameterizedTest
         @EnumSource(ParamKind.class)
         void approve(ParamKind paramKind) {
-            Approvals.verify(Code.render(Code.with("TypeName", 0, List.of(
+            Approvals.verify(Code.render(new With("TypeName", 0, List.of(
                 new Field("FieldTypeName", "fieldName", paramKind)
-            ))), Approvals.NAMES.withParameters(paramKind.name()));
+            )).render()), Approvals.NAMES.withParameters(paramKind.name()));
         }
     }
 }

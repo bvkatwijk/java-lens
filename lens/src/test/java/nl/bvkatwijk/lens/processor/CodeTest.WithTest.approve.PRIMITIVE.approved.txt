@@ -1,5 +1,5 @@
-public static TypeName withFieldName(TypeName typename, FieldTypeName fieldName) {
-	return typename.fieldName() == fieldName
-		? typename
+public static TypeName withFieldName(TypeName typeName$, FieldTypeName fieldName) {
+	return typeName$.fieldName() == fieldName
+		? typeName$
 		: new TypeName(fieldName);
 }

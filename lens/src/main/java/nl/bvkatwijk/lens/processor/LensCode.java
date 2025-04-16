@@ -12,6 +12,8 @@ import nl.bvkatwijk.lens.api.Lens;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.RecordComponentElement;
 
+import static nl.bvkatwijk.lens.processor.Code.indent;
+
 /**
  * Code generation specific for lens library
  */
@@ -63,7 +65,7 @@ public class LensCode {
         var S_T_S = Code.params(Const.PARAM_SOURCE_TYPE, typeName, Const.PARAM_SOURCE_TYPE);
         return List.of(
             "public java.util.function.BiFunction<" + S_T_S + "> with() {",
-            Code.indent("return inner.with();"),
+            indent("return inner.with();"),
             "}"
         );
     }
@@ -72,7 +74,7 @@ public class LensCode {
         var S_T = Code.params(Const.PARAM_SOURCE_TYPE, typeName);
         return List.of(
             "public java.util.function.Function<" + S_T + "> get() {",
-            Code.indent("return inner.get();"),
+            indent("return inner.get();"),
             "}"
         );
     }
@@ -104,13 +106,14 @@ public class LensCode {
     }
 
     private static Seq<String> wither(String name, Tuple2<RecordComponentElement, Integer> field, List<RecordComponentElement> fields) {
-        return Code.with(
-            name,
-            field._2(),
-            fields.map(it -> new Field(
-                ElementOps.qualifiedType(it),
-                ElementOps.fieldName(it),
-                ParamKind.of(it)))
-        );
+        return new With(name, field._2(), fields.map(LensCode::toField))
+            .render();
+    }
+
+    private static Field toField(RecordComponentElement it) {
+        return new Field(
+            ElementOps.qualifiedType(it),
+            ElementOps.fieldName(it),
+            ParamKind.of(it));
     }
 }
