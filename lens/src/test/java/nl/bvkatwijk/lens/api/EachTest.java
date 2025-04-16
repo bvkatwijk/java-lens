@@ -1,24 +1,41 @@
 package nl.bvkatwijk.lens.api;
 
-import io.vavr.Value;
+import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
+import io.vavr.collection.Set;
 import nl.bvkatwijk.lens.Lenses;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static nl.bvkatwijk.lens.api.Each.*;
+
 class EachTest {
+
     @Lenses
-    record WrapValue(Value<String> wrapped) {
+    record WrapList(List<String> wrapped) {
     }
 
     @Test
-    void wrap() {
-        var it = new WrapValue(List.of("some"));
-        Assertions.assertEquals("SOME", WrapValueLens.µ
+    void wrapList() {
+        Assertions.assertEquals("A", WrapListLens.µ
             .wrapped()
-            .modify(e -> e.map(String::toUpperCase))
-            .apply(it)
+            .modify(map(String::toUpperCase))
+            .apply(new WrapList(List.of("a")))
             .wrapped()
-            .get());
+            .head());
+    }
+
+    @Lenses
+    record WrapSet(Set<String> wrapped) {
+    }
+
+    @Test
+    void wrapSet() {
+        Assertions.assertEquals("A", WrapSetLens.µ
+            .wrapped()
+            .modify(map(String::toUpperCase))
+            .apply(new WrapSet(HashSet.of("a")))
+            .wrapped()
+            .head());
     }
 }
