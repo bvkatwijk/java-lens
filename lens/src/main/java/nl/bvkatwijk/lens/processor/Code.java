@@ -59,26 +59,33 @@ public final class Code {
             .replaceFirst(m -> m.group().toUpperCase());
     }
 
+    static String uncapitalize(String string) {
+        return Pattern.compile("^.")
+            .matcher(string)
+            .replaceFirst(m -> m.group().toLowerCase());
+    }
+
     static Seq<String> with(String typeName, int index, List<Field> fields) {
         var fieldName = fields.get(index).fieldName();
-        return List.of(withDeclareMethod(typeName, index, fields, fieldName))
-            .appendAll(Code.indent(withBody(typeName, index, fields)))
+        String typeParam = uncapitalize(typeName) + "$";
+        return List.of(withDeclareMethod(typeName, typeParam, index, fields, fieldName))
+            .appendAll(Code.indent(withBody(typeName, typeParam, index, fields)))
             .append("}");
     }
 
-    private static String withDeclareMethod(String typeName, int index, List<Field> fields, String fieldName) {
-        return "public static " + typeName + " with" + Code.capitalize(fieldName) + "(" + withParams(typeName, index, fields, fieldName) + ") {";
+    static String withDeclareMethod(String typeName, String typeParam, int index, List<Field> fields, String fieldName) {
+        return "public static " + typeName + " with" + Code.capitalize(fieldName) + "(" + withParams(typeName, typeParam, index, fields, fieldName) + ") {";
     }
 
-    private static String withParams(String typeName, int index, List<Field> fields, String fieldName) {
-        return typeName + " " + typeName.toLowerCase() + ", " + fields.get(index).typeName() + " " + fieldName;
+    private static String withParams(String typeName, String typeParam, int index, List<Field> fields, String fieldName) {
+        return typeName + " " + typeParam + ", " + fields.get(index).typeName() + " " + fieldName;
     }
 
-    private static Value<String> withBody(String typeName, int index, List<Field> fields) {
+    private static Value<String> withBody(String typeName, String typeParam, int index, List<Field> fields) {
         var fieldNames = fields.map(Field::fieldName);
-        return List.of("return " + eq(fields.get(index), typeName))
-            .append(Code.indent("? " + typeName.toLowerCase()))
-            .append(Code.indent(": new " + typeName + "(" + params(typeName, index, fieldNames) + ");"));
+        return List.of("return " + eq(fields.get(index), typeParam))
+            .append(Code.indent("? " + typeParam))
+            .append(Code.indent(": new " + typeName + "(" + params(typeParam, index, fieldNames) + ");"));
     }
 
     private static String eq(Field field, String typeName) {
@@ -104,7 +111,7 @@ public final class Code {
      * Record accessor
      */
     public static String access(String typeName, String fieldName) {
-        return typeName.toLowerCase() + "." + fieldName + "()";
+        return typeName + "." + fieldName + "()";
     }
 
     public static String render(Traversable<String> code) {
