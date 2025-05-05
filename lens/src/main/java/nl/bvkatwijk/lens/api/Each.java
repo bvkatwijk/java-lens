@@ -11,7 +11,7 @@ public class Each {
     /// @param <V> Value Type
     /// @param <T> Wrapped Type
     @SuppressWarnings("unchecked")
-    public static <T, V extends Value<T>> UnaryOperator<V> map(UnaryOperator<T> f) {
+    public static <T, V extends Value<T>> UnaryOperator<V> mapEach(UnaryOperator<T> f) {
         return it -> (V) it.map(f);
     }
 }

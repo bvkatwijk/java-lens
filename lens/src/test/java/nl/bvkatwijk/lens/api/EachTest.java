@@ -19,7 +19,7 @@ class EachTest {
     void wrapList() {
         Assertions.assertEquals("A", WrapListLens.µ
             .wrapped()
-            .modify(map(String::toUpperCase))
+            .modify(mapEach(String::toUpperCase))
             .apply(new WrapList(List.of("a")))
             .wrapped()
             .head());
@@ -33,7 +33,7 @@ class EachTest {
     void wrapSet() {
         Assertions.assertEquals("A", WrapSetLens.µ
             .wrapped()
-            .modify(map(String::toUpperCase))
+            .modify(mapEach(String::toUpperCase))
             .apply(new WrapSet(HashSet.of("a")))
             .wrapped()
             .head());
