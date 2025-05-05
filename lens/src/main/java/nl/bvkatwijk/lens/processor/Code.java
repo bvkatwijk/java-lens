@@ -65,10 +65,10 @@ public final class Code {
 
     static String eq(Field field, String typeName) {
         var fieldName = field.fieldName();
+        var self = access(typeName, fieldName);
         return switch (field.paramKind()) {
-            case PRIMITIVE -> access(typeName, fieldName) + " == " + fieldName;
-            case DECLARED -> access(typeName, fieldName) + " != null && " +
-                          access(typeName, fieldName) + ".equals(" + fieldName + ")";
+            case PRIMITIVE -> self + " == " + fieldName;
+            case DECLARED -> self + " != null && " + self + ".equals(" + fieldName + ")";
         };
     }
 
