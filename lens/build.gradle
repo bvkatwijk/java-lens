@@ -7,8 +7,7 @@ plugins {
 }
 
 group = 'nl.bvkatwijk.java-lens'
-version = '0.6.0'
-sourceCompatibility = '21'
+version = '0.7.0'
 
 repositories {
     mavenCentral()
@@ -36,7 +35,7 @@ java {
     withJavadocJar()
     withSourcesJar()
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
+        languageVersion = JavaLanguageVersion.of(24)
     }
 }
 
@@ -128,6 +127,6 @@ publishing {
 
 tasks.withType(Zip) { task ->
     task.doLast {
-        ant.checksum file: it.archivePath
+        ant.checksum file: task.archiveFile.get().asFile
     }
 }
