@@ -26,7 +26,7 @@ dependencies {
     testImplementation libs.junit.jupiter.engine
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     testImplementation group: 'com.google.testing.compile', name: 'compile-testing', version: '0.23.0'
-    testImplementation group: 'com.approvaltests', name: 'approvaltests', version: '25.0.23'
+    testImplementation group: 'com.approvaltests', name: 'approvaltests', version: '25.4.3'
     testImplementation 'org.instancio:instancio-junit:5.5.1'
     testAnnotationProcessor project(":lens")
 }
