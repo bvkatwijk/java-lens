@@ -1,2 +1,2 @@
-java openjdk-24
-gradle 9.0.0
+java openjdk-25
+gradle 9.1.0
