@@ -1,7 +1,7 @@
 [versions]
 junit-jupiter = "6.0.1"
 lombok = "1.18.42"
-vavr = "0.10.7"
+vavr = "0.11.0"
 
 [libraries]
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit-jupiter" }
