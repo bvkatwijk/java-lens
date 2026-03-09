@@ -39,6 +39,7 @@ jobs:
       uses: codecov/test-results-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+
   dependency-submission:
     runs-on: ubuntu-latest
     permissions:
@@ -54,10 +55,8 @@ jobs:
     - name: Generate and submit dependency graph
       uses: gradle/actions/dependency-submission@v4
 
-
-  # this is the block that matters:
   dependabot:
-    needs: [build] # <-- important!
+    needs: [build]
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
