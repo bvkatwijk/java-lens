@@ -1,6 +1,6 @@
 [versions]
 junit-jupiter = "6.0.3"
-lombok = "1.18.42"
+lombok = "1.18.44"
 vavr = "1.0.1"
 
 [libraries]
