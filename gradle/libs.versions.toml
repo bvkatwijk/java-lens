@@ -1,5 +1,5 @@
 [versions]
-junit-jupiter = "6.0.3"
+junit-jupiter = "6.1.0"
 lombok = "1.18.46"
 vavr = "1.0.1"
 
