@@ -23,7 +23,7 @@ import java.io.Writer;
 import java.util.Set;
 
 @Getter
-@SupportedSourceVersion(SourceVersion.RELEASE_25)
+@SupportedSourceVersion(SourceVersion.RELEASE_26)
 @SupportedAnnotationTypes(Const.LENS_ANNOTATION_QUALIFIED)
 public class LensProcessor extends AbstractProcessor {
     @NonFinal
