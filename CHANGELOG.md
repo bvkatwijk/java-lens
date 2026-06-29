@@ -2,6 +2,10 @@
 - [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-06-29
+- Feat: Support Java 26
+- Bump: vavr 1.0.1
+
 ## [0.7.0] - 2025-09-10
 - Feat: Support Java 24
 - Bump: vavr 0.10.7
