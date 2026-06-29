@@ -15,8 +15,8 @@ public enum ParamKind {
 
     public static ParamKind of(Element it) {
         return switch (it.asType()) {
-            case PrimitiveType primitiveType -> PRIMITIVE;
-            case DeclaredType declaredType -> DECLARED;
+            case PrimitiveType _ -> PRIMITIVE;
+            case DeclaredType _ -> DECLARED;
             default -> throw  new IllegalStateException("Unsupported param kind: " + it);
         };
     }
