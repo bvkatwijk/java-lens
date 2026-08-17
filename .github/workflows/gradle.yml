@@ -7,9 +7,6 @@
 
 name: Build
 
-x-java-version: &java-version
-  java-version: '26'
-
 on:
   push:
     branches: [ "main" ]
@@ -27,7 +24,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v4
       with:
-        <<: *java-version
+        java-version: '26'
         distribution: 'temurin'
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
@@ -53,7 +50,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v4
       with:
-        <<: *java-version
+        java-version: '26'
         distribution: 'temurin'
 
     - name: Generate and submit dependency graph
