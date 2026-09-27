@@ -38,9 +38,13 @@ cmdPublish() {
     upload
 }
 
-CMD=$1
-case "$CMD" in
-	"publish") cmdPublish ;;
-    "check") cmdCheck $2 ;;
-	*) echo "Unknown command $CMD"; exit 1 ;;
-esac
+select CMD in publish check; do
+  case $CMD in
+    publish)
+      cmdPublish ;;
+    check)
+      cmdCheck $1 ;;
+    *)
+      echo "Invalid option $REPLY";;
+  esac
+done
