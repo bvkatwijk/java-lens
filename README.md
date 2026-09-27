@@ -6,13 +6,16 @@ Automatic lens generation to support transformations to records.
 [![ci](https://github.com/bvkatwijk/java-lens/actions/workflows/gradle.yml/badge.svg)](https://github.com/bvkatwijk/java-lens/actions/workflows/gradle.yml)
 [![codecov](https://codecov.io/github/bvkatwijk/java-lens/graph/badge.svg?token=9aIaRmZ2ON)](https://codecov.io/github/bvkatwijk/java-lens)
 
-## Purpose
-If you use records and you want to apply some transformation, code can get verbose, repetitive and error-prone. For example:
+## Example
+If you use records and you want to apply some transformation, code can get verbose, repetitive and error-prone. Say we have a layered immutable structure:
 ```java
 public record Person(String name, Address address, Address work, List<Person> friends) { }
 public record Address(String street, int number, City city) { }
 public record City(String name) { }
+```
 
+Without lenses the verbosity scales with both the amount of fields and layers. For example:
+```java
 public static Person moveToNewYork(Person person) {
     Address address = person.address;
     var updatedCity = new City("New York");
@@ -20,6 +23,7 @@ public static Person moveToNewYork(Person person) {
     return new Person(person.name, updatedAddress, person.work, person.friends);
 }
 ```
+
 Using Lenses you can annotate your records, giving you a DSL to make specific changes:
 
 ```java
@@ -29,9 +33,20 @@ public static Person moveToNewYork(Person person) {
             .city()
             .name()
             .with("New York")
-            .apply(ALICE);
+            .apply(person);
 }
 ```
+
+Each part of the DSL is an immutable functional object allowing easy extraction and reuse, for example:
+
+```java
+public static final Lens<Person, String> PERSON_CITY_NAME_LENS = PersonLens.µ
+            .address()
+            .city()
+            .name()
+public static final Function<Person, Person> PERSON_MOVE_NEW_YORK = PERSON_CITY_NAME_LENS.with("New York")
+```
+
 
 ## Usage
 Add `@Lenses` annotation to your record(s)
