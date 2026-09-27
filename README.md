@@ -47,7 +47,6 @@ public static final Lens<Person, String> PERSON_CITY_NAME_LENS = PersonLens.µ
 public static final Function<Person, Person> PERSON_MOVE_NEW_YORK = PERSON_CITY_NAME_LENS.with("New York")
 ```
 
-
 ## Usage
 Add `@Lenses` annotation to your record(s)
 ```java
@@ -55,6 +54,10 @@ Add `@Lenses` annotation to your record(s)
 public record Person(String name, Address address, Address work, List<Person> friends) { }
 ```
 See [ExampleTest](./lens/src/test/java/nl/bvkatwijk/lens/example/ExampleTest.java) for more usage examples.
+
+## Dependencies
+
+The library has a runtime dependency on [Vavr](https://github.com/vavr-io/vavr).
 
 ## Development
 
