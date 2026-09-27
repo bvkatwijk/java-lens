@@ -70,7 +70,7 @@ signing {
 }
 
 tasks.withType(Sign) {
-    onlyIf { isReleaseVersion }
+    // onlyIf { isReleaseVersion }
 }
 
 publishing {
